@@ -629,23 +629,21 @@ jobs:
       - name: Install build dependencies
         run: |
           apt-get update
-          # clang-14 is NOT in Debian Bullseye default apt repos.
-          # Add the official LLVM apt repo for Bullseye before installing.
-          apt-get install -y gnupg lsb-release ca-certificates
+          # Step 1: curl must be installed first (minimal Bullseye has none).
+          apt-get install -y curl gnupg ca-certificates
+          # Step 2: add LLVM apt repo — clang-14 not in Bullseye default repos.
           curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key             | gpg --dearmor -o /usr/share/keyrings/llvm-archive-keyring.gpg
-          echo "deb [signed-by=/usr/share/keyrings/llvm-archive-keyring.gpg]             https://apt.llvm.org/bullseye/ llvm-toolchain-bullseye-14 main"             > /etc/apt/sources.list.d/llvm.list
+          echo "deb [signed-by=/usr/share/keyrings/llvm-archive-keyring.gpg] https://apt.llvm.org/bullseye/ llvm-toolchain-bullseye-14 main"             > /etc/apt/sources.list.d/llvm.list
           apt-get update
-          # Install clang-14 from LLVM repo; keep build-essential for make/ld.
-          apt-get install -y curl clang-14 python3 git libfuse2 file rpm \
-            libarchive-tools build-essential \
-            libglib2.0-0 libgtk-3-0 libnss3 libxss1 libxtst6 libasound2 \
-            libatk-bridge2.0-0 libdrm2 libgbm1 libx11-xcb1 libxcb-dri3-0
-          # Override CC/CXX for node-gyp native builds; keep system ld.
+          # Step 3: install clang-14 (now available) + runtime deps.
+          apt-get install -y clang-14 python3 git libfuse2 file rpm             libarchive-tools build-essential             libglib2.0-0 libgtk-3-0 libnss3 libxss1 libxtst6 libasound2             libatk-bridge2.0-0 libdrm2 libgbm1 libx11-xcb1 libxcb-dri3-0
+          # Step 4: set clang-14 as CC/CXX; keep system ld (binutils).
           export CC=clang-14
           export CXX=clang++-14
           echo "CC=clang-14" >> "${GITHUB_ENV}"
           echo "CXX=clang++-14" >> "${GITHUB_ENV}"
-          echo "Using clang: $(clang-14 --version | head -n1)"
+          echo "clang version: $(clang-14 --version | head -n1)"
+          # Step 5: install Node 22.
           curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
           apt-get install -y nodejs
 
