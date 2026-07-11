@@ -167,7 +167,7 @@ function formatClipboardImageTimestamp(date = new Date()) {
 }
 
 function createClipboardImageFileName(date = new Date()) {
-  return `netcatty-paste-${formatClipboardImageTimestamp(date)}.png`;
+  return `magiesTerminal-paste-${formatClipboardImageTimestamp(date)}.png`;
 }
 
 async function readClipboardImage({

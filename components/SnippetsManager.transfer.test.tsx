@@ -93,7 +93,7 @@ test("SnippetImportDialog shows example JSON before import confirmation", () => 
   );
 
   assert.match(markup, /Example JSON/);
-  assert.match(markup, /netcatty\.snippets/);
+  assert.match(markup, /magiesTerminal\.snippets/);
   assert.match(markup, /JSON array/);
   assert.match(markup, /Choose file/);
   assert.match(markup, /Download samples/);
@@ -103,7 +103,7 @@ test("SnippetImportDialog shows example JSON before import confirmation", () => 
 
 test("snippet import sample files include standard and array formats", () => {
   assert.equal(SNIPPET_IMPORT_SAMPLE_FILES.length, 5);
-  assert.ok(SNIPPET_IMPORT_SAMPLE_FILES.some((file) => file.name === "01-standard-netcatty-object.json"));
+  assert.ok(SNIPPET_IMPORT_SAMPLE_FILES.some((file) => file.name === "01-standard-magiesTerminal-object.json"));
   assert.ok(SNIPPET_IMPORT_SAMPLE_FILES.some((file) => file.name === "02-plain-snippet-array.json"));
   assert.deepEqual(JSON.parse(SNIPPET_IMPORT_SAMPLE_FILES[1].content).map((item: { command: string }) => item.command), [
     "ss -lntp",

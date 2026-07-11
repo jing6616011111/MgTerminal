@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 function registerProviderHandlers(ctx) {
   with (ctx) {
-  ipcMain.handle("netcatty:ai:user-skills:status", async (event) => {
+  ipcMain.handle("magiesTerminal:ai:user-skills:status", async (event) => {
     if (!validateSenderOrSettings(event)) return { ok: false, error: "Unauthorized IPC sender" };
     try {
       const status = await scanUserSkills(electronModule?.app);
@@ -11,7 +11,7 @@ function registerProviderHandlers(ctx) {
     }
   });
 
-  ipcMain.handle("netcatty:ai:user-skills:open", async (event) => {
+  ipcMain.handle("magiesTerminal:ai:user-skills:open", async (event) => {
     if (!validateSenderOrSettings(event)) return { ok: false, error: "Unauthorized IPC sender" };
     try {
       const status = await scanUserSkills(electronModule?.app);
@@ -26,7 +26,7 @@ function registerProviderHandlers(ctx) {
     }
   });
 
-  ipcMain.handle("netcatty:ai:user-skills:build-context", async (event, { prompt, selectedSkillSlugs }) => {
+  ipcMain.handle("magiesTerminal:ai:user-skills:build-context", async (event, { prompt, selectedSkillSlugs }) => {
     if (!validateSender(event)) return { ok: false, error: "Unauthorized IPC sender" };
     try {
       const { context, status } = await buildUserSkillsContext(electronModule?.app, prompt, selectedSkillSlugs);
@@ -37,7 +37,7 @@ function registerProviderHandlers(ctx) {
   });
 
   // ── Provider config sync (renderer → main, keys stay encrypted) ──
-  ipcMain.handle("netcatty:ai:sync-providers", async (event, { providers }) => {
+  ipcMain.handle("magiesTerminal:ai:sync-providers", async (event, { providers }) => {
     if (!validateSenderOrSettings(event)) return { ok: false };
     if (Array.isArray(providers)) {
       providerConfigs = providers;
@@ -47,7 +47,7 @@ function registerProviderHandlers(ctx) {
   });
 
   // ── Web search config sync (renderer → main, for fetch allowlist + key decryption) ──
-  ipcMain.handle("netcatty:ai:sync-web-search", async (event, { apiHost, apiKey }) => {
+  ipcMain.handle("magiesTerminal:ai:sync-web-search", async (event, { apiHost, apiKey }) => {
     if (!validateSenderOrSettings(event)) return { ok: false };
     webSearchApiHost = typeof apiHost === "string" ? apiHost : null;
     webSearchApiKeyEncrypted = typeof apiKey === "string" ? apiKey : null;
@@ -113,7 +113,7 @@ function registerProviderHandlers(ctx) {
     return false;
   }
 
-  ipcMain.handle("netcatty:ai:allowlist:add-host", async (event, { baseURL }) => {
+  ipcMain.handle("magiesTerminal:ai:allowlist:add-host", async (event, { baseURL }) => {
     if (!validateSenderOrSettings(event)) return { ok: false, error: "Unauthorized IPC sender" };
     if (typeof baseURL !== "string") return { ok: false, error: "baseURL must be a string" };
     try {
@@ -319,7 +319,7 @@ function registerProviderHandlers(ctx) {
   }
 
   // Start a streaming chat request (proxied through main process)
-  ipcMain.handle("netcatty:ai:chat:stream", async (event, { requestId, url, headers, body, providerId }) => {
+  ipcMain.handle("magiesTerminal:ai:chat:stream", async (event, { requestId, url, headers, body, providerId }) => {
     // Validate IPC sender (Issue #17)
     if (!validateSender(event)) {
       return { ok: false, error: "Unauthorized IPC sender" };
@@ -340,7 +340,7 @@ function registerProviderHandlers(ctx) {
         return { ok: false, error: "Invalid URL" };
       }
 
-      // Check URL against allowed hosts (same as netcatty:ai:fetch)
+      // Check URL against allowed hosts (same as magiesTerminal:ai:fetch)
       if (!isAllowedFetchUrl(resolvedUrl)) {
         return { ok: false, error: "URL host is not in the allowed list" };
       }
@@ -357,7 +357,7 @@ function registerProviderHandlers(ctx) {
   });
 
   // Cancel an active stream
-  ipcMain.handle("netcatty:ai:chat:cancel", async (event, { requestId }) => {
+  ipcMain.handle("magiesTerminal:ai:chat:cancel", async (event, { requestId }) => {
     if (!validateSender(event)) return { ok: false, error: "Unauthorized IPC sender" };
     const controller = activeStreams.get(requestId);
     if (controller) {
@@ -369,7 +369,7 @@ function registerProviderHandlers(ctx) {
   });
 
   // Non-streaming request (for model listing, validation, etc.)
-  ipcMain.handle("netcatty:ai:fetch", async (event, { url, method, headers, body, providerId, skipHostCheck, followRedirects, skipTLSVerify }) => {
+  ipcMain.handle("magiesTerminal:ai:fetch", async (event, { url, method, headers, body, providerId, skipHostCheck, followRedirects, skipTLSVerify }) => {
     // Validate IPC sender — settings window needs this for model listing
     if (!validateSenderOrSettings(event)) {
       return { ok: false, status: 0, data: "", error: "Unauthorized IPC sender" };

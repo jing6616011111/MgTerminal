@@ -78,7 +78,7 @@ function loadBridgeWithFakePty(spawns) {
 }
 
 function makeHarness(t) {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-mosh-session-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-mosh-session-"));
   t.after(() => fs.rmSync(tmp, { recursive: true, force: true }));
 
   const binDir = path.join(tmp, "bin");
@@ -135,7 +135,7 @@ test("startMoshSession handshake path returns the same shape as the legacy path"
 });
 
 test("startMoshSession uses bundled mosh-client even when PATH contains another client", async (t) => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-mosh-session-path-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-mosh-session-path-"));
   t.after(() => fs.rmSync(tmp, { recursive: true, force: true }));
 
   const binDir = path.join(tmp, "bin");
@@ -200,7 +200,7 @@ test("startMoshSession handshake path sends the existing exit event on failure",
 
   h.spawns[0].emitExit({ exitCode: 255, signal: 0 });
 
-  const exit = h.sent.find((evt) => evt.channel === "netcatty:exit");
+  const exit = h.sent.find((evt) => evt.channel === "magiesTerminal:exit");
   assert.ok(exit);
   assert.equal(exit.payload.sessionId, "mosh-test-session");
   assert.equal(exit.payload.reason, "error");
@@ -258,14 +258,14 @@ test("startMoshSession passes vault private keys to ssh via a temp identity file
 
 test("startMoshSession passes certificates with reference identity files", async (t) => {
   const h = makeHarness(t);
-  const referenceKeyPath = path.join(os.tmpdir(), "netcatty-reference-id_ed25519");
+  const referenceKeyPath = path.join(os.tmpdir(), "magiesTerminal-reference-id_ed25519");
   await h.bridge.startMoshSession(
     h.event,
     {
       ...h.options,
       keyId: "reference-key-1",
       identityFilePaths: [referenceKeyPath],
-      certificate: "ssh-ed25519-cert-v01@openssh.com AAAATEST netcatty-cert",
+      certificate: "ssh-ed25519-cert-v01@openssh.com AAAATEST magiesTerminal-cert",
     },
     { moshClientLookup: h.lookupOpts },
   );
@@ -281,7 +281,7 @@ test("startMoshSession passes certificates with reference identity files", async
   assert.notEqual(certFlagIndex, -1);
   const certPath = h.spawns[0].args[certFlagIndex].slice("CertificateFile=".length);
   assert.equal(fs.existsSync(certPath), true);
-  assert.match(fs.readFileSync(certPath, "utf8"), /netcatty-cert/);
+  assert.match(fs.readFileSync(certPath, "utf8"), /magiesTerminal-cert/);
 
   h.spawns[0].emitExit({ exitCode: 255, signal: 0 });
   assert.equal(fs.existsSync(certPath), false);
@@ -376,13 +376,13 @@ test("startMoshSession handshake path sends the existing exit event after mosh-c
   assert.equal(h.spawns.length, 2);
   h.spawns[1].emitExit({ exitCode: 0, signal: 0 });
 
-  const exit = h.sent.find((evt) => evt.channel === "netcatty:exit");
+  const exit = h.sent.find((evt) => evt.channel === "magiesTerminal:exit");
   assert.ok(exit);
   assert.equal(exit.payload.sessionId, "mosh-test-session");
   assert.equal(exit.payload.reason, "exited");
 });
 
-test("startMoshSession keeps MoshCatty on Netcatty's primary terminal screen", async (t) => {
+test("startMoshSession keeps MoshCatty on MagiesTerminal's primary terminal screen", async (t) => {
   const h = makeHarness(t);
   await h.bridge.startMoshSession(h.event, h.options, { moshClientLookup: h.lookupOpts });
 
@@ -403,12 +403,12 @@ test("startMoshSession restores terminal modes on exit without leaving the prima
   h.spawns[1].emitExit({ exitCode: 1, signal: 0 });
 
   const terminalData = h.sent
-    .filter((evt) => evt.channel === "netcatty:data")
+    .filter((evt) => evt.channel === "magiesTerminal:data")
     .map((evt) => evt.payload.data)
     .join("");
-  const exitIndex = h.sent.findIndex((evt) => evt.channel === "netcatty:exit");
+  const exitIndex = h.sent.findIndex((evt) => evt.channel === "magiesTerminal:exit");
   const cleanupIndex = h.sent.findIndex(
-    (evt) => evt.channel === "netcatty:data" && evt.payload.data.includes("\x1b[?25h"),
+    (evt) => evt.channel === "magiesTerminal:data" && evt.payload.data.includes("\x1b[?25h"),
   );
 
   assert.match(terminalData, /\x1b\[\?25h/);
@@ -496,7 +496,7 @@ test("closeSession ends a Mosh stats companion connection", async (t) => {
 });
 
 test("startMoshSession fails when bundled mosh-client is missing even if PATH has mosh-client", async (t) => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-mosh-session-missing-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-mosh-session-missing-"));
   t.after(() => fs.rmSync(tmp, { recursive: true, force: true }));
 
   const binDir = path.join(tmp, "bin");

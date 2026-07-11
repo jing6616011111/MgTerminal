@@ -281,7 +281,7 @@ function createWorkerAiExecHandler({
         expectedPrompt: getFreshIdlePrompt(session),
         typedInput: true,
         echoCommand: (rawCommand) => {
-          event?.sender?.send?.("netcatty:data", {
+          event?.sender?.send?.("magiesTerminal:data", {
             sessionId,
             data: formatSyntheticEcho(rawCommand),
             syntheticEcho: true,
@@ -377,7 +377,7 @@ function createWorkerAiJobStartHandler({
     activeSessionJobs.set(sessionId, jobId);
 
     // Insert into backgroundJobs *before* the shell-kind probe so
-    // netcatty:ai:catty:cancel / cancelWorkerBackgroundJobsForSession can
+    // magiesTerminal:ai:catty:cancel / cancelWorkerBackgroundJobsForSession can
     // latch cancellation while we await. Without this, the first job on an
     // unprobed remote session has no map entry during the probe and still
     // writes to the PTY after chat cancel (Codex P2 on #2061).
@@ -448,7 +448,7 @@ function createWorkerAiJobStartHandler({
         expectedPrompt: getFreshIdlePrompt(session),
         typedInput: true,
         echoCommand: (rawCommand) => {
-          event?.sender?.send?.("netcatty:data", {
+          event?.sender?.send?.("magiesTerminal:data", {
             sessionId,
             data: formatSyntheticEcho(rawCommand),
             syntheticEcho: true,
@@ -549,23 +549,23 @@ function registerWorkerAiExecHandlers(ipcMain, { sessions }) {
   const activePtyExecs = new Map();
   const backgroundJobs = new Map();
   const activeSessionJobs = new Map();
-  ipcMain.handle("netcatty:ai:exec", createWorkerAiExecHandler({
+  ipcMain.handle("magiesTerminal:ai:exec", createWorkerAiExecHandler({
     sessions,
     activePtyExecs,
     activeSessionJobs,
   }));
-  ipcMain.handle("netcatty:ai:jobStart", createWorkerAiJobStartHandler({
+  ipcMain.handle("magiesTerminal:ai:jobStart", createWorkerAiJobStartHandler({
     sessions,
     backgroundJobs,
     activeSessionJobs,
   }));
-  ipcMain.handle("netcatty:ai:jobPoll", createWorkerAiJobPollHandler({
+  ipcMain.handle("magiesTerminal:ai:jobPoll", createWorkerAiJobPollHandler({
     backgroundJobs,
   }));
-  ipcMain.handle("netcatty:ai:jobStop", createWorkerAiJobStopHandler({
+  ipcMain.handle("magiesTerminal:ai:jobStop", createWorkerAiJobStopHandler({
     backgroundJobs,
   }));
-  ipcMain.on("netcatty:ai:catty:cancel", (_event, payload = {}) => {
+  ipcMain.on("magiesTerminal:ai:catty:cancel", (_event, payload = {}) => {
     cancelPtyExecsForSession(activePtyExecs, payload.chatSessionId);
     cancelWorkerBackgroundJobsForSession(backgroundJobs, payload.chatSessionId);
   });

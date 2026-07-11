@@ -61,8 +61,8 @@ export const QuickScriptEditorDialog: React.FC<QuickScriptEditorDialogProps> = (
       setTargetSelection([]);
       setOpen(true);
     };
-    window.addEventListener('netcatty:scripts:add', handler);
-    return () => window.removeEventListener('netcatty:scripts:add', handler);
+    window.addEventListener('magiesTerminal:scripts:add', handler);
+    return () => window.removeEventListener('magiesTerminal:scripts:add', handler);
   }, []);
 
   useEffect(() => {
@@ -73,8 +73,8 @@ export const QuickScriptEditorDialog: React.FC<QuickScriptEditorDialogProps> = (
       setTargetSelection(snippet.targetsAllHosts ? [] : (snippet.targets ?? []));
       setOpen(true);
     };
-    window.addEventListener('netcatty:snippets:edit', handler);
-    return () => window.removeEventListener('netcatty:snippets:edit', handler);
+    window.addEventListener('magiesTerminal:snippets:edit', handler);
+    return () => window.removeEventListener('magiesTerminal:snippets:edit', handler);
   }, []);
 
   useEffect(() => {
@@ -105,7 +105,7 @@ export const QuickScriptEditorDialog: React.FC<QuickScriptEditorDialogProps> = (
 
       onCreateSnippet(snippet);
       toast.success(t('scripts.recording.savedNamed', { name: snippet.label }));
-      window.dispatchEvent(new CustomEvent('netcatty:scripts:saved', {
+      window.dispatchEvent(new CustomEvent('magiesTerminal:scripts:saved', {
         detail: { snippetId: snippet.id, packagePath },
       }));
 
@@ -115,8 +115,8 @@ export const QuickScriptEditorDialog: React.FC<QuickScriptEditorDialogProps> = (
         setOpen(true);
       }
     };
-    window.addEventListener('netcatty:scripts:save-recorded', handler);
-    return () => window.removeEventListener('netcatty:scripts:save-recorded', handler);
+    window.addEventListener('magiesTerminal:scripts:save-recorded', handler);
+    return () => window.removeEventListener('magiesTerminal:scripts:save-recorded', handler);
   }, [onCreatePackage, onCreateSnippet, packages, t]);
 
   const hostById = useMemo(
@@ -216,7 +216,7 @@ export const QuickScriptEditorDialog: React.FC<QuickScriptEditorDialogProps> = (
     if (onRunSnippet) {
       onRunSnippet(savedSnippet, targets);
     } else {
-      window.dispatchEvent(new CustomEvent('netcatty:scripts:run-now', {
+      window.dispatchEvent(new CustomEvent('magiesTerminal:scripts:run-now', {
         detail: { snippet: savedSnippet },
       }));
     }

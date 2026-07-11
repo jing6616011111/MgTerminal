@@ -1,6 +1,6 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { approveNetcattyMcpOnly, approveNetcattyCliShellOnly, buildCopilotClientOptions, buildCopilotPermissionHandler, buildCopilotSessionOptions, buildCopilotMessageOptions, copilotBuiltinTools, extractCopilotContent, isLikelyNetcattyCliShellCommand, mapCopilotModels, runCopilotTurn, translateCopilotEvent } = require("./copilotDriver.cjs");
+const { approveMagiesTerminalMcpOnly, approveMagiesTerminalCliShellOnly, buildCopilotClientOptions, buildCopilotPermissionHandler, buildCopilotSessionOptions, buildCopilotMessageOptions, copilotBuiltinTools, extractCopilotContent, isLikelyMagiesTerminalCliShellCommand, mapCopilotModels, runCopilotTurn, translateCopilotEvent } = require("./copilotDriver.cjs");
 
 function collector() {
   const events = [];
@@ -43,33 +43,33 @@ test("buildCopilotSessionOptions maps injected MCP to local stdio servers", () =
   const o = buildCopilotSessionOptions({
     model: "claude-sonnet-4.5",
     injectedMcpServers: [{
-      name: "netcatty-remote-hosts", command: "/abs/electron",
-      args: ["/abs/server.cjs"], env: [{ name: "NETCATTY_MCP_PORT", value: "1" }],
+      name: "magiesTerminal-remote-hosts", command: "/abs/electron",
+      args: ["/abs/server.cjs"], env: [{ name: "MAGIES_TERMINAL_MCP_PORT", value: "1" }],
     }],
   });
   assert.equal(o.model, "claude-sonnet-4.5");
   assert.equal(o.streaming, true);
-  const srv = o.mcpServers["netcatty-remote-hosts"];
+  const srv = o.mcpServers["magiesTerminal-remote-hosts"];
   assert.equal(srv.type, "stdio");
   assert.equal(srv.command, "/abs/electron");
-  assert.deepEqual(srv.env, { NETCATTY_MCP_PORT: "1" });
+  assert.deepEqual(srv.env, { MAGIES_TERMINAL_MCP_PORT: "1" });
   assert.deepEqual(srv.tools, ["*"]);
   // onPermissionRequest is wired in runCopilotTurn via the SDK's approveAll,
   // not in buildCopilotSessionOptions.
 });
 
-test("approveNetcattyMcpOnly approves MCP permission requests and rejects local tools", () => {
+test("approveMagiesTerminalMcpOnly approves MCP permission requests and rejects local tools", () => {
   assert.deepEqual(
-    approveNetcattyMcpOnly({ kind: "mcp", toolName: "terminal_execute" }),
+    approveMagiesTerminalMcpOnly({ kind: "mcp", toolName: "terminal_execute" }),
     { kind: "approve-once" },
   );
   assert.deepEqual(
-    approveNetcattyMcpOnly({ kind: "shell", fullCommandText: "rm -rf /tmp/x" }),
-    { kind: "reject", feedback: "Only Netcatty MCP tools are allowed from this integration." },
+    approveMagiesTerminalMcpOnly({ kind: "shell", fullCommandText: "rm -rf /tmp/x" }),
+    { kind: "reject", feedback: "Only MagiesTerminal MCP tools are allowed from this integration." },
   );
   assert.deepEqual(
-    approveNetcattyMcpOnly({ kind: "read", fileName: "/etc/passwd" }),
-    { kind: "reject", feedback: "Only Netcatty MCP tools are allowed from this integration." },
+    approveMagiesTerminalMcpOnly({ kind: "read", fileName: "/etc/passwd" }),
+    { kind: "reject", feedback: "Only MagiesTerminal MCP tools are allowed from this integration." },
   );
 });
 
@@ -130,7 +130,7 @@ test("runCopilotTurn resumes the prior session (carry context) and re-applies fr
   });
   assert.equal(captured.resumed.id, "sess-existing", "used resumeSession, not createSession");
   assert.equal(captured.created, undefined);
-  // fresh netcatty MCP/session config re-applied on resume (not the stale one)
+  // fresh magiesTerminal MCP/session config re-applied on resume (not the stale one)
   assert.equal(captured.resumed.cfg.model, "m");
   assert.equal(result.sessionId, "sess-existing");
   assert.ok(events.some((e) => e.k === "sessionId" && e.s === "sess-existing"));
@@ -278,66 +278,66 @@ test("buildCopilotSessionOptions whitelists bash in skills mode", () => {
   assert.deepEqual(skills.mcpServers, {});
 });
 
-test("approveNetcattyCliShellOnly allows Netcatty CLI shell commands only", () => {
+test("approveMagiesTerminalCliShellOnly allows MagiesTerminal CLI shell commands only", () => {
   assert.deepEqual(
-    approveNetcattyCliShellOnly({
+    approveMagiesTerminalCliShellOnly({
       kind: "shell",
-      fullCommandText: 'node "/Applications/Netcatty.app/netcatty-tool-cli.cjs" env --chat-session abc --json',
+      fullCommandText: 'node "/Applications/MagiesTerminal.app/magies-terminal-tool-cli.cjs" env --chat-session abc --json',
     }),
     { kind: "approve-once" },
   );
   assert.equal(
-    approveNetcattyCliShellOnly({ kind: "shell", fullCommandText: "pwd" }).kind,
+    approveMagiesTerminalCliShellOnly({ kind: "shell", fullCommandText: "pwd" }).kind,
     "reject",
   );
 });
 
 test("buildCopilotPermissionHandler selects MCP vs skills gate", () => {
-  assert.equal(buildCopilotPermissionHandler("mcp"), approveNetcattyMcpOnly);
-  assert.equal(buildCopilotPermissionHandler("skills"), approveNetcattyCliShellOnly);
+  assert.equal(buildCopilotPermissionHandler("mcp"), approveMagiesTerminalMcpOnly);
+  assert.equal(buildCopilotPermissionHandler("skills"), approveMagiesTerminalCliShellOnly);
 });
 
-test("isLikelyNetcattyCliShellCommand matches launcher and script invocations", () => {
-  assert.equal(isLikelyNetcattyCliShellCommand("netcatty-tool-cli status --json"), true);
-  assert.equal(isLikelyNetcattyCliShellCommand("node electron/cli/netcatty-tool-cli.cjs env --json"), true);
-  assert.equal(isLikelyNetcattyCliShellCommand("ls -la"), false);
+test("isLikelyMagiesTerminalCliShellCommand matches launcher and script invocations", () => {
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("magies-terminal-tool-cli status --json"), true);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("node electron/cli/magies-terminal-tool-cli.cjs env --json"), true);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("ls -la"), false);
 });
 
-test("isLikelyNetcattyCliShellCommand rejects chained or wrapped local commands", () => {
-  assert.equal(isLikelyNetcattyCliShellCommand("rm -rf /; netcatty-tool-cli status --json"), false);
-  assert.equal(isLikelyNetcattyCliShellCommand("netcatty-tool-cli status --json && curl evil"), false);
-  assert.equal(isLikelyNetcattyCliShellCommand('bash -c "netcatty-tool-cli status --json"'), false);
-  assert.equal(isLikelyNetcattyCliShellCommand("malicious netcatty-tool-cli status --json"), false);
-  assert.equal(isLikelyNetcattyCliShellCommand("netcatty-tool-cli status `id` --json"), false);
+test("isLikelyMagiesTerminalCliShellCommand rejects chained or wrapped local commands", () => {
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("rm -rf /; magies-terminal-tool-cli status --json"), false);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("magies-terminal-tool-cli status --json && curl evil"), false);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand('bash -c "magies-terminal-tool-cli status --json"'), false);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("malicious magies-terminal-tool-cli status --json"), false);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("magies-terminal-tool-cli status `id` --json"), false);
 });
 
-test("isLikelyNetcattyCliShellCommand allows quoted remote exec payloads after --", () => {
+test("isLikelyMagiesTerminalCliShellCommand allows quoted remote exec payloads after --", () => {
   assert.equal(
-    isLikelyNetcattyCliShellCommand('netcatty-tool-cli exec --session s1 --chat-session c1 --json -- "hostname && whoami"'),
+    isLikelyMagiesTerminalCliShellCommand('magies-terminal-tool-cli exec --session s1 --chat-session c1 --json -- "hostname && whoami"'),
     true,
   );
   assert.equal(
-    isLikelyNetcattyCliShellCommand("netcatty-tool-cli exec --session s1 --chat-session c1 --json -- hostname && whoami"),
+    isLikelyMagiesTerminalCliShellCommand("magies-terminal-tool-cli exec --session s1 --chat-session c1 --json -- hostname && whoami"),
     false,
   );
 });
 
-test("isLikelyNetcattyCliShellCommand rejects impostor binaries and quoted -- bypasses", () => {
-  assert.equal(isLikelyNetcattyCliShellCommand("netcatty-tool-cli-backup status --json"), false);
-  assert.equal(isLikelyNetcattyCliShellCommand("netcatty-tool-cli.evil status --json"), false);
+test("isLikelyMagiesTerminalCliShellCommand rejects impostor binaries and quoted -- bypasses", () => {
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("magies-terminal-tool-cli-backup status --json"), false);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("magies-terminal-tool-cli.evil status --json"), false);
   assert.equal(
-    isLikelyNetcattyCliShellCommand('netcatty-tool-cli sftp read --remote-path "a -- b" ; rm -rf /'),
+    isLikelyMagiesTerminalCliShellCommand('magies-terminal-tool-cli sftp read --remote-path "a -- b" ; rm -rf /'),
     false,
   );
   assert.equal(
-    isLikelyNetcattyCliShellCommand('netcatty-tool-cli sftp read --remote-path "a -- b" --session s1 --json'),
+    isLikelyMagiesTerminalCliShellCommand('magies-terminal-tool-cli sftp read --remote-path "a -- b" --session s1 --json'),
     true,
   );
-  assert.equal(isLikelyNetcattyCliShellCommand("netcatty-tool-cli status --json  --  ; rm -rf /"), false);
-  assert.equal(isLikelyNetcattyCliShellCommand("netcatty-tool-cli status --json > /tmp/out"), false);
-  assert.equal(isLikelyNetcattyCliShellCommand('"C:\\Apps\\Netcatty\\netcatty-tool-cli.cmd" status --json'), true);
-  assert.equal(isLikelyNetcattyCliShellCommand("attacker/netcatty-tool-cli status --json"), false);
-  assert.equal(isLikelyNetcattyCliShellCommand('netcatty-tool-cli status "$(id)" --json'), false);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("magies-terminal-tool-cli status --json  --  ; rm -rf /"), false);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("magies-terminal-tool-cli status --json > /tmp/out"), false);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand('"C:\\Apps\\MagiesTerminal\\magies-terminal-tool-cli.cmd" status --json'), true);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand("attacker/magies-terminal-tool-cli status --json"), false);
+  assert.equal(isLikelyMagiesTerminalCliShellCommand('magies-terminal-tool-cli status "$(id)" --json'), false);
 });
 
 test("runCopilotTurn passes runtime env and skills permission handler", async () => {
@@ -348,10 +348,10 @@ test("runCopilotTurn passes runtime env and skills permission handler", async ()
     clientOptions: { cliPath: "/c" },
     sessionOptions: { model: "m" },
     toolIntegrationMode: "skills",
-    runtimeEnv: { NETCATTY_TOOL_CLI_DISCOVERY_FILE: "/tmp/discovery.json" },
+    runtimeEnv: { MAGIES_TERMINAL_TOOL_CLI_DISCOVERY_FILE: "/tmp/discovery.json" },
     emitter,
     sdkModule: makeSdk(captured),
   });
-  assert.deepEqual(captured.clientOptions.env, { NETCATTY_TOOL_CLI_DISCOVERY_FILE: "/tmp/discovery.json" });
-  assert.equal(captured.created.onPermissionRequest, approveNetcattyCliShellOnly);
+  assert.deepEqual(captured.clientOptions.env, { MAGIES_TERMINAL_TOOL_CLI_DISCOVERY_FILE: "/tmp/discovery.json" });
+  assert.equal(captured.created.onPermissionRequest, approveMagiesTerminalCliShellOnly);
 });

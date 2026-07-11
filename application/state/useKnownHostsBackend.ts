@@ -1,9 +1,9 @@
 import { useCallback } from "react";
-import { netcattyBridge } from "../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../infrastructure/services/magiesTerminalBridge";
 
 export const useKnownHostsBackend = () => {
   const readKnownHosts = useCallback(async () => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return bridge?.readKnownHosts?.();
   }, []);
 

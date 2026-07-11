@@ -1,6 +1,6 @@
 /**
  * QuickAddSnippetDialog — lightweight "new snippet" modal mounted at the
- * App root and triggered by the `netcatty:snippets:add` window event.
+ * App root and triggered by the `magiesTerminal:snippets:add` window event.
  *
  * Intentionally minimal: label + command + package only. Advanced fields
  * (target hosts, shortkey, tags) can be set later via the full Snippets
@@ -71,8 +71,8 @@ export const QuickAddSnippetDialog: React.FC<QuickAddSnippetDialogProps> = ({
       setMultiLineRunMode(undefined);
       setOpen(true);
     };
-    window.addEventListener('netcatty:snippets:add', handler);
-    return () => window.removeEventListener('netcatty:snippets:add', handler);
+    window.addEventListener('magiesTerminal:snippets:add', handler);
+    return () => window.removeEventListener('magiesTerminal:snippets:add', handler);
   }, []);
 
   // Sibling event for editing an existing snippet from the ScriptsSidePanel
@@ -90,8 +90,8 @@ export const QuickAddSnippetDialog: React.FC<QuickAddSnippetDialogProps> = ({
       setMultiLineRunMode(snippet.multiLineRunMode);
       setOpen(true);
     };
-    window.addEventListener('netcatty:snippets:edit', handler);
-    return () => window.removeEventListener('netcatty:snippets:edit', handler);
+    window.addEventListener('magiesTerminal:snippets:edit', handler);
+    return () => window.removeEventListener('magiesTerminal:snippets:edit', handler);
   }, []);
 
   // Auto-focus the label input once the dialog renders, so the user can

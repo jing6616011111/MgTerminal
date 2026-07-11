@@ -239,7 +239,7 @@ async function sendToMainWindow(channel, ...args) {
 
 async function connectToHostFromSystemMenu(hostId) {
   if (!hostId) return;
-  await sendToMainWindow("netcatty:trayPanel:connectToHost", hostId);
+  await sendToMainWindow("magiesTerminal:trayPanel:connectToHost", hostId);
 }
 
 function getTrayPanelUrl() {
@@ -247,7 +247,7 @@ function getTrayPanelUrl() {
   if (devServerUrl) {
     return `${devServerUrl.replace(/\/$/, "")}/#/tray`;
   }
-  return "app://netcatty/index.html#/tray";
+  return "app://magiesTerminal/index.html#/tray";
 }
 
 function ensureTrayPanelWindow() {
@@ -295,7 +295,7 @@ function ensureTrayPanelWindow() {
 
   trayPanelWindow.webContents.on("did-finish-load", () => {
     try {
-      trayPanelWindow?.webContents?.send("netcatty:trayPanel:setMenuData", trayMenuData);
+      trayPanelWindow?.webContents?.send("magiesTerminal:trayPanel:setMenuData", trayMenuData);
     } catch {
       // ignore
     }
@@ -325,7 +325,7 @@ function showTrayPanel() {
   win.focus();
 
   try {
-    win.webContents?.send("netcatty:trayPanel:setMenuData", trayMenuData);
+    win.webContents?.send("magiesTerminal:trayPanel:setMenuData", trayMenuData);
   } catch {
     // ignore
   }
@@ -334,7 +334,7 @@ function showTrayPanel() {
   trayPanelRefreshTimer = setInterval(() => {
     try {
       if (!trayPanelWindow || trayPanelWindow.isDestroyed() || !trayPanelWindow.isVisible()) return;
-      trayPanelWindow.webContents?.send("netcatty:trayPanel:refresh");
+      trayPanelWindow.webContents?.send("magiesTerminal:trayPanel:refresh");
     } catch {
       // ignore
     }
@@ -666,7 +666,7 @@ function createTray() {
     }
 
     tray = new Tray(trayIcon || nativeImage.createEmpty());
-    tray.setToolTip("Netcatty");
+    tray.setToolTip("MagiesTerminal");
 
     // Build and set initial context menu
     updateTrayMenu();
@@ -737,7 +737,7 @@ function buildTrayMenuTemplate() {
           const win = getMainWindow();
           if (win && bringMainWindowToForeground(win)) {
             // Notify renderer to focus this session
-            win.webContents?.send("netcatty:tray:focusSession", session.id);
+            win.webContents?.send("magiesTerminal:tray:focusSession", session.id);
           }
         },
       });
@@ -773,7 +773,7 @@ function buildTrayMenuTemplate() {
         click: () => {
           const win = getMainWindow();
           if (win) {
-            win.webContents?.send("netcatty:tray:togglePortForward", rule.id, !isActive);
+            win.webContents?.send("magiesTerminal:tray:togglePortForward", rule.id, !isActive);
           }
         },
       });
@@ -962,58 +962,58 @@ function handleWindowClose(event, win) {
  */
 function registerHandlers(ipcMain) {
   // Register global toggle hotkey
-  ipcMain.handle("netcatty:globalHotkey:register", async (_event, { hotkey }) => {
+  ipcMain.handle("magiesTerminal:globalHotkey:register", async (_event, { hotkey }) => {
     return registerGlobalHotkey(hotkey);
   });
 
   // Unregister global toggle hotkey
-  ipcMain.handle("netcatty:globalHotkey:unregister", async () => {
+  ipcMain.handle("magiesTerminal:globalHotkey:unregister", async () => {
     unregisterGlobalHotkey();
     return { success: true };
   });
 
   // Get current hotkey status
-  ipcMain.handle("netcatty:globalHotkey:status", async () => {
+  ipcMain.handle("magiesTerminal:globalHotkey:status", async () => {
     return getHotkeyStatus();
   });
 
   // Set close-to-tray behavior
-  ipcMain.handle("netcatty:tray:setCloseToTray", async (_event, { enabled }) => {
+  ipcMain.handle("magiesTerminal:tray:setCloseToTray", async (_event, { enabled }) => {
     return setCloseToTray(enabled);
   });
 
   // Get close-to-tray status
-  ipcMain.handle("netcatty:tray:isCloseToTray", async () => {
+  ipcMain.handle("magiesTerminal:tray:isCloseToTray", async () => {
     return { enabled: closeToTray };
   });
 
   // Update tray menu data
-  ipcMain.handle("netcatty:tray:updateMenuData", async (_event, data) => {
+  ipcMain.handle("magiesTerminal:tray:updateMenuData", async (_event, data) => {
     setTrayMenuData(data);
     return { success: true };
   });
 
-  ipcMain.handle("netcatty:trayPanel:hide", async () => {
+  ipcMain.handle("magiesTerminal:trayPanel:hide", async () => {
     hideTrayPanel();
     return { success: true };
   });
 
-  ipcMain.handle("netcatty:trayPanel:openMainWindow", async () => {
+  ipcMain.handle("magiesTerminal:trayPanel:openMainWindow", async () => {
     await openMainWindowReady();
     return { success: true };
   });
 
-  ipcMain.handle("netcatty:trayPanel:jumpToSession", async (_event, sessionId) => {
-    await sendToMainWindow("netcatty:trayPanel:jumpToSession", sessionId);
+  ipcMain.handle("magiesTerminal:trayPanel:jumpToSession", async (_event, sessionId) => {
+    await sendToMainWindow("magiesTerminal:trayPanel:jumpToSession", sessionId);
     return { success: true };
   });
 
-  ipcMain.handle("netcatty:trayPanel:connectToHost", async (_event, hostId) => {
+  ipcMain.handle("magiesTerminal:trayPanel:connectToHost", async (_event, hostId) => {
     await connectToHostFromSystemMenu(hostId);
     return { success: true };
   });
 
-  ipcMain.handle("netcatty:trayPanel:quitApp", async () => {
+  ipcMain.handle("magiesTerminal:trayPanel:quitApp", async () => {
     const { app } = electronModule;
     closeToTray = false;
     app.quit();

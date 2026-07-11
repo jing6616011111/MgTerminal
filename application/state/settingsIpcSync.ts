@@ -52,7 +52,7 @@ import {
   normalizeHttpNetworkProxySettings,
   type HttpNetworkProxySettings,
 } from '../../domain/httpNetworkProxy';
-import { netcattyBridge } from '../../infrastructure/services/netcattyBridge';
+import { magiesTerminalBridge } from '../../infrastructure/services/magiesTerminalBridge';
 import {
   isValidUiFontId,
   migrateIncomingTerminalFontId,
@@ -146,7 +146,7 @@ export function useSettingsIpcSync({
   // Listen for settings changes from other windows via IPC
   useEffect(() => {
     if (!enabled) return;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onSettingsChanged) return;
     const unsubscribe = bridge.onSettingsChanged((payload) => {
       const { key, value } = payload;

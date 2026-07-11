@@ -1,5 +1,5 @@
 {
-  description = "Netcatty packages";
+  description = "MagiesTerminal packages";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -22,17 +22,17 @@
           pkgs = import nixpkgs { inherit system; };
         in
         rec {
-          netcatty = pkgs.callPackage ./nix/package.nix { };
-          default = netcatty;
+          magiesTerminal = pkgs.callPackage ./nix/package.nix { };
+          default = magiesTerminal;
         }
       );
 
       apps = forAllSystems (system: {
-        netcatty = {
+        magiesTerminal = {
           type = "app";
-          program = "${nixpkgs.lib.getExe self.packages.${system}.netcatty}";
+          program = "${nixpkgs.lib.getExe self.packages.${system}.magiesTerminal}";
         };
-        default = self.apps.${system}.netcatty;
+        default = self.apps.${system}.magiesTerminal;
       });
     };
 }

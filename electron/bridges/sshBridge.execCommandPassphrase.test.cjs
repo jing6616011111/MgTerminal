@@ -54,7 +54,7 @@ function loadBridgeWithMockedSsh2(t) {
 }
 
 function createEncryptedIdentityFile(t) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-ssh-exec-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-ssh-exec-"));
   t.after(() => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
@@ -84,7 +84,7 @@ test("execCommand stops when an identity file passphrase prompt is cancelled", a
     on() {},
   };
   bridge.registerHandlers(ipcMain);
-  const execHandler = ipcMain.handlers.get("netcatty:ssh:exec");
+  const execHandler = ipcMain.handlers.get("magiesTerminal:ssh:exec");
 
   await assert.rejects(
     () => execHandler(

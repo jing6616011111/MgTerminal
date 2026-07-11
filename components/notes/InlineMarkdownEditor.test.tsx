@@ -136,35 +136,35 @@ test("note markdown toolbar remains usable in narrow panes", () => {
   const styles = readFileSync(new URL("../../index.css", import.meta.url), "utf8");
   const source = readFileSync(new URL("./InlineMarkdownEditor.tsx", import.meta.url), "utf8");
 
-  assert.doesNotMatch(source, /MoreHorizontal|data-note-toolbar-more|netcatty-note-toolbar-more/);
+  assert.doesNotMatch(source, /MoreHorizontal|data-note-toolbar-more|magiesTerminal-note-toolbar-more/);
 
   assert.match(
     styles,
-    /\.netcatty-mdx-editor\s*\{[^}]*container-type:\s*inline-size;/s,
+    /\.magiesTerminal-mdx-editor\s*\{[^}]*container-type:\s*inline-size;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-note-markdown-toolbar\s*\{[^}]*max-width:\s*100%;[^}]*height:\s*auto\s*!important;[^}]*overflow:\s*visible\s*!important;/s,
+    /\.magiesTerminal-note-markdown-toolbar\s*\{[^}]*max-width:\s*100%;[^}]*height:\s*auto\s*!important;[^}]*overflow:\s*visible\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-note-markdown-toolbar\s*\{[^}]*box-sizing:\s*border-box;[^}]*display:\s*flex\s*!important;[^}]*flex-wrap:\s*wrap\s*!important;[^}]*align-content:\s*flex-start\s*!important;/s,
+    /\.magiesTerminal-note-markdown-toolbar\s*\{[^}]*box-sizing:\s*border-box;[^}]*display:\s*flex\s*!important;[^}]*flex-wrap:\s*wrap\s*!important;[^}]*align-content:\s*flex-start\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-note-markdown-toolbar\s*>\s*\*\s*\{[^}]*flex-shrink:\s*0;/s,
+    /\.magiesTerminal-note-markdown-toolbar\s*>\s*\*\s*\{[^}]*flex-shrink:\s*0;/s,
   );
   assert.match(
     styles,
-    /@container\s*\(max-width:\s*34rem\)\s*\{[\s\S]*\.netcatty-note-markdown-toolbar\s*\{[^}]*gap:\s*0\.125rem\s*!important;/s,
+    /@container\s*\(max-width:\s*34rem\)\s*\{[\s\S]*\.magiesTerminal-note-markdown-toolbar\s*\{[^}]*gap:\s*0\.125rem\s*!important;/s,
   );
   assert.match(
     styles,
-    /@container\s*\(max-width:\s*34rem\)\s*\{[\s\S]*\.netcatty-note-markdown-toolbar\s*\{[^}]*flex-wrap:\s*wrap\s*!important;[^}]*align-content:\s*flex-start\s*!important;/s,
+    /@container\s*\(max-width:\s*34rem\)\s*\{[\s\S]*\.magiesTerminal-note-markdown-toolbar\s*\{[^}]*flex-wrap:\s*wrap\s*!important;[^}]*align-content:\s*flex-start\s*!important;/s,
   );
   assert.match(
     styles,
-    /@container\s*\(max-width:\s*34rem\)\s*\{[\s\S]*\.netcatty-note-markdown-toolbar\s+button,[\s\S]*\.netcatty-note-markdown-toolbar\s+\[role="button"\][\s\S]*height:\s*1\.75rem\s*!important;/s,
+    /@container\s*\(max-width:\s*34rem\)\s*\{[\s\S]*\.magiesTerminal-note-markdown-toolbar\s+button,[\s\S]*\.magiesTerminal-note-markdown-toolbar\s+\[role="button"\][\s\S]*height:\s*1\.75rem\s*!important;/s,
   );
 });
 
@@ -179,7 +179,7 @@ test("preview mode opens links directly without showing the edit hover action", 
   assert.match(source, /\{editorMode === "edit" && linkAction && \(/);
 });
 
-test("preview mode only intercepts links netcatty can open", () => {
+test("preview mode only intercepts links magiesTerminal can open", () => {
   assert.equal(isSupportedNoteExternalHref("https://example.com/docs"), true);
   assert.equal(isSupportedNoteExternalHref("http://example.com/docs"), true);
   assert.equal(isSupportedNoteExternalHref("mailto:support@example.com"), true);
@@ -201,15 +201,15 @@ test("pasting inside code blocks keeps CodeMirror in control", () => {
 test("note code block editor colors follow the app theme", () => {
   const styles = readFileSync(new URL("../../index.css", import.meta.url), "utf8");
 
-  assert.match(styles, /\.netcatty-mdx-editor\s+\.cm-editor/);
-  assert.match(styles, /\.netcatty-mdx-editor\s+\.cm-gutters/);
+  assert.match(styles, /\.magiesTerminal-mdx-editor\s+\.cm-editor/);
+  assert.match(styles, /\.magiesTerminal-mdx-editor\s+\.cm-gutters/);
   assert.match(styles, /background:\s*hsl\(var\(--secondary\)/);
   assert.match(styles, /color:\s*hsl\(var\(--foreground\)/);
   assert.match(styles, /--note-code-token-keyword:\s*color-mix\(in oklab,\s*hsl\(var\(--primary\)\)/);
-  assert.match(styles, /\.netcatty-mdx-editor\s+\.cm-content\s+\.netcatty-code-token-keyword/);
-  assert.match(styles, /\.netcatty-mdx-editor\s+\.cm-content\s+\.netcatty-code-token-string/);
+  assert.match(styles, /\.magiesTerminal-mdx-editor\s+\.cm-content\s+\.magiesTerminal-code-token-keyword/);
+  assert.match(styles, /\.magiesTerminal-mdx-editor\s+\.cm-content\s+\.magiesTerminal-code-token-string/);
   assert.doesNotMatch(styles, /span\[class\*="ͼ"\]/);
-  assert.doesNotMatch(styles, /\.netcatty-mdx-editor\s+\.cm-line\s+span/);
+  assert.doesNotMatch(styles, /\.magiesTerminal-mdx-editor\s+\.cm-line\s+span/);
 });
 
 test("note code block active line is highlighted only while focused", () => {
@@ -217,11 +217,11 @@ test("note code block active line is highlighted only while focused", () => {
 
   assert.match(
     styles,
-    /\.netcatty-mdx-editor\s+\.cm-activeLine,\s*\.netcatty-mdx-editor\s+\.cm-activeLineGutter\s*\{[^}]*background:\s*transparent/s,
+    /\.magiesTerminal-mdx-editor\s+\.cm-activeLine,\s*\.magiesTerminal-mdx-editor\s+\.cm-activeLineGutter\s*\{[^}]*background:\s*transparent/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor\s+\.cm-editor:focus-within\s+\.cm-activeLine,\s*\.netcatty-mdx-editor\s+\.cm-editor:focus-within\s+\.cm-activeLineGutter\s*\{[^}]*background:\s*hsl\(var\(--primary\)\s*\/\s*0\.08\)/s,
+    /\.magiesTerminal-mdx-editor\s+\.cm-editor:focus-within\s+\.cm-activeLine,\s*\.magiesTerminal-mdx-editor\s+\.cm-editor:focus-within\s+\.cm-activeLineGutter\s*\{[^}]*background:\s*hsl\(var\(--primary\)\s*\/\s*0\.08\)/s,
   );
 });
 
@@ -230,59 +230,59 @@ test("note code block frame is borderless and language picker is compact", () =>
 
   assert.match(
     styles,
-    /\.netcatty-mdx-editor\s+\[class\*="_codeMirrorWrapper_"\]\s*\{[^}]*border:\s*0\s*!important;[^}]*padding:\s*0\s*!important;/s,
+    /\.magiesTerminal-mdx-editor\s+\[class\*="_codeMirrorWrapper_"\]\s*\{[^}]*border:\s*0\s*!important;[^}]*padding:\s*0\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor\s+\.cm-editor\s*\{[^}]*border:\s*0\s*!important;/s,
+    /\.magiesTerminal-mdx-editor\s+\.cm-editor\s*\{[^}]*border:\s*0\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor\s+\[class\*="_codeMirrorToolbar_"\]\s*\{[^}]*position:\s*static\s*!important;[^}]*padding:\s*0\.125rem;/s,
+    /\.magiesTerminal-mdx-editor\s+\[class\*="_codeMirrorToolbar_"\]\s*\{[^}]*position:\s*static\s*!important;[^}]*padding:\s*0\.125rem;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor \[class\*="_codeMirrorToolbar_"\] \[class\*="_selectTrigger_"\]\s*\{[^}]*height:\s*1\.45rem\s*!important;[^}]*font-size:\s*11px\s*!important;/s,
+    /\.magiesTerminal-mdx-editor \[class\*="_codeMirrorToolbar_"\] \[class\*="_selectTrigger_"\]\s*\{[^}]*height:\s*1\.45rem\s*!important;[^}]*font-size:\s*11px\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor:not\(\.netcatty-mdx-editor--preview\)\s+\[class\*="_codeMirrorToolbar_"\]\s+\[class\*="_selectTrigger_"\]\s*\{[^}]*width:\s*auto\s*!important;[^}]*min-width:\s*fit-content\s*!important;/s,
+    /\.magiesTerminal-mdx-editor:not\(\.magiesTerminal-mdx-editor--preview\)\s+\[class\*="_codeMirrorToolbar_"\]\s+\[class\*="_selectTrigger_"\]\s*\{[^}]*width:\s*auto\s*!important;[^}]*min-width:\s*fit-content\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor \[class\*="_toolbarCodeBlockLanguageSelectContent_"\][\s\S]*width:\s*auto\s*!important;[\s\S]*min-width:\s*max-content\s*!important;/s,
+    /\.magiesTerminal-mdx-editor \[class\*="_toolbarCodeBlockLanguageSelectContent_"\][\s\S]*width:\s*auto\s*!important;[\s\S]*min-width:\s*max-content\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor \[class\*="_toolbarCodeBlockLanguageSelectContent_"\] \[class\*="_selectItem_"\][\s\S]*font-size:\s*11px\s*!important;/s,
+    /\.magiesTerminal-mdx-editor \[class\*="_toolbarCodeBlockLanguageSelectContent_"\] \[class\*="_selectItem_"\][\s\S]*font-size:\s*11px\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor\s+\.cm-editor\s*\{[^}]*font-size:\s*13px\s*!important;/s,
+    /\.magiesTerminal-mdx-editor\s+\.cm-editor\s*\{[^}]*font-size:\s*13px\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor\s+\.cm-line\s*\{[^}]*line-height:\s*1\.45\s*!important;/s,
+    /\.magiesTerminal-mdx-editor\s+\.cm-line\s*\{[^}]*line-height:\s*1\.45\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor\s+\.cm-gutterElement\s*\{[^}]*font-size:\s*13px\s*!important;[^}]*line-height:\s*1\.45\s*!important;/s,
+    /\.magiesTerminal-mdx-editor\s+\.cm-gutterElement\s*\{[^}]*font-size:\s*13px\s*!important;[^}]*line-height:\s*1\.45\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor:not\(\.netcatty-mdx-editor--preview\)\s+\[class\*="_codeMirrorWrapper_"\]\s*\{[^}]*gap:\s*0;[^}]*margin:\s*0\.3rem\s+0\s+0\.65rem;/s,
+    /\.magiesTerminal-mdx-editor:not\(\.magiesTerminal-mdx-editor--preview\)\s+\[class\*="_codeMirrorWrapper_"\]\s*\{[^}]*gap:\s*0;[^}]*margin:\s*0\.3rem\s+0\s+0\.65rem;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor:not\(\.netcatty-mdx-editor--preview\)\s+\[class\*="_codeMirrorWrapper_"\]\s+\.cm-content\s*\{[^}]*padding:\s*0\s*!important;/s,
+    /\.magiesTerminal-mdx-editor:not\(\.magiesTerminal-mdx-editor--preview\)\s+\[class\*="_codeMirrorWrapper_"\]\s+\.cm-content\s*\{[^}]*padding:\s*0\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor\s+\.cm-gutters\s*\{[^}]*padding:\s*0\s*!important;/s,
+    /\.magiesTerminal-mdx-editor\s+\.cm-gutters\s*\{[^}]*padding:\s*0\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor--preview\s+\[class\*="_codeMirrorToolbar_"\]\s*\{[^}]*display:\s*none\s*!important;/s,
+    /\.magiesTerminal-mdx-editor--preview\s+\[class\*="_codeMirrorToolbar_"\]\s*\{[^}]*display:\s*none\s*!important;/s,
   );
 });
 
@@ -314,29 +314,29 @@ test("note code blocks expose a hover copy action only in preview mode", () => {
   assert.match(source, /copyFailedLabel/);
   assert.match(source, /MutationObserver/);
   assert.match(source, /setAttribute\("aria-label", copiedLabel\)/);
-  assert.match(styles, /\.netcatty-note-code-copy/);
+  assert.match(styles, /\.magiesTerminal-note-code-copy/);
   assert.match(
     styles,
-    /\.netcatty-mdx-editor\s+\[class\*="_codeMirrorWrapper_"\]:hover\s+\.netcatty-note-code-copy/s,
+    /\.magiesTerminal-mdx-editor\s+\[class\*="_codeMirrorWrapper_"\]:hover\s+\.magiesTerminal-note-code-copy/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor:not\(\.netcatty-mdx-editor--preview\)\s+\[class\*="_codeMirrorWrapper_"\]\s*\{[^}]*display:\s*flex;/s,
+    /\.magiesTerminal-mdx-editor:not\(\.magiesTerminal-mdx-editor--preview\)\s+\[class\*="_codeMirrorWrapper_"\]\s*\{[^}]*display:\s*flex;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor:not\(\.netcatty-mdx-editor--preview\)\s+\[class\*="_codeMirrorToolbar_"\]\s*\{[^}]*position:\s*static\s*!important;[^}]*justify-content:\s*flex-end;/s,
+    /\.magiesTerminal-mdx-editor:not\(\.magiesTerminal-mdx-editor--preview\)\s+\[class\*="_codeMirrorToolbar_"\]\s*\{[^}]*position:\s*static\s*!important;[^}]*justify-content:\s*flex-end;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor:not\(\.netcatty-mdx-editor--preview\)\s+\[class\*="_codeMirrorToolbar_"\]\s+\[class\*="_selectTrigger_"\]\s*\{[^}]*font-size:\s*11px\s*!important;/s,
+    /\.magiesTerminal-mdx-editor:not\(\.magiesTerminal-mdx-editor--preview\)\s+\[class\*="_codeMirrorToolbar_"\]\s+\[class\*="_selectTrigger_"\]\s*\{[^}]*font-size:\s*11px\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor:not\(\.netcatty-mdx-editor--preview\)\s+\[class\*="_codeMirrorToolbar_"\]\s+button\s*\{[^}]*height:\s*1\.35rem\s*!important;/s,
+    /\.magiesTerminal-mdx-editor:not\(\.magiesTerminal-mdx-editor--preview\)\s+\[class\*="_codeMirrorToolbar_"\]\s+button\s*\{[^}]*height:\s*1\.35rem\s*!important;/s,
   );
   assert.match(
     styles,
-    /\.netcatty-mdx-editor:not\(\.netcatty-mdx-editor--preview\)\s+\[class\*="_codeMirrorToolbar_"\]\s+button\s+svg\s*\{[^}]*width:\s*14px\s*!important;/s,
+    /\.magiesTerminal-mdx-editor:not\(\.magiesTerminal-mdx-editor--preview\)\s+\[class\*="_codeMirrorToolbar_"\]\s+button\s+svg\s*\{[^}]*width:\s*14px\s*!important;/s,
   );
 });

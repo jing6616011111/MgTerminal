@@ -73,13 +73,13 @@ const {
   setCodexValidationCache,
 } = require("./ai/codexHelpers.cjs");
 
-const DEBUG_MCP = process.env.NETCATTY_MCP_DEBUG === "1";
-const NETCATTY_TOOL_SKILL_PATH = toUnpackedAsarPath(
-  path.resolve(__dirname, "../../skills/netcatty-tool-cli/SKILL.md"),
+const DEBUG_MCP = process.env.MAGIES_TERMINAL_MCP_DEBUG === "1";
+const MAGIES_TERMINAL_TOOL_SKILL_PATH = toUnpackedAsarPath(
+  path.resolve(__dirname, "../../skills/magies-terminal-tool-cli/SKILL.md"),
 );
-const NETCATTY_TOOL_LAUNCHER_PATH = getCliLauncherPath();
-const NETCATTY_TOOL_CLI_PATH = toUnpackedAsarPath(
-  path.resolve(__dirname, "../cli/netcatty-tool-cli.cjs"),
+const MAGIES_TERMINAL_TOOL_LAUNCHER_PATH = getCliLauncherPath();
+const MAGIES_TERMINAL_TOOL_CLI_PATH = toUnpackedAsarPath(
+  path.resolve(__dirname, "../cli/magies-terminal-tool-cli.cjs"),
 );
 
 function debugMcpLog(...args) {
@@ -103,22 +103,22 @@ async function ensureSkillsCliHost() {
 }
 
 function getSkillsCliInvocation() {
-  if (existsSync(NETCATTY_TOOL_LAUNCHER_PATH)) {
+  if (existsSync(MAGIES_TERMINAL_TOOL_LAUNCHER_PATH)) {
     return {
-      commandPrefix: `"${NETCATTY_TOOL_LAUNCHER_PATH}"`,
-      launcherPath: NETCATTY_TOOL_LAUNCHER_PATH,
+      commandPrefix: `"${MAGIES_TERMINAL_TOOL_LAUNCHER_PATH}"`,
+      launcherPath: MAGIES_TERMINAL_TOOL_LAUNCHER_PATH,
       usesLauncher: true,
     };
   }
-  if (existsSync(NETCATTY_TOOL_CLI_PATH)) {
+  if (existsSync(MAGIES_TERMINAL_TOOL_CLI_PATH)) {
     return {
-      commandPrefix: `node "${NETCATTY_TOOL_CLI_PATH}"`,
+      commandPrefix: `node "${MAGIES_TERMINAL_TOOL_CLI_PATH}"`,
       launcherPath: null,
       usesLauncher: false,
     };
   }
   return {
-    commandPrefix: "netcatty-tool-cli",
+    commandPrefix: "magies-terminal-tool-cli",
     launcherPath: null,
     usesLauncher: false,
   };
@@ -128,22 +128,22 @@ function buildExternalAgentSystemContext({ mode, chatSessionId, defaultTargetSes
   const userSkillsPreamble = userSkillsContext ? `${userSkillsContext}\n\n` : "";
   if (mode === "skills") {
     const { commandPrefix: cliCommandPrefix, launcherPath, usesLauncher } = getSkillsCliInvocation();
-    const skillHint = existsSync(NETCATTY_TOOL_SKILL_PATH)
-      ? `The local Netcatty skill file is "${NETCATTY_TOOL_SKILL_PATH}". You do not need to read it for routine read-only requests if the host instructions here are sufficient. Only open it when the task is unusual, multi-step, or you are unsure about the workflow. `
+    const skillHint = existsSync(MAGIES_TERMINAL_TOOL_SKILL_PATH)
+      ? `The local MagiesTerminal skill file is "${MAGIES_TERMINAL_TOOL_SKILL_PATH}". You do not need to read it for routine read-only requests if the host instructions here are sufficient. Only open it when the task is unusual, multi-step, or you are unsure about the workflow. `
       : "";
     const cliHint = usesLauncher
       ? (
-        `For this chat session, the Netcatty CLI launcher is at \`${launcherPath}\`. ` +
-        `Invoke that launcher directly for every Netcatty CLI call, and do not prepend \`node\`. ` +
+        `For this chat session, the MagiesTerminal CLI launcher is at \`${launcherPath}\`. ` +
+        `Invoke that launcher directly for every MagiesTerminal CLI call, and do not prepend \`node\`. ` +
         (process.platform === "win32"
           ? `If your execution surface supports argv-style execution, use that launcher path as the executable and pass subcommands/flags as separate arguments. If you need a literal shell command line, invoke it as \`${cliCommandPrefix}\`. `
           : `The literal shell command prefix is \`${cliCommandPrefix}\`. `)
       )
-      : existsSync(NETCATTY_TOOL_CLI_PATH)
-        ? `For this chat session, the exact Netcatty CLI command prefix is \`${cliCommandPrefix}\`.`
-        : "Use the exact Netcatty CLI command prefix provided by the host application for this chat session. ";
+      : existsSync(MAGIES_TERMINAL_TOOL_CLI_PATH)
+        ? `For this chat session, the exact MagiesTerminal CLI command prefix is \`${cliCommandPrefix}\`.`
+        : "Use the exact MagiesTerminal CLI command prefix provided by the host application for this chat session. ";
     const scopeHint = chatSessionId
-      ? `Always include \`--chat-session ${chatSessionId}\` on every Netcatty CLI call so you stay inside the current scoped session set. `
+      ? `Always include \`--chat-session ${chatSessionId}\` on every MagiesTerminal CLI call so you stay inside the current scoped session set. `
       : "";
     const defaultTargetHint = defaultTargetSession
       ? (
@@ -164,38 +164,38 @@ function buildExternalAgentSystemContext({ mode, chatSessionId, defaultTargetSes
 
     return (
       `${userSkillsPreamble}` +
-      `[Context: You are inside Netcatty, a multi-session terminal manager. ` +
+      `[Context: You are inside MagiesTerminal, a multi-session terminal manager. ` +
       `${skillHint}` +
       `${cliHint}` +
       `${scopeHint}` +
       `${defaultTargetHint}` +
-      `Use Skills + CLI instead of the "netcatty-remote-hosts" MCP server for Netcatty session access. ` +
-      `Use the local shell only to invoke Netcatty CLI commands or inspect local attachments explicitly supplied by the user. Do not use local shell or filesystem tools for unrelated local-machine work. ` +
+      `Use Skills + CLI instead of the "magiesTerminal-remote-hosts" MCP server for MagiesTerminal session access. ` +
+      `Use the local shell only to invoke MagiesTerminal CLI commands or inspect local attachments explicitly supplied by the user. Do not use local shell or filesystem tools for unrelated local-machine work. ` +
       `First classify the task: remote command execution tasks go through \`exec\`, while remote file or directory tasks go through \`sftp\`. If the user explicitly says to avoid shell or \`exec\`, do not use \`exec\`. Treat \`exec\` as the short-command path only: use it only for commands expected to finish within about 60 seconds. For builds, scans, watch mode, tail-following, ping, or anything likely to exceed that budget or stream output for an extended period, do not use plain \`exec\`; use the long-running job commands instead. ` +
       `${discoveryHint}` +
       `After choosing a target session ID, call \`${cliCommandPrefix} session --session <id> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\` before executing anything. Do not infer protocol, shell type, device type, or connection readiness from the \`env\` result alone when you are about to run a command. ` +
-      `For remote file operations, use the Netcatty SFTP CLI surface instead of trying to reconstruct SSH credentials or open your own SSH/SFTP connection, but only when the chosen session is SSH-backed and connected. After the required \`session --session <id>\` confirmation step, inspect the reported protocol, shell type, device type, and connected state before picking a file-operation path. For SSH-backed sessions, prefer one-off commands such as \`${cliCommandPrefix} sftp list --session <id> --remote-path <remote-path> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\`, \`${cliCommandPrefix} sftp read --session <id> --remote-path <remote-path> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\`, \`${cliCommandPrefix} sftp write --session <id> --remote-path <remote-path> --content <text> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\`, \`${cliCommandPrefix} sftp download --session <id> --remote-path <remote-path> --local-path <local-path> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\`, or \`${cliCommandPrefix} sftp upload --session <id> --local-path <local-path> --remote-path <remote-path> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\`. For local sessions, use normal local filesystem tools instead of Netcatty SFTP. For Mosh, Telnet, serial/raw, or network-device sessions, do not call SFTP; use a real SSH session, vendor CLI commands, or tell the user that the requested file transfer is unsupported on that transport. ` +
-      `Keep local and remote path semantics strict: \`--remote-path\` always refers to the remote host, while \`--local-path\` always refers to the local machine running Netcatty. If the user asks to download a file to a local destination such as \`/tmp\`, \`~/Downloads\`, or a desktop path, use \`sftp download\`, not \`sftp read\` or \`sftp write\`. If the user asks to create or modify a file on the remote host, use \`sftp write\` or another remote SFTP operation, not \`sftp download\`. ` +
+      `For remote file operations, use the MagiesTerminal SFTP CLI surface instead of trying to reconstruct SSH credentials or open your own SSH/SFTP connection, but only when the chosen session is SSH-backed and connected. After the required \`session --session <id>\` confirmation step, inspect the reported protocol, shell type, device type, and connected state before picking a file-operation path. For SSH-backed sessions, prefer one-off commands such as \`${cliCommandPrefix} sftp list --session <id> --remote-path <remote-path> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\`, \`${cliCommandPrefix} sftp read --session <id> --remote-path <remote-path> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\`, \`${cliCommandPrefix} sftp write --session <id> --remote-path <remote-path> --content <text> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\`, \`${cliCommandPrefix} sftp download --session <id> --remote-path <remote-path> --local-path <local-path> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\`, or \`${cliCommandPrefix} sftp upload --session <id> --local-path <local-path> --remote-path <remote-path> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\`. For local sessions, use normal local filesystem tools instead of MagiesTerminal SFTP. For Mosh, Telnet, serial/raw, or network-device sessions, do not call SFTP; use a real SSH session, vendor CLI commands, or tell the user that the requested file transfer is unsupported on that transport. ` +
+      `Keep local and remote path semantics strict: \`--remote-path\` always refers to the remote host, while \`--local-path\` always refers to the local machine running MagiesTerminal. If the user asks to download a file to a local destination such as \`/tmp\`, \`~/Downloads\`, or a desktop path, use \`sftp download\`, not \`sftp read\` or \`sftp write\`. If the user asks to create or modify a file on the remote host, use \`sftp write\` or another remote SFTP operation, not \`sftp download\`. ` +
       `If you need to create or update a small text file with known content on the remote host, prefer \`${cliCommandPrefix} sftp write ...\` directly. Use \`sftp upload\` only when a real local file already exists and must be transferred to the remote host. Do not create temporary local files just to upload text that could be sent with \`sftp write\`. ` +
       `Keep SFTP usage one-off and explicit: every \`sftp\` command should include both \`--session <id>\` and \`--chat-session ${chatSessionId || "<chat-session-id>"}\`. Do not open reusable SFTP handles or use \`--sftp <id>\`. ` +
-      `Run Netcatty CLI calls strictly one at a time. Do not issue concurrent or background Netcatty CLI commands for the same chat session, and always wait for each call to finish before starting the next one. ` +
+      `Run MagiesTerminal CLI calls strictly one at a time. Do not issue concurrent or background MagiesTerminal CLI commands for the same chat session, and always wait for each call to finish before starting the next one. ` +
       `For simple read-only requests such as hostname, IP address, CPU info, memory info, disk usage, pwd, whoami, uname, or process checks, use the shortest possible path: one \`env\`, one \`session\`, then one \`exec\`. Prefer a single straightforward command over creating helper scripts or multi-step shell orchestration. ` +
       `For long-running command tasks, start them with \`${cliCommandPrefix} job-start --session <id> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""} -- <command>\`, then use \`${cliCommandPrefix} job-poll --job <job-id> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\` to fetch incremental output, and \`${cliCommandPrefix} job-stop --job <job-id> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""}\` if the user asks to stop them. Do not poll aggressively; wait roughly 30 seconds between polls unless the output clearly justifies checking sooner. ` +
       `For those simple read-only requests, do not spend time reading extra files, designing scripts, or narrating a plan unless the first direct command fails or the session metadata shows a special device type. ` +
       `Do not create temporary scripts, JSON post-processing scripts, or extra wrapper commands unless the task genuinely requires logic that cannot fit cleanly in one direct command. ` +
-      `Avoid shell command substitution such as \`$()\` and backticks, because Netcatty safety policy may block them. Prefer straightforward command chains such as \`hostname && hostname -I && lscpu\`. ` +
+      `Avoid shell command substitution such as \`$()\` and backticks, because MagiesTerminal safety policy may block them. Prefer straightforward command chains such as \`hostname && hostname -I && lscpu\`. ` +
       `Avoid wrapping simple commands in \`sh -c\`, \`bash -c\`, or similar shell launcher patterns unless the task genuinely requires shell parsing that cannot be expressed as a direct command. ` +
       `Do not spend time narrating intent before every CLI call for routine read-only checks. Execute the minimal command sequence and then report the result. ` +
       `Only after that confirmation step should you call \`${cliCommandPrefix} exec --session <id> --json${chatSessionId ? ` --chat-session ${chatSessionId}` : ""} -- <command>\` for command execution. ` +
-      `If the user stops the run or asks to abort outstanding Netcatty work, use \`${cliCommandPrefix} cancel --chat-session ${chatSessionId || "<chat-session-id>"} --json\`, and use \`resume\` to re-enable execs for that scope if needed. ` +
+      `If the user stops the run or asks to abort outstanding MagiesTerminal work, use \`${cliCommandPrefix} cancel --chat-session ${chatSessionId || "<chat-session-id>"} --json\`, and use \`resume\` to re-enable execs for that scope if needed. ` +
       `For serial/raw sessions and network device sessions (deviceType: network), commands are sent as-is without shell wrapping and exit codes are unavailable. Use vendor CLI commands directly.]`
     );
   }
 
   return appendVaultAgentGuidance(
     `${userSkillsPreamble}` +
-    `[Context: You are inside Netcatty, a multi-session terminal manager. ` +
-    `Use the "netcatty-remote-hosts" MCP tools to operate only on the terminal sessions exposed by Netcatty. ` +
+    `[Context: You are inside MagiesTerminal, a multi-session terminal manager. ` +
+    `Use the "magiesTerminal-remote-hosts" MCP tools to operate only on the terminal sessions exposed by MagiesTerminal. ` +
     `For local files explicitly attached by the user, use the list_attachments and read_attachment tools. Do not use local shell or local filesystem tools for unrelated local-machine work. ` +
     `Those sessions may be remote hosts, a local terminal, or Mosh-backed shells. ` +
     `Call get_environment first to discover available sessions and their IDs. ` +
@@ -607,7 +607,7 @@ async function streamRequest(url, options, event, requestId, skipTLS) {
             } catch {
               if (errorBody.trim()) errorDetail = errorBody.slice(0, 500);
             }
-            safeSend(event.sender, "netcatty:ai:stream:error", {
+            safeSend(event.sender, "magiesTerminal:ai:stream:error", {
               requestId,
               error: `HTTP ${statusCode}: ${errorDetail}`,
             });
@@ -627,7 +627,7 @@ async function streamRequest(url, options, event, requestId, skipTLS) {
           buffer += chunk.toString();
           // Guard against unbounded buffer growth
           if (buffer.length > MAX_BUFFER_SIZE) {
-            safeSend(event.sender, "netcatty:ai:stream:error", {
+            safeSend(event.sender, "magiesTerminal:ai:stream:error", {
               requestId,
               error: "Stream buffer exceeded maximum size (10MB)",
             });
@@ -644,7 +644,7 @@ async function streamRequest(url, options, event, requestId, skipTLS) {
 
             // Forward raw SSE data line to renderer
             if (trimmed.startsWith("data: ")) {
-              safeSend(event.sender, "netcatty:ai:stream:data", {
+              safeSend(event.sender, "magiesTerminal:ai:stream:data", {
                 requestId,
                 data: trimmed.slice(6),
               });
@@ -655,17 +655,17 @@ async function streamRequest(url, options, event, requestId, skipTLS) {
         res.on("end", () => {
           // Flush any remaining buffer
           if (buffer.trim().startsWith("data: ")) {
-            safeSend(event.sender, "netcatty:ai:stream:data", {
+            safeSend(event.sender, "magiesTerminal:ai:stream:data", {
               requestId,
               data: buffer.trim().slice(6),
             });
           }
-          safeSend(event.sender, "netcatty:ai:stream:end", { requestId });
+          safeSend(event.sender, "magiesTerminal:ai:stream:end", { requestId });
           activeStreams.delete(requestId);
         });
 
         res.on("error", (err) => {
-          safeSend(event.sender, "netcatty:ai:stream:error", {
+          safeSend(event.sender, "magiesTerminal:ai:stream:error", {
             requestId,
             error: err.message,
           });
@@ -675,7 +675,7 @@ async function streamRequest(url, options, event, requestId, skipTLS) {
     );
 
     req.on("error", (err) => {
-      safeSend(event.sender, "netcatty:ai:stream:error", {
+      safeSend(event.sender, "magiesTerminal:ai:stream:error", {
         requestId,
         error: err.message,
       });
@@ -685,7 +685,7 @@ async function streamRequest(url, options, event, requestId, skipTLS) {
 
     req.on("timeout", () => {
       req.destroy();
-      safeSend(event.sender, "netcatty:ai:stream:error", {
+      safeSend(event.sender, "magiesTerminal:ai:stream:error", {
         requestId,
         error: "Request timeout",
       });
@@ -765,9 +765,9 @@ function createHandlerContext(ipcMain) {
     getCodexValidationCache,
     setCodexValidationCache,
     DEBUG_MCP,
-    NETCATTY_TOOL_SKILL_PATH,
-    NETCATTY_TOOL_LAUNCHER_PATH,
-    NETCATTY_TOOL_CLI_PATH,
+    MAGIES_TERMINAL_TOOL_SKILL_PATH,
+    MAGIES_TERMINAL_TOOL_LAUNCHER_PATH,
+    MAGIES_TERMINAL_TOOL_CLI_PATH,
     debugMcpLog,
     normalizeToolIntegrationMode,
     setToolIntegrationMode,

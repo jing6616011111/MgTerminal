@@ -1,13 +1,13 @@
 import type { MiddleClickBehavior, TerminalSettings } from "../../../domain/models";
 
 type MiddleClickSettings = Partial<Pick<TerminalSettings, "middleClickBehavior" | "middleClickPaste">>;
-const MIDDLE_CONTEXT_MENU_EVENT_KEY = "__netcattyMiddleContextMenu";
+const MIDDLE_CONTEXT_MENU_EVENT_KEY = "__magiesTerminalMiddleContextMenu";
 
 type MiddleClickContextMenuEvent = MouseEvent & {
   [MIDDLE_CONTEXT_MENU_EVENT_KEY]?: boolean;
 };
 
-const SHIFT_SELECTION_REPLAY_EVENT_KEY = "__netcattyShiftSelectionReplay";
+const SHIFT_SELECTION_REPLAY_EVENT_KEY = "__magiesTerminalShiftSelectionReplay";
 
 type ShiftSelectionReplayMouseEvent = MouseEvent & {
   [SHIFT_SELECTION_REPLAY_EVENT_KEY]?: boolean;

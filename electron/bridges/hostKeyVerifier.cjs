@@ -192,7 +192,7 @@ const requestHostKeyVerification = (sender, info) => new Promise((resolve) => {
   });
 
   try {
-    sender.send("netcatty:host-key:verify", {
+    sender.send("magiesTerminal:host-key:verify", {
       requestId,
       ...info,
     });
@@ -254,7 +254,7 @@ const handleResponse = (_event, payload) => {
 };
 
 const registerHandler = (ipcMain) => {
-  ipcMain.handle("netcatty:host-key:respond", handleResponse);
+  ipcMain.handle("magiesTerminal:host-key:respond", handleResponse);
 };
 
 const getRequests = () => hostKeyRequests;

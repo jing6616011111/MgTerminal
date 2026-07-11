@@ -7,7 +7,7 @@ import {
 } from '../state/activeTabStore';
 import { updateActiveChromeThemeDeps } from '../state/activeChromeThemeSync';
 import { useActiveChromeTheme } from '../state/useActiveChromeTheme';
-import { netcattyBridge } from '../../infrastructure/services/netcattyBridge';
+import { magiesTerminalBridge } from '../../infrastructure/services/magiesTerminalBridge';
 import { resolveActiveChromeTheme } from './activeChromeTheme';
 import type { TerminalAppearanceHostScope, ResolvedAppearance } from '../../domain/terminalAppearanceRuntime';
 import type {
@@ -136,11 +136,11 @@ export function AppActiveTabChrome({
       const isLocal = logView.log.protocol === 'local' || logView.log.hostname === 'localhost';
       return `${t('tabs.logPrefix')} ${isLocal ? t('tabs.logLocal') : logView.log.hostname}`;
     }
-    return 'Netcatty';
+    return 'MagiesTerminal';
   }, [activeTabId, editorTabFileNameCounts, editorTabs, logViews, sessionById, t, workspaceById]);
 
   useEffect(() => {
-    void netcattyBridge.get()?.setWindowTitle?.(activeWindowTitle);
+    void magiesTerminalBridge.get()?.setWindowTitle?.(activeWindowTitle);
   }, [activeWindowTitle]);
 
   return null;

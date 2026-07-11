@@ -131,16 +131,16 @@ export default [
         "error",
         {
           object: "window",
-          property: "netcatty",
+          property: "magiesTerminal",
           message:
-            "Do not access window.netcatty directly; use netcattyBridge or an application/state backend hook.",
+            "Do not access window.magiesTerminal directly; use magiesTerminalBridge or an application/state backend hook.",
         },
       ],
       "no-restricted-globals": ["error", "localStorage", "sessionStorage"],
     },
   },
   {
-    files: ["infrastructure/services/netcattyBridge.ts"],
+    files: ["infrastructure/services/magiesTerminalBridge.ts"],
     rules: {
       "no-restricted-properties": "off",
     },

@@ -38,7 +38,7 @@ function getVersion() {
 }
 
 const version = getVersion();
-const repo = process.env.GITHUB_REPOSITORY || 'binaricat/netcatty';
+const repo = process.env.GITHUB_REPOSITORY || 'JasonZhangDad/MagiesTerminal';
 // For tag releases, use the tag; for workflow_dispatch, create a tag from version
 const tag = (process.env.GITHUB_REF_NAME && /^v\d+\.\d+\.\d+/.test(process.env.GITHUB_REF_NAME))
   ? process.env.GITHUB_REF_NAME
@@ -53,28 +53,28 @@ const baseUrl = `https://github.com/${repo}/releases/download/${tag}`;
 // - pacman: x64 -> x64, arm64 -> aarch64
 const files = {
   mac: {
-    arm64: `Netcatty-${version}-mac-arm64.dmg`,
-    x64: `Netcatty-${version}-mac-x64.dmg`
+    arm64: `MagiesTerminal-${version}-mac-arm64.dmg`,
+    x64: `MagiesTerminal-${version}-mac-x64.dmg`
   },
   win: {
-    x64: `Netcatty-${version}-win-x64.exe`
+    x64: `MagiesTerminal-${version}-win-x64.exe`
   },
   linux: {
     appimage: {
-      x64: `Netcatty-${version}-linux-x86_64.AppImage`,
-      arm64: `Netcatty-${version}-linux-arm64.AppImage`
+      x64: `MagiesTerminal-${version}-linux-x86_64.AppImage`,
+      arm64: `MagiesTerminal-${version}-linux-arm64.AppImage`
     },
     deb: {
-      x64: `Netcatty-${version}-linux-amd64.deb`,
-      arm64: `Netcatty-${version}-linux-arm64.deb`
+      x64: `MagiesTerminal-${version}-linux-amd64.deb`,
+      arm64: `MagiesTerminal-${version}-linux-arm64.deb`
     },
     rpm: {
-      x64: `Netcatty-${version}-linux-x86_64.rpm`,
-      arm64: `Netcatty-${version}-linux-aarch64.rpm`
+      x64: `MagiesTerminal-${version}-linux-x86_64.rpm`,
+      arm64: `MagiesTerminal-${version}-linux-aarch64.rpm`
     },
     pacman: {
-      x64: `Netcatty-${version}-linux-x64.pacman`,
-      arm64: `Netcatty-${version}-linux-aarch64.pacman`
+      x64: `MagiesTerminal-${version}-linux-x64.pacman`,
+      arm64: `MagiesTerminal-${version}-linux-aarch64.pacman`
     }
   }
 };

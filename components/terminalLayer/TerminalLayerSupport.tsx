@@ -40,7 +40,7 @@ const LazyAIChatSidePanel = lazy(() =>
 
 const AIChatSidePanelFallback = memo(function AIChatSidePanelFallback() {
   return (
-    <div className="netcatty-lazy-fade-in h-full min-h-0 bg-background" aria-hidden="true" />
+    <div className="magiesTerminal-lazy-fade-in h-full min-h-0 bg-background" aria-hidden="true" />
   );
 });
 

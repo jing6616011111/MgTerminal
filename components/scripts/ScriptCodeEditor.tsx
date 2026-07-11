@@ -1,7 +1,7 @@
 import Editor, { loader, type Monaco, type OnMount, useMonaco } from '@monaco-editor/react';
 import { Loader2 } from 'lucide-react';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { useNetcattyMonacoTheme } from '@/infrastructure/monaco/useNetcattyMonacoTheme';
+import { useMagiesTerminalMonacoTheme } from '@/infrastructure/monaco/useMagiesTerminalMonacoTheme';
 import { registerNctMonacoCompletionProvider } from '@/infrastructure/scripts/nctMonacoCompletion.ts';
 
 const viteEnv = import.meta.env ?? { BASE_URL: '/' };
@@ -33,7 +33,7 @@ export const ScriptCodeEditor: React.FC<ScriptCodeEditorProps> = ({
   active = true,
 }) => {
   const monaco = useMonaco();
-  const themeName = useNetcattyMonacoTheme(monaco ?? undefined);
+  const themeName = useMagiesTerminalMonacoTheme(monaco ?? undefined);
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
   const completionDisposableRef = useRef<{ dispose: () => void } | null>(null);
 

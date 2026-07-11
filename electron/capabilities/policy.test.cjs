@@ -15,30 +15,30 @@ const { CAPABILITY_SURFACES, PERMISSION_MODES } = require("./constants.cjs");
 
 test("builtin write methods match legacy mcpServerBridge write set", () => {
   const legacyWriteMethods = [
-    "netcatty/exec",
-    "netcatty/sftp/write",
-    "netcatty/sftp/download",
-    "netcatty/sftp/upload",
-    "netcatty/sftp/mkdir",
-    "netcatty/sftp/delete",
-    "netcatty/sftp/rename",
-    "netcatty/sftp/chmod",
-    "netcatty/jobStart",
-    "netcatty/jobStop",
+    "magiesTerminal/exec",
+    "magiesTerminal/sftp/write",
+    "magiesTerminal/sftp/download",
+    "magiesTerminal/sftp/upload",
+    "magiesTerminal/sftp/mkdir",
+    "magiesTerminal/sftp/delete",
+    "magiesTerminal/sftp/rename",
+    "magiesTerminal/sftp/chmod",
+    "magiesTerminal/jobStart",
+    "magiesTerminal/jobStop",
   ];
   assert.deepEqual(new Set(legacyWriteMethods), BUILTIN_WRITE_RPC_METHODS);
 });
 
 test("builtin approval methods exclude jobStop and non-write control rpc", () => {
-  assert.equal(BUILTIN_APPROVAL_RPC_METHODS.has("netcatty/jobStop"), false);
-  assert.equal(BUILTIN_APPROVAL_RPC_METHODS.has("netcatty/setCancelled"), false);
-  assert.equal(BUILTIN_APPROVAL_RPC_METHODS.has("netcatty/exec"), true);
-  assert.equal(BUILTIN_APPROVAL_RPC_METHODS.has("netcatty/sftp/write"), true);
+  assert.equal(BUILTIN_APPROVAL_RPC_METHODS.has("magiesTerminal/jobStop"), false);
+  assert.equal(BUILTIN_APPROVAL_RPC_METHODS.has("magiesTerminal/setCancelled"), false);
+  assert.equal(BUILTIN_APPROVAL_RPC_METHODS.has("magiesTerminal/exec"), true);
+  assert.equal(BUILTIN_APPROVAL_RPC_METHODS.has("magiesTerminal/sftp/write"), true);
 });
 
 test("observer mode blocks writes but allows terminal poll", () => {
   const denied = evaluateRpcPermission({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.OBSERVER,
     params: { chatSessionId: "chat-1" },
   });
@@ -46,7 +46,7 @@ test("observer mode blocks writes but allows terminal poll", () => {
   assert.match(denied.error, /observer/i);
 
   const allowed = evaluateRpcPermission({
-    rpcMethod: "netcatty/jobPoll",
+    rpcMethod: "magiesTerminal/jobPoll",
     permissionMode: PERMISSION_MODES.OBSERVER,
     params: { chatSessionId: "chat-1" },
   });
@@ -56,7 +56,7 @@ test("observer mode blocks writes but allows terminal poll", () => {
 
 test("confirm mode requires approval for writes but not sftp list on builtin surface", () => {
   const writeDecision = evaluateRpcPermission({
-    rpcMethod: "netcatty/sftp/write",
+    rpcMethod: "magiesTerminal/sftp/write",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: { chatSessionId: "chat-1" },
   });
@@ -64,7 +64,7 @@ test("confirm mode requires approval for writes but not sftp list on builtin sur
   assert.equal(writeDecision.requiresApproval, true);
 
   const readDecision = evaluateRpcPermission({
-    rpcMethod: "netcatty/sftp/list",
+    rpcMethod: "magiesTerminal/sftp/list",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: { chatSessionId: "chat-1" },
   });
@@ -86,7 +86,7 @@ test("public surface treats sensitive reads as confirm-gated", () => {
 
 test("write operations require chatSessionId on builtin surface", () => {
   const decision = evaluateRpcPermission({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.AUTO,
     params: {},
   });
@@ -96,7 +96,7 @@ test("write operations require chatSessionId on builtin surface", () => {
 
 test("cancelled chat sessions block terminal writes", () => {
   const decision = evaluateRpcPermission({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.AUTO,
     params: { chatSessionId: "chat-1" },
     context: { chatSessionCancelled: true },
@@ -107,7 +107,7 @@ test("cancelled chat sessions block terminal writes", () => {
 
 test("cancelled chat sessions block sftp writes", () => {
   const decision = evaluateRpcPermission({
-    rpcMethod: "netcatty/sftp/write",
+    rpcMethod: "magiesTerminal/sftp/write",
     permissionMode: PERMISSION_MODES.AUTO,
     params: { chatSessionId: "chat-1" },
     context: { chatSessionCancelled: true },
@@ -118,7 +118,7 @@ test("cancelled chat sessions block sftp writes", () => {
 
 test("cancelled chat sessions still allow sftp reads", () => {
   const decision = evaluateRpcPermission({
-    rpcMethod: "netcatty/sftp/list",
+    rpcMethod: "magiesTerminal/sftp/list",
     permissionMode: PERMISSION_MODES.AUTO,
     params: { chatSessionId: "chat-1" },
     context: { chatSessionCancelled: true },
@@ -128,7 +128,7 @@ test("cancelled chat sessions still allow sftp reads", () => {
 
 test("jobStop bypasses observer and cancelled chat checks", () => {
   const observerDecision = evaluateRpcPermission({
-    rpcMethod: "netcatty/jobStop",
+    rpcMethod: "magiesTerminal/jobStop",
     permissionMode: PERMISSION_MODES.OBSERVER,
     params: { chatSessionId: "chat-1" },
     context: { chatSessionCancelled: true },
@@ -176,7 +176,7 @@ test("confirm mode requires approval for portforward start and host notes set", 
 
 test("evaluatePermissionWithGrants skips approval when a grant matches", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",
@@ -198,7 +198,7 @@ test("evaluatePermissionWithGrants skips approval when a grant matches", () => {
 
 test("evaluatePermissionWithGrants does not let a comment grant approve a multiline command", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",
@@ -223,7 +223,7 @@ test("evaluatePermissionWithGrants does not let a comment grant approve a multil
 
 test("evaluatePermissionWithGrants does not let a here-doc body grant approve the command", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",
@@ -249,7 +249,7 @@ test("evaluatePermissionWithGrants does not let a here-doc body grant approve th
 
 test("evaluatePermissionWithGrants does not let a piped here-doc body grant approve the command", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",
@@ -275,7 +275,7 @@ test("evaluatePermissionWithGrants does not let a piped here-doc body grant appr
 
 test("evaluatePermissionWithGrants does not let an fd-prefixed here-doc body grant approve the command", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",
@@ -301,7 +301,7 @@ test("evaluatePermissionWithGrants does not let an fd-prefixed here-doc body gra
 
 test("evaluatePermissionWithGrants does not let a background command grant approve the next command", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",
@@ -323,7 +323,7 @@ test("evaluatePermissionWithGrants does not let a background command grant appro
 
 test("evaluatePermissionWithGrants does not let cwd substitutions hide before a later grant", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",
@@ -345,7 +345,7 @@ test("evaluatePermissionWithGrants does not let cwd substitutions hide before a 
 
 test("evaluatePermissionWithGrants does not let quoted here-doc operator text hide later commands", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",
@@ -371,7 +371,7 @@ test("evaluatePermissionWithGrants does not let quoted here-doc operator text hi
 
 test("evaluatePermissionWithGrants keeps commands after mixed-quoted here-doc delimiters grantable", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",
@@ -398,7 +398,7 @@ test("evaluatePermissionWithGrants keeps commands after mixed-quoted here-doc de
 
 test("evaluatePermissionWithGrants does not let arithmetic shifts hide following commands", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",
@@ -423,7 +423,7 @@ test("evaluatePermissionWithGrants does not let arithmetic shifts hide following
 
 test("evaluatePermissionWithGrants keeps commands after ANSI-C quoted here-doc delimiters grantable", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",
@@ -450,7 +450,7 @@ test("evaluatePermissionWithGrants keeps commands after ANSI-C quoted here-doc d
 
 test("evaluatePermissionWithGrants keeps commands after dollar-quoted here-doc delimiters grantable", () => {
   const decision = evaluatePermissionWithGrants({
-    rpcMethod: "netcatty/exec",
+    rpcMethod: "magiesTerminal/exec",
     permissionMode: PERMISSION_MODES.CONFIRM,
     params: {
       chatSessionId: "chat-1",

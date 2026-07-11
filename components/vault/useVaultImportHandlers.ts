@@ -71,7 +71,7 @@ export function useVaultImportHandlers({
           }
   
           // Check if this file is already managed
-          const bridge = (window as unknown as { netcatty?: { getPathForFile?: (file: File) => string | undefined } }).netcatty;
+          const bridge = (window as unknown as { magiesTerminal?: { getPathForFile?: (file: File) => string | undefined } }).magiesTerminal;
           // Try bridge.getPathForFile first, then fall back to file.path (Electron legacy)
           const filePath = bridge?.getPathForFile?.(file) || (file as File & { path?: string }).path;
   

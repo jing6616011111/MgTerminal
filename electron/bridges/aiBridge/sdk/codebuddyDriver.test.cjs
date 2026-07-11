@@ -34,10 +34,10 @@ test("buildCodebuddyQueryOptions wires SDK options in isolated mode", () => {
     abortController: ac,
     resume: "sess-1",
     injectedMcpServers: [{
-      name: "netcatty-remote-hosts",
+      name: "magiesTerminal-remote-hosts",
       command: "/abs/electron",
       args: ["/abs/server.cjs"],
-      env: [{ name: "NETCATTY_MCP_PORT", value: "1" }],
+      env: [{ name: "MAGIES_TERMINAL_MCP_PORT", value: "1" }],
     }],
   });
 
@@ -54,11 +54,11 @@ test("buildCodebuddyQueryOptions wires SDK options in isolated mode", () => {
   assert.equal(opts.resume, "sess-1");
   assert.deepEqual(opts.tools, []);
   // allowedTools must stay unset in mcp mode: tools:[] disables built-ins, while
-  // allowedTools:[] would prevent injected Netcatty MCP tools from running.
+  // allowedTools:[] would prevent injected MagiesTerminal MCP tools from running.
   assert.ok(!("allowedTools" in opts));
   assert.ok(opts.disallowedTools.includes("AskUserQuestion"));
-  assert.equal(opts.mcpServers["netcatty-remote-hosts"].type, "stdio");
-  assert.deepEqual(opts.mcpServers["netcatty-remote-hosts"].env, { NETCATTY_MCP_PORT: "1" });
+  assert.equal(opts.mcpServers["magiesTerminal-remote-hosts"].type, "stdio");
+  assert.deepEqual(opts.mcpServers["magiesTerminal-remote-hosts"].env, { MAGIES_TERMINAL_MCP_PORT: "1" });
 });
 
 test("built-in tools are mode-aware", () => {

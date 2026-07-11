@@ -28,7 +28,7 @@ function loadBridgeWithMocks(options = {}) {
       setVaultAgentInvoker() {},
       getOrCreateHost: async () => 4010,
       getScopedSessionIds: () => [],
-      buildMcpServerConfig: () => ({ name: "netcatty-remote-hosts", type: "http", url: "http://127.0.0.1:4010" }),
+      buildMcpServerConfig: () => ({ name: "magiesTerminal-remote-hosts", type: "http", url: "http://127.0.0.1:4010" }),
       getPermissionMode: () =>
         typeof options.getPermissionMode === "function"
           ? options.getPermissionMode()
@@ -47,8 +47,8 @@ function loadBridgeWithMocks(options = {}) {
       cleanup() {},
     },
     "../cli/discoveryPath.cjs": {
-      getCliLauncherPath: () => "/tmp/netcatty-tool-cli",
-      TOOL_CLI_DISCOVERY_ENV_VAR: "NETCATTY_TOOL_CLI_DISCOVERY_FILE",
+      getCliLauncherPath: () => "/tmp/magies-terminal-tool-cli",
+      TOOL_CLI_DISCOVERY_ENV_VAR: "MAGIES_TERMINAL_TOOL_CLI_DISCOVERY_FILE",
     },
     "./ai/userSkills.cjs": {
       scanUserSkills: async () => ({ readyCount: 0, warningCount: 0, skills: [], warnings: [] }),
@@ -208,7 +208,7 @@ test("mcp attachment update handler forwards current chat attachments", async ()
   bridge.registerHandlers(ipcMain);
 
   try {
-    const updateAttachments = ipcMain.handlers.get("netcatty:ai:mcp:update-attachments");
+    const updateAttachments = ipcMain.handlers.get("magiesTerminal:ai:mcp:update-attachments");
     assert.equal(typeof updateAttachments, "function");
     const attachments = [{
       filename: "hosts_export_2026-06-25.csv",
@@ -244,7 +244,7 @@ test("command timeout handler accepts one-day timeout values", async () => {
   bridge.registerHandlers(ipcMain);
 
   try {
-    const setCommandTimeout = ipcMain.handlers.get("netcatty:ai:mcp:set-command-timeout");
+    const setCommandTimeout = ipcMain.handlers.get("magiesTerminal:ai:mcp:set-command-timeout");
     assert.equal(typeof setCommandTimeout, "function");
 
     const result = await setCommandTimeout({ sender: { id: 1 } }, { timeout: 86_400 });
@@ -257,7 +257,7 @@ test("command timeout handler accepts one-day timeout values", async () => {
 });
 
 test("discover returns the 3-layer contract for an installed, authenticated agent", async (t) => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-discover-contract-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-discover-contract-"));
   t.after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
   const claudePath = path.join(tempDir, process.platform === "win32" ? "claude.cmd" : "claude");
   fs.writeFileSync(
@@ -276,7 +276,7 @@ test("discover returns the 3-layer contract for an installed, authenticated agen
   bridge.registerHandlers(ipcMain);
 
   try {
-    const discover = ipcMain.handlers.get("netcatty:ai:agents:discover");
+    const discover = ipcMain.handlers.get("magiesTerminal:ai:agents:discover");
     assert.equal(typeof discover, "function");
     const agents = await discover({ sender: { id: 1 } });
     const claude = agents.find((agent) => agent.command === "claude");
@@ -308,7 +308,7 @@ test("resolve-cli does not fall back to PATH when a custom path is invalid", asy
   bridge.registerHandlers(ipcMain);
 
   try {
-    const resolveCli = ipcMain.handlers.get("netcatty:ai:resolve-cli");
+    const resolveCli = ipcMain.handlers.get("magiesTerminal:ai:resolve-cli");
     const result = await resolveCli({ sender: { id: 1 } }, {
       command: "codex",
       customPath: "/missing/codex",
@@ -343,7 +343,7 @@ test("codex login does not reuse an active session from a different resolved pat
   bridge.registerHandlers(ipcMain);
 
   try {
-    const startLogin = ipcMain.handlers.get("netcatty:ai:codex:start-login");
+    const startLogin = ipcMain.handlers.get("magiesTerminal:ai:codex:start-login");
     const result = await startLogin({ sender: { id: 1 } }, {});
 
     assert.equal(result.ok, false);
@@ -354,7 +354,7 @@ test("codex login does not reuse an active session from a different resolved pat
 });
 
 test("codex integration keeps ChatGPT connected when the SDK validation probe fails", async (t) => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codex-integration-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codex-integration-"));
   t.after(() => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
@@ -379,7 +379,7 @@ test("codex integration keeps ChatGPT connected when the SDK validation probe fa
   bridge.registerHandlers(ipcMain);
 
   try {
-    const handler = ipcMain.handlers.get("netcatty:ai:codex:get-integration");
+    const handler = ipcMain.handlers.get("magiesTerminal:ai:codex:get-integration");
     assert.equal(typeof handler, "function");
 
     const result = await handler({ sender: { id: 1 } }, {
@@ -397,7 +397,7 @@ test("codex integration keeps ChatGPT connected when the SDK validation probe fa
 });
 
 test("resolve-cli probes Windows cmd paths with spaces", { skip: process.platform !== "win32" }, async (t) => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty codex resolve "));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal codex resolve "));
   t.after(() => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
@@ -423,7 +423,7 @@ test("resolve-cli probes Windows cmd paths with spaces", { skip: process.platfor
   bridge.registerHandlers(ipcMain);
 
   try {
-    const resolveHandler = ipcMain.handlers.get("netcatty:ai:resolve-cli");
+    const resolveHandler = ipcMain.handlers.get("magiesTerminal:ai:resolve-cli");
     assert.equal(typeof resolveHandler, "function");
 
     const result = await resolveHandler({ sender: { id: 1 } }, { command: "codex", customPath: "" });
@@ -441,7 +441,7 @@ test("resolve-cli probes Windows cmd paths with spaces", { skip: process.platfor
 });
 
 test("resolve-cli probes Windows Claude cmd paths with spaces", { skip: process.platform !== "win32" }, async (t) => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty claude resolve "));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal claude resolve "));
   t.after(() => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
@@ -467,7 +467,7 @@ test("resolve-cli probes Windows Claude cmd paths with spaces", { skip: process.
   bridge.registerHandlers(ipcMain);
 
   try {
-    const resolveHandler = ipcMain.handlers.get("netcatty:ai:resolve-cli");
+    const resolveHandler = ipcMain.handlers.get("magiesTerminal:ai:resolve-cli");
     assert.equal(typeof resolveHandler, "function");
 
     const result = await resolveHandler({ sender: { id: 1 } }, { command: "claude", customPath: "" });
@@ -485,7 +485,7 @@ test("resolve-cli probes Windows Claude cmd paths with spaces", { skip: process.
 });
 
 test("resolve-cli probes Windows Claude exe paths with spaces", { skip: process.platform !== "win32" }, async (t) => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty claude exe resolve "));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal claude exe resolve "));
   t.after(() => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
@@ -507,7 +507,7 @@ test("resolve-cli probes Windows Claude exe paths with spaces", { skip: process.
   bridge.registerHandlers(ipcMain);
 
   try {
-    const resolveHandler = ipcMain.handlers.get("netcatty:ai:resolve-cli");
+    const resolveHandler = ipcMain.handlers.get("magiesTerminal:ai:resolve-cli");
     assert.equal(typeof resolveHandler, "function");
 
     const result = await resolveHandler({ sender: { id: 1 } }, { command: "claude", customPath: "" });
@@ -533,7 +533,7 @@ test("resolve-cli reports Cursor SDK installed but unavailable without an API ke
   bridge.registerHandlers(ipcMain);
 
   try {
-    const resolveCli = ipcMain.handlers.get("netcatty:ai:resolve-cli");
+    const resolveCli = ipcMain.handlers.get("magiesTerminal:ai:resolve-cli");
     const result = await resolveCli({ sender: { id: 1 } }, { command: "cursor", customPath: "" });
     assert.deepEqual(result, {
       path: "cursor",
@@ -559,7 +559,7 @@ test("resolve-cli separates Cursor SDK installation from API key availability", 
   bridge.registerHandlers(ipcMain);
 
   try {
-    const resolveCli = ipcMain.handlers.get("netcatty:ai:resolve-cli");
+    const resolveCli = ipcMain.handlers.get("magiesTerminal:ai:resolve-cli");
     const result = await resolveCli(
       { sender: { id: 1 } },
       { command: "cursor", customPath: "/Applications/Cursor.app/Contents/MacOS/Cursor" },
@@ -589,7 +589,7 @@ test("resolve-cli ignores custom Cursor paths and stores the SDK sentinel path",
   bridge.registerHandlers(ipcMain);
 
   try {
-    const resolveCli = ipcMain.handlers.get("netcatty:ai:resolve-cli");
+    const resolveCli = ipcMain.handlers.get("magiesTerminal:ai:resolve-cli");
     const result = await resolveCli(
       { sender: { id: 1 } },
       { command: "cursor", customPath: "/tmp/not-cursor" },
@@ -618,7 +618,7 @@ test("resolve-cli exposes Cursor SDK support when installed and authenticated", 
   bridge.registerHandlers(ipcMain);
 
   try {
-    const resolveCli = ipcMain.handlers.get("netcatty:ai:resolve-cli");
+    const resolveCli = ipcMain.handlers.get("magiesTerminal:ai:resolve-cli");
     const result = await resolveCli({ sender: { id: 1 } }, { command: "cursor", customPath: "" });
     assert.deepEqual(result, {
       path: "cursor",
@@ -643,7 +643,7 @@ test("resolve-cli exposes Cursor SDK support when API key is saved in settings",
   bridge.registerHandlers(ipcMain);
 
   try {
-    const resolveCli = ipcMain.handlers.get("netcatty:ai:resolve-cli");
+    const resolveCli = ipcMain.handlers.get("magiesTerminal:ai:resolve-cli");
     const result = await resolveCli(
       { sender: { id: 1 } },
       { command: "cursor", customPath: "", apiKeyPresent: true },
@@ -672,7 +672,7 @@ test("resolve-cli reports settings as Cursor auth source when settings and env k
   bridge.registerHandlers(ipcMain);
 
   try {
-    const resolveCli = ipcMain.handlers.get("netcatty:ai:resolve-cli");
+    const resolveCli = ipcMain.handlers.get("magiesTerminal:ai:resolve-cli");
     const result = await resolveCli(
       { sender: { id: 1 } },
       { command: "cursor", customPath: "", apiKeyPresent: true },
@@ -698,7 +698,7 @@ test("resolve-cli can refresh shell env before resolving Cursor", async () => {
   bridge.registerHandlers(ipcMain);
 
   try {
-    const resolveCli = ipcMain.handlers.get("netcatty:ai:resolve-cli");
+    const resolveCli = ipcMain.handlers.get("magiesTerminal:ai:resolve-cli");
     const result = await resolveCli(
       { sender: { id: 1 } },
       { command: "cursor", customPath: "", refreshShellEnv: true },
@@ -720,7 +720,7 @@ test("discover exposes Cursor SDK support when API key is saved in settings", as
   bridge.registerHandlers(ipcMain);
 
   try {
-    const discover = ipcMain.handlers.get("netcatty:ai:agents:discover");
+    const discover = ipcMain.handlers.get("magiesTerminal:ai:agents:discover");
     const agents = await discover({ sender: { id: 1 } }, { apiKeyPresent: true });
     const cursor = agents.find((agent) => agent.command === "cursor");
 
@@ -745,7 +745,7 @@ test("discover can refresh shell env before scanning Cursor", async () => {
   bridge.registerHandlers(ipcMain);
 
   try {
-    const discover = ipcMain.handlers.get("netcatty:ai:agents:discover");
+    const discover = ipcMain.handlers.get("magiesTerminal:ai:agents:discover");
     const agents = await discover({ sender: { id: 1 } }, { refreshShellEnv: true });
     const cursor = agents.find((agent) => agent.command === "cursor");
 

@@ -1,6 +1,6 @@
 "use strict";
 
-const EXTERNAL_MCP_CODEX_NAME = "netcatty-external";
+const EXTERNAL_MCP_CODEX_NAME = "magiesTerminal-external";
 const {
   formatDiscoveryEnvCliFlags,
 } = require("../../cli/externalMcpDiscoveryPath.cjs");

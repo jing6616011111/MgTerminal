@@ -16,15 +16,15 @@
  */
 function createStreamEmitter({ safeSend, sender, requestId }) {
   const emitEvent = (event) => {
-    safeSend(sender, "netcatty:ai:sdk-agent:event", { requestId, event });
+    safeSend(sender, "magiesTerminal:ai:sdk-agent:event", { requestId, event });
   };
   return {
     emitEvent,
     emitDone() {
-      safeSend(sender, "netcatty:ai:sdk-agent:done", { requestId });
+      safeSend(sender, "magiesTerminal:ai:sdk-agent:done", { requestId });
     },
     emitError(error) {
-      safeSend(sender, "netcatty:ai:sdk-agent:error", { requestId, error });
+      safeSend(sender, "magiesTerminal:ai:sdk-agent:error", { requestId, error });
     },
     text(textDelta) {
       if (textDelta) emitEvent({ type: "text-delta", textDelta });

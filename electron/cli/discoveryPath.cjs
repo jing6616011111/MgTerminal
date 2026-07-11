@@ -2,9 +2,9 @@
 
 const os = require("node:os");
 const path = require("node:path");
-const CLI_STATE_DIR_NAME = "netcatty-tool-cli";
-const TOOL_CLI_DISCOVERY_ENV_VAR = "NETCATTY_TOOL_CLI_DISCOVERY_FILE";
-const FALLBACK_APP_DATA_DIR_NAME = "netcatty";
+const CLI_STATE_DIR_NAME = "magies-terminal-tool-cli";
+const TOOL_CLI_DISCOVERY_ENV_VAR = "MAGIES_TERMINAL_TOOL_CLI_DISCOVERY_FILE";
+const FALLBACK_APP_DATA_DIR_NAME = "magiesTerminal";
 
 function toUnpackedAsarPath(filePath) {
   return filePath.replace(/app\.asar([\\/])/, "app.asar.unpacked$1");
@@ -69,8 +69,8 @@ function getCliDiscoveryFilePath(options = {}) {
 
 function getCliLauncherPath() {
   const fileName = process.platform === "win32"
-    ? "netcatty-tool-cli.cmd"
-    : "netcatty-tool-cli";
+    ? "magies-terminal-tool-cli.cmd"
+    : "magies-terminal-tool-cli";
   return toUnpackedAsarPath(path.join(__dirname, fileName));
 }
 

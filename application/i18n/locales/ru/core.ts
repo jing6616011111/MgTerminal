@@ -151,7 +151,7 @@ export const ruCoreMessages: Messages = {
   'settings.update.downloadError': 'Не удалось загрузить обновление.',
   'settings.update.manualDownload': 'Скачать с GitHub',
   'settings.update.manualDownloadHint': 'Автообновление недоступно на этой платформе. Скачайте последнюю версию с GitHub.',
-  'settings.update.hint': 'Netcatty проверяет обновления через GitHub Releases.',
+  'settings.update.hint': 'MagiesTerminal проверяет обновления через GitHub Releases.',
   'settings.update.lastCheckedJustNow': 'только что',
   'settings.update.lastCheckedMinutesAgo': '{n} мин назад',
   'settings.update.lastCheckedHoursAgo': '{n} ч назад',
@@ -215,7 +215,7 @@ export const ruCoreMessages: Messages = {
   'tray.recentHosts': 'Недавние хосты',
   'tray.empty.title': 'Пока здесь ничего нет',
   'tray.empty.subtitle': 'Подключитесь к серверу, они по вам скучают 🚀',
-  'tray.quit': 'Выйти из Netcatty',
+  'tray.quit': 'Выйти из MagiesTerminal',
 
   // Vault Sidebar
   'vault.sidebar.collapse': 'Свернуть боковую панель',
@@ -292,7 +292,7 @@ export const ruCoreMessages: Messages = {
   'settings.appearance.windowOpacity': 'Прозрачность окна',
   'settings.appearance.windowOpacity.desc': 'Настройте прозрачность всего окна приложения. При низких значениях текст терминала тоже бледнеет. В некоторых средах Linux это может не поддерживаться.',
   'settings.appearance.appIcon': 'Значок приложения',
-  'settings.appearance.appIcon.desc': 'Выберите стиль значка для Dock/панели задач, чтобы Netcatty было проще найти при переключении приложений. Применяется во время работы; значок установленного пакета не меняется.',
+  'settings.appearance.appIcon.desc': 'Выберите стиль значка для Dock/панели задач, чтобы MagiesTerminal было проще найти при переключении приложений. Применяется во время работы; значок установленного пакета не меняется.',
   'settings.appearance.appIcon.original': 'Оригинал',
   'settings.appearance.appIcon.bright': 'Яркий',
   'settings.appearance.appIcon.dark': 'Тёмный',

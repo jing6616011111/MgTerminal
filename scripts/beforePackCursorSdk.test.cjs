@@ -15,7 +15,7 @@ function writeJson(filePath, value) {
 }
 
 test("ensureCursorSdkPlatformPackages installs both macOS Cursor runtime packages", (t) => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-cursor-pack-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-cursor-pack-"));
   t.after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
   writeJson(path.join(tempDir, "node_modules", "@cursor", "sdk", "package.json"), { version: "1.0.18" });
   writeJson(path.join(tempDir, "node_modules", "@cursor", "sdk-darwin-arm64", "package.json"), { version: "1.0.18" });
@@ -42,7 +42,7 @@ test("ensureCursorSdkPlatformPackages installs both macOS Cursor runtime package
 });
 
 test("ensureCursorSdkPlatformPackages is a no-op when target packages exist", (t) => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-cursor-pack-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-cursor-pack-"));
   t.after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
   writeJson(path.join(tempDir, "node_modules", "@cursor", "sdk", "package.json"), { version: "1.0.18" });
   for (const packageName of CURSOR_PLATFORM_PACKAGES.linux) {

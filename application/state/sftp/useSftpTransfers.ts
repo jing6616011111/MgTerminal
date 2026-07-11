@@ -13,7 +13,7 @@ import {
   describeSftpIncomingKind,
   getSftpConflictTypeKey,
 } from "../../../domain/sftpConflict";
-import { netcattyBridge } from "../../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../../infrastructure/services/magiesTerminalBridge";
 import { logger } from "../../../lib/logger";
 import { SftpPane } from "./types";
 import { useSftpDirectoryTransferOps } from "./transferDirectoryOps";
@@ -183,7 +183,7 @@ export const useSftpTransfers = ({
         if (task.totalBytes > 0 || !!task.sourceLastModified) return;
 
         if (sourcePane.connection?.isLocal) {
-          const stat = await netcattyBridge.get()?.statLocal?.(task.sourcePath);
+          const stat = await magiesTerminalBridge.get()?.statLocal?.(task.sourcePath);
           if (stat) {
             if (!task.sourceLastModified && stat.lastModified) {
               task.sourceLastModified = stat.lastModified;
@@ -198,7 +198,7 @@ export const useSftpTransfers = ({
         }
 
         if (sourceSftpId) {
-          const stat = await netcattyBridge.get()?.statSftp?.(
+          const stat = await magiesTerminalBridge.get()?.statSftp?.(
             sourceSftpId,
             task.sourcePath,
             sourceEncoding,
@@ -382,7 +382,7 @@ export const useSftpTransfers = ({
         if (cancelledTasksRef.current.has(task.id)) {
           throw new Error("Transfer cancelled");
         }
-        const result = await netcattyBridge.require().sameHostCopyDirectory!(
+        const result = await magiesTerminalBridge.require().sameHostCopyDirectory!(
           sourceSftpId,
           task.sourcePath,
           task.targetPath,

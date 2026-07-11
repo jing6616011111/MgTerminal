@@ -244,7 +244,7 @@ export function resolveApproval(
 
   // MCP tool call: also forward response to main process via IPC
   if (toolCallId.startsWith('mcp_approval_')) {
-    const bridge = (window as unknown as { netcatty?: { respondMcpApproval?: (id: string, approved: boolean) => Promise<unknown> } }).netcatty;
+    const bridge = (window as unknown as { magiesTerminal?: { respondMcpApproval?: (id: string, approved: boolean) => Promise<unknown> } }).magiesTerminal;
     bridge?.respondMcpApproval?.(toolCallId, approved);
   }
 }
@@ -340,7 +340,7 @@ export function clearAllPendingApprovals(chatSessionId?: string): void {
  */
 export function setupMcpApprovalBridge(): () => void {
   const bridge = (window as unknown as {
-    netcatty?: {
+    magiesTerminal?: {
       onMcpApprovalRequest?: (cb: (payload: {
         approvalId: string;
         toolName: string;
@@ -351,7 +351,7 @@ export function setupMcpApprovalBridge(): () => void {
         approvalIds: string[];
       }) => void) => () => void;
     };
-  }).netcatty;
+  }).magiesTerminal;
   if (!bridge?.onMcpApprovalRequest) return () => {};
 
   const unsubRequest = bridge.onMcpApprovalRequest((payload) => {

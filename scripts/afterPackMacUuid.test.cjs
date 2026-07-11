@@ -86,14 +86,14 @@ function buildFatMachO(slices) {
 }
 
 test("deriveUuid is deterministic and 16 bytes", () => {
-  const a = deriveUuid("com.netcatty.app");
-  const b = deriveUuid("com.netcatty.app");
+  const a = deriveUuid("top.magies.terminal");
+  const b = deriveUuid("top.magies.terminal");
   assert.equal(a.length, 16);
   assert.ok(a.equals(b));
 });
 
 test("deriveUuid differs per appId and sets version/variant bits", () => {
-  const a = deriveUuid("com.netcatty.app");
+  const a = deriveUuid("top.magies.terminal");
   const b = deriveUuid("com.example.other");
   assert.ok(!a.equals(b));
   assert.equal(a[6] & 0xf0, 0x50); // version 5
@@ -103,7 +103,7 @@ test("deriveUuid differs per appId and sets version/variant bits", () => {
 test("patchMachOBuffer rewrites LC_UUID in a thin Mach-O and leaves the rest intact", () => {
   const original = Buffer.alloc(16, 0x11);
   const buf = buildThinMachO(original);
-  const uuid = deriveUuid("com.netcatty.app");
+  const uuid = deriveUuid("top.magies.terminal");
 
   const { patched, oldUuids } = patchMachOBuffer(buf, uuid);
 
@@ -121,7 +121,7 @@ test("patchMachOBuffer patches every slice of a fat binary", () => {
   const slice1 = buildThinMachO(Buffer.alloc(16, 0x22));
   const slice2 = buildThinMachO(Buffer.alloc(16, 0x33));
   const fat = buildFatMachO([slice1, slice2]);
-  const uuid = deriveUuid("com.netcatty.app");
+  const uuid = deriveUuid("top.magies.terminal");
 
   const { patched } = patchMachOBuffer(fat, uuid);
 
@@ -138,14 +138,14 @@ test("patchMachOBuffer reports zero when there is no LC_UUID", () => {
   cmd.writeUInt32LE(16, 4);
   const buf = Buffer.concat([header, cmd]);
 
-  const { patched } = patchMachOBuffer(buf, deriveUuid("com.netcatty.app"));
+  const { patched } = patchMachOBuffer(buf, deriveUuid("top.magies.terminal"));
   assert.equal(patched, 0);
 });
 
 test("adHocSignAppBundle signs the full app bundle on macOS hosts", () => {
   const calls = [];
 
-  const didSign = adHocSignAppBundle("/tmp/Netcatty.app", {
+  const didSign = adHocSignAppBundle("/tmp/MagiesTerminal.app", {
     hostPlatform: "darwin",
     execFileSync: (bin, args, options) => {
       calls.push({ bin, args, options });
@@ -162,7 +162,7 @@ test("adHocSignAppBundle signs the full app bundle on macOS hosts", () => {
         "--sign",
         "-",
         "--timestamp=none",
-        "/tmp/Netcatty.app",
+        "/tmp/MagiesTerminal.app",
       ],
       options: { stdio: ["ignore", "pipe", "pipe"] },
     },
@@ -172,7 +172,7 @@ test("adHocSignAppBundle signs the full app bundle on macOS hosts", () => {
 test("adHocSignAppBundle skips non-macOS hosts", () => {
   let called = false;
 
-  const didSign = adHocSignAppBundle("/tmp/Netcatty.app", {
+  const didSign = adHocSignAppBundle("/tmp/MagiesTerminal.app", {
     hostPlatform: "linux",
     execFileSync: () => {
       called = true;
@@ -187,7 +187,7 @@ test("pruneAsarHeaderEntries removes package records without moving packed paylo
   const fs = require("node:fs");
   const os = require("node:os");
   const path = require("node:path");
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-prune-asar-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-prune-asar-"));
   t.after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
 
   const asarPath = path.join(tempDir, "app.asar");
@@ -235,11 +235,11 @@ test("pruneCursorSdkPlatformPackages keeps only the target macOS arch package", 
   const fs = require("node:fs");
   const os = require("node:os");
   const path = require("node:path");
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-prune-cursor-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-prune-cursor-"));
   t.after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
   const cursorRoot = path.join(
     tempDir,
-    "Netcatty.app",
+    "MagiesTerminal.app",
     "Contents",
     "Resources",
     "app.asar.unpacked",
@@ -248,7 +248,7 @@ test("pruneCursorSdkPlatformPackages keeps only the target macOS arch package", 
   );
   fs.mkdirSync(path.join(cursorRoot, "sdk-darwin-arm64"), { recursive: true });
   fs.mkdirSync(path.join(cursorRoot, "sdk-darwin-x64"), { recursive: true });
-  writeFakeAsar(path.join(tempDir, "Netcatty.app", "Contents", "Resources", "app.asar"), {
+  writeFakeAsar(path.join(tempDir, "MagiesTerminal.app", "Contents", "Resources", "app.asar"), {
     files: {
       node_modules: {
         files: {
@@ -267,7 +267,7 @@ test("pruneCursorSdkPlatformPackages keeps only the target macOS arch package", 
     electronPlatformName: "darwin",
     arch: 3,
     appOutDir: tempDir,
-    packager: { appInfo: { productFilename: "Netcatty" } },
+    packager: { appInfo: { productFilename: "MagiesTerminal" } },
   });
 
   assert.deepEqual(removed, ["sdk-darwin-x64"]);
@@ -275,7 +275,7 @@ test("pruneCursorSdkPlatformPackages keeps only the target macOS arch package", 
   assert.ok(!fs.existsSync(path.join(cursorRoot, "sdk-darwin-x64")));
 
   const { header } = readAsarHeader(
-    path.join(tempDir, "Netcatty.app", "Contents", "Resources", "app.asar"),
+    path.join(tempDir, "MagiesTerminal.app", "Contents", "Resources", "app.asar"),
   );
   assert.ok(header.files.node_modules.files["@cursor"].files["sdk-darwin-arm64"]);
   assert.equal(header.files.node_modules.files["@cursor"].files["sdk-darwin-x64"], undefined);
@@ -285,11 +285,11 @@ test("pruneCursorSdkPlatformPackages keeps both macOS packages for universal bui
   const fs = require("node:fs");
   const os = require("node:os");
   const path = require("node:path");
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-prune-cursor-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-prune-cursor-"));
   t.after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
   const cursorRoot = path.join(
     tempDir,
-    "Netcatty.app",
+    "MagiesTerminal.app",
     "Contents",
     "Resources",
     "app.asar.unpacked",
@@ -303,7 +303,7 @@ test("pruneCursorSdkPlatformPackages keeps both macOS packages for universal bui
     electronPlatformName: "darwin",
     arch: 4,
     appOutDir: tempDir,
-    packager: { appInfo: { productFilename: "Netcatty" } },
+    packager: { appInfo: { productFilename: "MagiesTerminal" } },
   });
 
   assert.deepEqual(removed, []);
@@ -315,7 +315,7 @@ test("pruneCursorSdkPlatformPackages keeps only the target Linux arch package", 
   const fs = require("node:fs");
   const os = require("node:os");
   const path = require("node:path");
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-prune-cursor-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-prune-cursor-"));
   t.after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
   const cursorRoot = path.join(
     tempDir,
@@ -331,7 +331,7 @@ test("pruneCursorSdkPlatformPackages keeps only the target Linux arch package", 
     electronPlatformName: "linux",
     arch: 1,
     appOutDir: tempDir,
-    packager: { appInfo: { productFilename: "netcatty" } },
+    packager: { appInfo: { productFilename: "magiesTerminal" } },
   });
 
   assert.deepEqual(removed, ["sdk-linux-arm64"]);

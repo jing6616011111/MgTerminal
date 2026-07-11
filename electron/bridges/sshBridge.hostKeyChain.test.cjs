@@ -113,7 +113,7 @@ function makeSender({ rejectHostKeyPrompts = false } = {}) {
     sent: [],
     send(channel, payload) {
       this.sent.push({ channel, payload });
-      if (rejectHostKeyPrompts && channel === "netcatty:host-key:verify") {
+      if (rejectHostKeyPrompts && channel === "magiesTerminal:host-key:verify") {
         const { handleResponse } = require("./hostKeyVerifier.cjs");
         queueMicrotask(() => {
           handleResponse(null, {
@@ -169,12 +169,12 @@ test("jump-host chain connections verify hop host keys against known hosts", asy
   assert.equal(typeof connectOpts.hostVerifier, "function");
   assert.equal(MockSSHClient.instances[0].hostVerifierCalls, 1);
   assert.ok(sender.sent.some((message) => (
-    message.channel === "netcatty:chain:progress"
+    message.channel === "magiesTerminal:chain:progress"
     && message.payload.sessionId === "session-1"
     && message.payload.status === "tcp-connected"
   )));
   assert.deepEqual(
-    sender.sent.filter((message) => message.channel === "netcatty:host-key:verify"),
+    sender.sent.filter((message) => message.channel === "magiesTerminal:host-key:verify"),
     [],
   );
 });
@@ -271,7 +271,7 @@ test("jump-host chain times out stalled forwarding to the next target", async (t
   assert.equal(MockSSHClient.instances.length, 1);
   assert.equal(MockSSHClient.instances[0].ended, true);
   assert.ok(sender.sent.some((message) => (
-    message.channel === "netcatty:chain:progress"
+    message.channel === "magiesTerminal:chain:progress"
     && message.payload.sessionId === "session-1"
     && message.payload.status === "forwarding"
   )));
@@ -309,7 +309,7 @@ test("jump-host chain connections stop when hop host keys are rejected", async (
   assert.equal(MockSSHClient.instances.length, 1);
   assert.equal(MockSSHClient.instances[0].hostVerifierCalls, 1);
   assert.equal(
-    sender.sent.filter((message) => message.channel === "netcatty:host-key:verify").length,
+    sender.sent.filter((message) => message.channel === "magiesTerminal:host-key:verify").length,
     1,
   );
 });

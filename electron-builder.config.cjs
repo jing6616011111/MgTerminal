@@ -5,8 +5,8 @@ const { etExtraResources } = require('./scripts/et-extra-resources.cjs');
  * @type {import('electron-builder').Configuration}
  */
 module.exports = {
-    appId: 'com.netcatty.app',
-    productName: 'Netcatty',
+    appId: 'top.magies.terminal',
+    productName: 'MagiesTerminal',
     artifactName: '${productName}-${version}-${os}-${arch}.${ext}',
     protocols: [
         {
@@ -24,7 +24,7 @@ module.exports = {
     ],
     electronLanguages: ['en', 'en-US', 'zh_CN', 'zh-CN', 'zh_TW', 'zh-TW', 'ru'],
     // Give the macOS build a unique Mach-O LC_UUID before signing, so macOS
-    // Local Network privacy treats Netcatty distinctly from every other
+    // Local Network privacy treats MagiesTerminal distinctly from every other
     // Electron app (which all share Electron's prebuilt LC_UUID) — see #1040
     // and scripts/afterPackMacUuid.cjs. No-op on Windows/Linux.
     beforePack: './scripts/beforePackCursorSdk.cjs',
@@ -103,7 +103,7 @@ module.exports = {
         // runtime.
         '!node_modules/typescript/**/*',
         // ── Exclude per-platform native agent binaries (~100s of MB each). ──
-        // Netcatty is "bring your own CLI": each SDK is pointed at the user's
+        // MagiesTerminal is "bring your own CLI": each SDK is pointed at the user's
         // system-installed CLI via an absolute path override (claude
         // pathToClaudeCodeExecutable / codex codexPathOverride / copilot cliPath).
         // Only the SDKs' JS is bundled; the heavy per-arch binaries are dropped.
@@ -113,7 +113,7 @@ module.exports = {
         // The codex/copilot exclusions target only the per-arch binary packages
         // (codex-<arch> / copilot-<arch>) — NOT @openai/codex-sdk / copilot-sdk,
         // whose JS we DO bundle. @github/copilot is the full ~288MB CLI (with
-        // per-platform prebuilds); netcatty uses the user's copilot via cliPath,
+        // per-platform prebuilds); magiesTerminal uses the user's copilot via cliPath,
         // so it is excluded entirely.
         '!**/@anthropic-ai/claude-agent-sdk-*/**/*',
         '!node_modules/@anthropic-ai/claude-code-*/**/*',
@@ -123,11 +123,11 @@ module.exports = {
         '!node_modules/opencode-{darwin,linux,linuxmusl,windows}-*/**/*',
         '!node_modules/opencode-ai/**/*',
         // CodeBuddy follows the same first-party integration model as the
-        // other coding agents: Netcatty discovers and passes the user's
+        // other coding agents: MagiesTerminal discovers and passes the user's
         // installed CLI path to the SDK. Keep the small SDK wrapper, but do not
         // bundle the full CodeBuddy CLI payload (rg vendors + web UI).
         '!node_modules/@tencent-ai/agent-sdk/cli/**/*',
-        // Netcatty loads Cursor SDK through ESM dynamic import, so the duplicate
+        // MagiesTerminal loads Cursor SDK through ESM dynamic import, so the duplicate
         // CommonJS build and type metadata are not needed at runtime.
         '!node_modules/@cursor/sdk/dist/cjs/**/*',
         '!node_modules/@cursor/sdk/dist/**/*.d.ts',
@@ -177,9 +177,9 @@ module.exports = {
         entitlements: 'electron/entitlements.mac.plist',
         entitlementsInherit: 'electron/entitlements.mac.plist',
         extendInfo: {
-            NSCameraUsageDescription: 'Netcatty may use the camera for video calls',
-            NSMicrophoneUsageDescription: 'Netcatty may use the microphone for audio',
-            NSLocalNetworkUsageDescription: 'Netcatty needs local network access for SSH connections',
+            NSCameraUsageDescription: 'MagiesTerminal may use the camera for video calls',
+            NSMicrophoneUsageDescription: 'MagiesTerminal may use the microphone for audio',
+            NSLocalNetworkUsageDescription: 'MagiesTerminal needs local network access for SSH connections',
             CFBundleDocumentTypes: [
                 {
                     CFBundleTypeName: 'Folder',
@@ -231,7 +231,7 @@ module.exports = {
         allowToChangeInstallationDirectory: true,
         createDesktopShortcut: true,
         createStartMenuShortcut: true,
-        shortcutName: 'Netcatty'
+        shortcutName: 'MagiesTerminal'
     },
     linux: {
         // Linux .deb/.rpm/AppImage icons come from build/icons/* (see
@@ -269,15 +269,15 @@ module.exports = {
     pacman: {
         // FPM-generated .pacman packages bypass Arch's alpm hooks that
         // normally refresh the hicolor icon cache. Without this, KDE cannot
-        // resolve Icon=netcatty and shows a generic placeholder (#1358).
+        // resolve Icon=magiesTerminal and shows a generic placeholder (#1358).
         afterInstall: 'scripts/linux/after-install.tpl',
         afterRemove: 'scripts/linux/after-remove.tpl',
     },
     publish: [
         {
             provider: 'github',
-            owner: 'binaricat',
-            repo: 'Netcatty',
+            owner: 'JasonZhangDad',
+            repo: 'MagiesTerminal',
             releaseType: 'release'
         }
     ]

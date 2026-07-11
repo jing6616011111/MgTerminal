@@ -1,9 +1,9 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-const SSH_DEEP_LINK_CHANNEL = "netcatty:deepLink:ssh";
-const TELNET_DEEP_LINK_CHANNEL = "netcatty:deepLink:telnet";
-const JMS_DEEP_LINK_CHANNEL = "netcatty:deepLink:jms";
+const SSH_DEEP_LINK_CHANNEL = "magiesTerminal:deepLink:ssh";
+const TELNET_DEEP_LINK_CHANNEL = "magiesTerminal:deepLink:telnet";
+const JMS_DEEP_LINK_CHANNEL = "magiesTerminal:deepLink:jms";
 const SSH_PROTOCOL = "ssh";
 const TELNET_PROTOCOL = "telnet";
 const JMS_PROTOCOL = "jms";

@@ -3,7 +3,7 @@
 This directory holds the pure Rust `mosh-client` from
 [binaricat/MoshCatty](https://github.com/binaricat/MoshCatty).
 
-Netcatty runs SSH + `mosh-server` bootstrap itself, then launches this binary
+MagiesTerminal runs SSH + `mosh-server` bootstrap itself, then launches this binary
 (see `electron/bridges/moshHandshake.cjs` and `terminalBridge/moshSession.cjs`).
 
 ## Layout
@@ -23,7 +23,7 @@ Release tags: `moshcatty-*` (require `moshcatty-0.1.4+`) from
 
 ### Linux glibc floors
 
-Linux assets must start on the same distros Netcatty packages for. From
+Linux assets must start on the same distros MagiesTerminal packages for. From
 `moshcatty-0.1.2`, MoshCatty builds Linux clients on:
 
 | Target | Build image | Max required GLIBC |
@@ -54,4 +54,4 @@ Env: `MOSH_BIN_OWNER` / `MOSH_BIN_REPO` (default `binaricat` / `MoshCatty`),
 
 - MoshCatty client: **GPL-3.0-or-later**
 - Upstream Mosh protocol reference: **GPL-3.0**
-- Netcatty is **GPL-3.0**
+- MagiesTerminal is **GPL-3.0**

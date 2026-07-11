@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { netcattyBridge } from '@/infrastructure/services/netcattyBridge.ts';
+import { magiesTerminalBridge } from '@/infrastructure/services/magiesTerminalBridge.ts';
 import { DEFAULT_RECORDING_PROMPT_TIMEOUT_MS } from '@/domain/snippetScript.ts';
-import type { ScriptRecordingStep } from '@/types/global/netcatty-bridge-script.d.ts';
+import type { ScriptRecordingStep } from '@/types/global/magies-terminal-bridge-script.d.ts';
 
 export function useScriptRecorder(sessionId: string | undefined) {
   const [isRecording, setIsRecording] = useState(false);
@@ -30,7 +30,7 @@ export function useScriptRecorder(sessionId: string | undefined) {
 
   const startRecording = useCallback(async () => {
     const sid = sessionIdRef.current;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!sid || !bridge?.scriptRecordingStart) return;
     await bridge.scriptRecordingStart(sid);
     startedAtRef.current = Date.now();
@@ -45,7 +45,7 @@ export function useScriptRecorder(sessionId: string | undefined) {
 
   const stopRecording = useCallback(async () => {
     const sid = sessionIdRef.current;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!sid || !bridge?.scriptRecordingStop) {
       return { steps: [] as ScriptRecordingStep[], code: '' };
     }
@@ -71,7 +71,7 @@ export function useScriptRecorder(sessionId: string | undefined) {
   const appendStep = useCallback(async (step: ScriptRecordingStep) => {
     const sid = sessionIdRef.current;
     if (!sid || !isRecordingRef.current || isPausedRef.current) return;
-    await netcattyBridge.get()?.scriptRecordingAppendStep?.(sid, step);
+    await magiesTerminalBridge.get()?.scriptRecordingAppendStep?.(sid, step);
     lastStepAtRef.current = Date.now();
   }, []);
 

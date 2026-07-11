@@ -332,7 +332,7 @@ async function uploadFile(localPath, remotePath, client, fileSize, transfer, sen
   if (!sftp) throw new Error("SFTP client not ready");
 
   // Prefer fastPut on an isolated SFTP channel so cancellation can abort just this transfer.
-  if (!client.__netcattySudoMode) {
+  if (!client.__magiesTerminalSudoMode) {
     let fastSftp = null;
     try {
       fastSftp = await openIsolatedSftpChannel(client);
@@ -453,7 +453,7 @@ async function downloadFile(remotePath, localPath, client, fileSize, transfer, s
   if (!sftp) throw new Error("SFTP client not ready");
 
   // Prefer fastGet on an isolated SFTP channel so cancellation can abort just this transfer.
-  if (!client.__netcattySudoMode) {
+  if (!client.__magiesTerminalSudoMode) {
       const fastSftp = await acquireIsolatedDownloadChannel(client, transfer);
 
     if (fastSftp && typeof fastSftp.fastGet === "function") {
@@ -625,7 +625,7 @@ async function startTransfer(event, payload, onProgress) {
     ) {
       lastProgressSentTime = now;
       lastProgressSentBytes = transferred;
-      sender.send("netcatty:transfer:progress", { transferId, transferred, speed, totalBytes: total });
+      sender.send("magiesTerminal:transfer:progress", { transferId, transferred, speed, totalBytes: total });
     }
   };
 
@@ -668,13 +668,13 @@ async function startTransfer(event, payload, onProgress) {
   };
 
   const sendComplete = () => {
-    sender.send("netcatty:transfer:complete", { transferId });
+    sender.send("magiesTerminal:transfer:complete", { transferId });
     cleanupTransfer();
   };
 
   const sendError = (error) => {
     cleanupTransfer();
-    sender.send("netcatty:transfer:error", { transferId, error: error.message || String(error) });
+    sender.send("magiesTerminal:transfer:error", { transferId, error: error.message || String(error) });
   };
 
   try {
@@ -799,7 +799,7 @@ async function startTransfer(event, payload, onProgress) {
       }
 
       if (!sameHostDone) {
-        const tempPath = path.join(os.tmpdir(), `netcatty-transfer-${transferId}`);
+        const tempPath = path.join(os.tmpdir(), `magiesTerminal-transfer-${transferId}`);
 
         const sourceClient = sftpClients.get(sourceSftpId);
         const targetClient = sftpClients.get(targetSftpId);
@@ -840,7 +840,7 @@ async function startTransfer(event, payload, onProgress) {
   } catch (err) {
     if (err.message === 'Transfer cancelled') {
       cleanupTransfer();
-      sender.send("netcatty:transfer:cancelled", { transferId });
+      sender.send("magiesTerminal:transfer:cancelled", { transferId });
     } else {
       sendError(err);
     }
@@ -948,15 +948,15 @@ function registerHandlers(ipcMain, options = {}) {
   const terminalWorkerManager = options.terminalWorkerManager || null;
   if (terminalWorkerManager) {
     [
-      "netcatty:transfer:start",
-      "netcatty:transfer:cancel",
-      "netcatty:transfer:same-host-copy-dir",
+      "magiesTerminal:transfer:start",
+      "magiesTerminal:transfer:cancel",
+      "magiesTerminal:transfer:same-host-copy-dir",
     ].forEach((channel) => registerWorkerHandle(ipcMain, terminalWorkerManager, channel));
     return;
   }
-  ipcMain.handle("netcatty:transfer:start", startTransfer);
-  ipcMain.handle("netcatty:transfer:cancel", cancelTransfer);
-  ipcMain.handle("netcatty:transfer:same-host-copy-dir", sameHostCopyDirectory);
+  ipcMain.handle("magiesTerminal:transfer:start", startTransfer);
+  ipcMain.handle("magiesTerminal:transfer:cancel", cancelTransfer);
+  ipcMain.handle("magiesTerminal:transfer:same-host-copy-dir", sameHostCopyDirectory);
 }
 
 module.exports = {

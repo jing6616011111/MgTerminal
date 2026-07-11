@@ -374,13 +374,13 @@ async function getManualSessionLogStatus(event, payload = {}) {
  * Register IPC handlers for session logs operations
  */
 function registerHandlers(ipcMain, options = {}) {
-  ipcMain.handle("netcatty:sessionLogs:export", exportSessionLog);
-  ipcMain.handle("netcatty:sessionLogs:selectDir", selectSessionLogsDir);
-  ipcMain.handle("netcatty:sessionLogs:autoSave", autoSaveSessionLog);
-  ipcMain.handle("netcatty:sessionLogs:openDir", openSessionLogsDir);
-  ipcMain.handle("netcatty:sessionLog:manualStart", startManualSessionLog);
-  ipcMain.handle("netcatty:sessionLog:manualStop", stopManualSessionLog);
-  ipcMain.handle("netcatty:sessionLog:manualStatus", getManualSessionLogStatus);
+  ipcMain.handle("magiesTerminal:sessionLogs:export", exportSessionLog);
+  ipcMain.handle("magiesTerminal:sessionLogs:selectDir", selectSessionLogsDir);
+  ipcMain.handle("magiesTerminal:sessionLogs:autoSave", autoSaveSessionLog);
+  ipcMain.handle("magiesTerminal:sessionLogs:openDir", openSessionLogsDir);
+  ipcMain.handle("magiesTerminal:sessionLog:manualStart", startManualSessionLog);
+  ipcMain.handle("magiesTerminal:sessionLog:manualStop", stopManualSessionLog);
+  ipcMain.handle("magiesTerminal:sessionLog:manualStatus", getManualSessionLogStatus);
 
   // In the default terminal-worker runtime, sessions run in a utilityProcess
   // and call appendData() on the worker's own sessionLogStreamManager module

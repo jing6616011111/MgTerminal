@@ -532,7 +532,7 @@ function startLocalSession(event, payload) {
       // No signal = process exited normally, even with non-zero code
       // (e.g. user typed `exit` after a failed command), so auto-close.
       const reason = evt.signal ? "error" : "exited";
-      contents?.send("netcatty:exit", { sessionId, ...evt, reason });
+      contents?.send("magiesTerminal:exit", { sessionId, ...evt, reason });
     };
     flushLocalPaced(finalizeExit);
   });
@@ -558,7 +558,7 @@ const telnetSessionApi = createTelnetSessionApi({
 const { startTelnetSession } = telnetSessionApi;
 
 /**
- * Resolve Netcatty's bundled bare `mosh-client` binary.
+ * Resolve MagiesTerminal's bundled bare `mosh-client` binary.
  *
  * Returns the absolute path or null.
  */
@@ -592,7 +592,7 @@ const {
 
 /**
  * EternalTerminal session API. `et` is a self-contained client that performs
- * its own SSH bootstrap + ET protocol handshake, so Netcatty just spawns the
+ * its own SSH bootstrap + ET protocol handshake, so MagiesTerminal just spawns the
  * bundled `et` binary as a PTY (no Node handshake wrapper like Mosh needs).
  */
 const { createEtSessionApi } = require("./terminalBridge/etSession.cjs");
@@ -752,7 +752,7 @@ async function startSerialSession(event, options) {
           session.ymodemAbortController?.abort();
           sessionLogStreamManager.stopStream(sessionId, logStreamToken);
           const contents = electronModule.webContents.fromId(session.webContentsId);
-          contents?.send("netcatty:exit", { sessionId, exitCode: 1, error: err.message, reason: "error" });
+          contents?.send("magiesTerminal:exit", { sessionId, exitCode: 1, error: err.message, reason: "error" });
           ptyProcessTree.unregisterPid(sessionId);
           sessions.delete(sessionId);
         });
@@ -763,7 +763,7 @@ async function startSerialSession(event, options) {
           session.ymodemAbortController?.abort();
           sessionLogStreamManager.stopStream(sessionId, logStreamToken);
           const contents = electronModule.webContents.fromId(session.webContentsId);
-          contents?.send("netcatty:exit", { sessionId, exitCode: 0, reason: "closed" });
+          contents?.send("magiesTerminal:exit", { sessionId, exitCode: 0, reason: "closed" });
           ptyProcessTree.unregisterPid(sessionId);
           sessions.delete(sessionId);
         });
@@ -1373,20 +1373,20 @@ function registerHandlers(ipcMain, options = {}) {
   const terminalWorkerManager = options.terminalWorkerManager || null;
   if (terminalWorkerManager) {
     [
-      "netcatty:local:start",
-      "netcatty:telnet:start",
-      "netcatty:mosh:start",
-      "netcatty:et:start",
-      "netcatty:serial:start",
-      "netcatty:serial:list",
-      "netcatty:serial:ymodem-send",
-      "netcatty:serial:ymodem-receive",
-      "netcatty:local:defaultShell",
-      "netcatty:local:validatePath",
-      "netcatty:shells:discover",
-      "netcatty:terminal:setEncoding",
+      "magiesTerminal:local:start",
+      "magiesTerminal:telnet:start",
+      "magiesTerminal:mosh:start",
+      "magiesTerminal:et:start",
+      "magiesTerminal:serial:start",
+      "magiesTerminal:serial:list",
+      "magiesTerminal:serial:ymodem-send",
+      "magiesTerminal:serial:ymodem-receive",
+      "magiesTerminal:local:defaultShell",
+      "magiesTerminal:local:validatePath",
+      "magiesTerminal:shells:discover",
+      "magiesTerminal:terminal:setEncoding",
     ].forEach((channel) => registerWorkerHandle(ipcMain, terminalWorkerManager, channel));
-    ipcMain.on("netcatty:write", (event, payload) => {
+    ipcMain.on("magiesTerminal:write", (event, payload) => {
       // Session log streams started in the main process (manual/script logs)
       // sanitize sudo-autofill markers and programmatic command echoes based
       // on the *input* that produced them. In worker mode the real write
@@ -1396,37 +1396,37 @@ function registerHandlers(ipcMain, options = {}) {
       // stream for the session.
       sessionLogStreamManager.registerSudoAutofillInput(payload?.sessionId, payload?.data);
       sessionLogStreamManager.registerProgrammaticCommandLogRewrite(payload?.sessionId, payload?.logRewrite);
-      terminalWorkerManager.send("netcatty:write", payload, {
+      terminalWorkerManager.send("magiesTerminal:write", payload, {
         webContentsId: event?.sender?.id,
       });
     });
     [
-      "netcatty:interrupt",
-      "netcatty:resize",
-      "netcatty:flow",
-      "netcatty:flow:ack",
-      "netcatty:close",
+      "magiesTerminal:interrupt",
+      "magiesTerminal:resize",
+      "magiesTerminal:flow",
+      "magiesTerminal:flow:ack",
+      "magiesTerminal:close",
     ].forEach((channel) => registerWorkerSend(ipcMain, terminalWorkerManager, channel));
     return;
   }
-  ipcMain.handle("netcatty:local:start", startLocalSession);
-  ipcMain.handle("netcatty:telnet:start", startTelnetSession);
-  ipcMain.handle("netcatty:mosh:start", startMoshSession);
-  ipcMain.handle("netcatty:et:start", startEtSession);
-  ipcMain.handle("netcatty:serial:start", startSerialSession);
-  ipcMain.handle("netcatty:serial:list", listSerialPorts);
-  ipcMain.handle("netcatty:serial:ymodem-send", sendSerialYmodem);
-  ipcMain.handle("netcatty:serial:ymodem-receive", receiveSerialYmodem);
-  ipcMain.handle("netcatty:local:defaultShell", getDefaultShell);
-  ipcMain.handle("netcatty:local:validatePath", validatePath);
-  ipcMain.handle("netcatty:shells:discover", () => discoverShells());
-  ipcMain.handle("netcatty:terminal:setEncoding", setSessionEncoding);
-  ipcMain.on("netcatty:write", writeToSession);
-  ipcMain.on("netcatty:interrupt", interruptSession);
-  ipcMain.on("netcatty:resize", resizeSession);
-  ipcMain.on("netcatty:flow", setSessionFlowPaused);
-  ipcMain.on("netcatty:flow:ack", ackSessionFlow);
-  ipcMain.on("netcatty:close", closeSession);
+  ipcMain.handle("magiesTerminal:local:start", startLocalSession);
+  ipcMain.handle("magiesTerminal:telnet:start", startTelnetSession);
+  ipcMain.handle("magiesTerminal:mosh:start", startMoshSession);
+  ipcMain.handle("magiesTerminal:et:start", startEtSession);
+  ipcMain.handle("magiesTerminal:serial:start", startSerialSession);
+  ipcMain.handle("magiesTerminal:serial:list", listSerialPorts);
+  ipcMain.handle("magiesTerminal:serial:ymodem-send", sendSerialYmodem);
+  ipcMain.handle("magiesTerminal:serial:ymodem-receive", receiveSerialYmodem);
+  ipcMain.handle("magiesTerminal:local:defaultShell", getDefaultShell);
+  ipcMain.handle("magiesTerminal:local:validatePath", validatePath);
+  ipcMain.handle("magiesTerminal:shells:discover", () => discoverShells());
+  ipcMain.handle("magiesTerminal:terminal:setEncoding", setSessionEncoding);
+  ipcMain.on("magiesTerminal:write", writeToSession);
+  ipcMain.on("magiesTerminal:interrupt", interruptSession);
+  ipcMain.on("magiesTerminal:resize", resizeSession);
+  ipcMain.on("magiesTerminal:flow", setSessionFlowPaused);
+  ipcMain.on("magiesTerminal:flow:ack", ackSessionFlow);
+  ipcMain.on("magiesTerminal:close", closeSession);
 }
 
 /**
@@ -1448,7 +1448,7 @@ const { getDefaultShell, validatePath } = pathValidationApi;
  * root so the helper is testable without packaging the app.
  *
  * Note this returns the network-protocol `mosh-client`, not the `mosh`
- * wrapper script. Netcatty drives the SSH bootstrap itself and then
+ * wrapper script. MagiesTerminal drives the SSH bootstrap itself and then
  * launches this bundled client directly.
  */
 function bundledMoshClient(opts = {}) {
@@ -1490,7 +1490,7 @@ function bundledMoshClient(opts = {}) {
  * the helper is testable without packaging the app.
  *
  * `et` is a self-contained client that performs its own SSH bootstrap and
- * EternalTerminal protocol handshake; Netcatty just spawns it as a PTY.
+ * EternalTerminal protocol handshake; MagiesTerminal just spawns it as a PTY.
  */
 function bundledEtClient(opts = {}) {
   const isWin = (opts.platform || process.platform) === "win32";

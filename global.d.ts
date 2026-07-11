@@ -1,11 +1,11 @@
-/// <reference path="./types/global/netcatty-bridge-session.d.ts" />
-/// <reference path="./types/global/netcatty-bridge-sftp.d.ts" />
-/// <reference path="./types/global/netcatty-bridge-sync.d.ts" />
-/// <reference path="./types/global/netcatty-bridge-files.d.ts" />
-/// <reference path="./types/global/netcatty-bridge-ai.d.ts" />
-/// <reference path="./types/global/netcatty-bridge-app.d.ts" />
-/// <reference path="./types/global/netcatty-bridge-system.d.ts" />
-/// <reference path="./types/global/netcatty-bridge-script.d.ts" />
+/// <reference path="./types/global/magies-terminal-bridge-session.d.ts" />
+/// <reference path="./types/global/magies-terminal-bridge-sftp.d.ts" />
+/// <reference path="./types/global/magies-terminal-bridge-sync.d.ts" />
+/// <reference path="./types/global/magies-terminal-bridge-files.d.ts" />
+/// <reference path="./types/global/magies-terminal-bridge-ai.d.ts" />
+/// <reference path="./types/global/magies-terminal-bridge-app.d.ts" />
+/// <reference path="./types/global/magies-terminal-bridge-system.d.ts" />
+/// <reference path="./types/global/magies-terminal-bridge-script.d.ts" />
 declare module "*.cjs" {
   const value: Record<string, unknown>;
   export = value;
@@ -19,7 +19,7 @@ declare module 'react' {
 
 declare global {
   // Proxy configuration for SSH connections
-  interface NetcattyProxyConfig {
+  interface MagiesTerminalProxyConfig {
     type: 'http' | 'socks5' | 'command';
     host: string;
     port: number;
@@ -39,7 +39,7 @@ declare global {
   }
 
   // Jump host configuration for SSH tunneling
-  interface NetcattyJumpHost {
+  interface MagiesTerminalJumpHost {
     hostname: string;
     port: number;
     username: string;
@@ -51,7 +51,7 @@ declare global {
     keyId?: string;
     keySource?: 'generated' | 'imported' | 'reference';
     label?: string; // Display label for UI
-    proxy?: NetcattyProxyConfig;
+    proxy?: MagiesTerminalProxyConfig;
     identityFilePaths?: string[];
     // ET server port on this hop, used only when ET tunnels through it as a
     // jump host (--jport). Defaults to 2022 in the bridge when omitted.
@@ -72,7 +72,7 @@ declare global {
 
   // Host key information for verification
   // Reserved for future host key verification UI feature
-  interface _NetcattyHostKeyInfo {
+  interface _MagiesTerminalHostKeyInfo {
     hostname: string;
     port: number;
     keyType: string;
@@ -80,7 +80,7 @@ declare global {
     publicKey?: string;
   }
 
-  interface NetcattySSHOptions {
+  interface MagiesTerminalSSHOptions {
     sessionId?: string;
     hostLabel?: string;
     hostname: string;
@@ -107,9 +107,9 @@ declare global {
     // Environment variables to set in the remote shell
     env?: Record<string, string>;
     // Proxy configuration
-    proxy?: NetcattyProxyConfig;
+    proxy?: MagiesTerminalProxyConfig;
     // Jump hosts (bastion chain)
-    jumpHosts?: NetcattyJumpHost[];
+    jumpHosts?: MagiesTerminalJumpHost[];
     // SSH-level keepalive interval in seconds (0 = disabled)
     keepaliveInterval?: number;
     // Unanswered keepalives before ssh2 declares the connection dead
@@ -180,8 +180,8 @@ declare global {
     passphrase?: string;
     knownHosts?: import("./domain/models").KnownHost[];
     verifyHostKeys?: boolean;
-    proxy?: NetcattyProxyConfig;
-    jumpHosts?: NetcattyJumpHost[];
+    proxy?: MagiesTerminalProxyConfig;
+    jumpHosts?: MagiesTerminalJumpHost[];
     identityFilePaths?: string[];
     legacyAlgorithms?: boolean;
     skipEcdsaHostKey?: boolean;
@@ -206,17 +206,17 @@ declare global {
     error?: string;
   }
 
-  interface NetcattyWindowsPtyInfo {
+  interface MagiesTerminalWindowsPtyInfo {
     backend: 'conpty' | 'winpty';
     buildNumber?: number;
   }
 
   type PortForwardStatusCallback = (status: 'inactive' | 'connecting' | 'active' | 'error', error?: string) => void;
 
-  interface NetcattyBridge {}
+  interface MagiesTerminalBridge {}
 
   interface Window {
-    netcatty?: NetcattyBridge;
+    magiesTerminal?: MagiesTerminalBridge;
   }
 
 }

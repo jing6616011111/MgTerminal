@@ -58,11 +58,11 @@ const rendererReadyCallbacksByWebContentsId = new Map();
 const rendererReadySeenByWebContentsId = new Set();
 const rendererReadyWaitersByWebContentsId = new Map();
 const unhealthyWebContentsIds = new Set();
-const DEBUG_WINDOWS = process.env.NETCATTY_DEBUG_WINDOWS === "1";
+const DEBUG_WINDOWS = process.env.MAGIES_TERMINAL_DEBUG_WINDOWS === "1";
 const OAUTH_DEFAULT_WIDTH = 600;
 const OAUTH_DEFAULT_HEIGHT = 700;
-const OAUTH_OVERLAY_ID = "__netcatty_oauth_loading__";
-const WINDOW_COMMAND_CLOSE_CHANNEL = "netcatty:window:command-close";
+const OAUTH_OVERLAY_ID = "__magiesTerminal_oauth_loading__";
+const WINDOW_COMMAND_CLOSE_CHANNEL = "magiesTerminal:window:command-close";
 // The OAuth callback port is chosen dynamically by oauthBridge (prefers
 // 45678, falls back to an OS-assigned free port if that is in use, #823),
 // so the in-app popup allow-list has to consult the bridge at popup-open
@@ -414,9 +414,9 @@ function requestWindowCommandClose(win) {
 
 function broadcastLanguageChanged() {
   try {
-    forEachMainWindow((win) => win.webContents?.send?.("netcatty:languageChanged", currentLanguage));
+    forEachMainWindow((win) => win.webContents?.send?.("magiesTerminal:languageChanged", currentLanguage));
     if (settingsWindow && !settingsWindow.isDestroyed()) {
-      settingsWindow.webContents?.send?.("netcatty:languageChanged", currentLanguage);
+      settingsWindow.webContents?.send?.("magiesTerminal:languageChanged", currentLanguage);
     }
   } catch {
     // ignore
@@ -552,13 +552,13 @@ function attachOAuthLoadingOverlay(win) {
       border-radius: 999px;
       border: 3px solid rgba(148, 163, 184, 0.35);
       border-top-color: currentColor;
-      animation: netcatty-oauth-spin 0.8s linear infinite;
+      animation: magiesTerminal-oauth-spin 0.8s linear infinite;
     }
     #${OAUTH_OVERLAY_ID} .label {
       font-size: 14px;
       letter-spacing: 0.04em;
     }
-    @keyframes netcatty-oauth-spin {
+    @keyframes magiesTerminal-oauth-spin {
       to { transform: rotate(360deg); }
     }
   `;
@@ -569,7 +569,7 @@ function attachOAuthLoadingOverlay(win) {
       const root = document.documentElement || document.body;
       const style = document.createElement("style");
       style.textContent = ${JSON.stringify(overlayStyle)};
-      style.setAttribute("data-netcatty-oauth", "style");
+      style.setAttribute("data-magiesTerminal-oauth", "style");
       (document.head || root).appendChild(style);
 
       const overlay = document.createElement("div");
@@ -584,7 +584,7 @@ function attachOAuthLoadingOverlay(win) {
     (() => {
       const overlay = document.getElementById("${OAUTH_OVERLAY_ID}");
       if (overlay) overlay.remove();
-      const style = document.querySelector('style[data-netcatty-oauth="style"]');
+      const style = document.querySelector('style[data-magiesTerminal-oauth="style"]');
       if (style) style.remove();
     })();
   `;
@@ -649,8 +649,8 @@ function setupDeferredShow(win, { timeoutMs = 3000, waitForRendererReady = true 
     tryShow();
   });
 
-  // Renderer calls netcattyBridge.rendererReady() after React mount,
-  // which sends IPC "netcatty:renderer:ready" → markRendererReady().
+  // Renderer calls magiesTerminalBridge.rendererReady() after React mount,
+  // which sends IPC "magiesTerminal:renderer:ready" → markRendererReady().
   // The timeout fallback (timeoutMs) ensures the window is shown even if
   // the signal is never received.
 
@@ -986,7 +986,7 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
   handlersRegistered = true;
   cachedNativeTheme = nativeTheme;
 
-  ipcMain.handle("netcatty:window:minimize", (event) => {
+  ipcMain.handle("magiesTerminal:window:minimize", (event) => {
     const win = getWindowForIpcEvent(event);
     if (win && !win.isDestroyed()) {
       debugLog("window:minimize", { senderId: event?.sender?.id, windowId: win.webContents?.id });
@@ -994,7 +994,7 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
     }
   });
 
-  ipcMain.handle("netcatty:window:maximize", (event) => {
+  ipcMain.handle("magiesTerminal:window:maximize", (event) => {
     const win = getWindowForIpcEvent(event);
     if (win && !win.isDestroyed()) {
       debugLog("window:maximize", { senderId: event?.sender?.id, windowId: win.webContents?.id });
@@ -1009,7 +1009,7 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
     return false;
   });
 
-  ipcMain.handle("netcatty:window:close", (event) => {
+  ipcMain.handle("magiesTerminal:window:close", (event) => {
     const win = getWindowForIpcEvent(event);
     if (win && !win.isDestroyed()) {
       debugLog("window:close", {
@@ -1022,7 +1022,7 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
     }
   });
 
-  ipcMain.handle("netcatty:window:isMaximized", (event) => {
+  ipcMain.handle("magiesTerminal:window:isMaximized", (event) => {
     const win = getWindowForIpcEvent(event);
     if (win && !win.isDestroyed()) {
       return win.isMaximized();
@@ -1030,7 +1030,7 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
     return false;
   });
 
-  ipcMain.handle("netcatty:window:isFullscreen", (event) => {
+  ipcMain.handle("magiesTerminal:window:isFullscreen", (event) => {
     const win = getWindowForIpcEvent(event);
     if (win && !win.isDestroyed()) {
       return win.isFullScreen();
@@ -1038,24 +1038,24 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
     return false;
   });
 
-  ipcMain.handle("netcatty:window:focus", (event) => {
+  ipcMain.handle("magiesTerminal:window:focus", (event) => {
     const win = getWindowForIpcEvent(event);
     return restoreWindowInputFocus(win);
   });
 
-  ipcMain.handle("netcatty:window:setTitle", (event, title) => {
+  ipcMain.handle("magiesTerminal:window:setTitle", (event, title) => {
     const win = getWindowForIpcEvent(event);
     if (!win || win.isDestroyed()) return false;
     const value = typeof title === "string" ? title.trim() : "";
     try {
-      win.setTitle(value || "Netcatty");
+      win.setTitle(value || "MagiesTerminal");
       return true;
     } catch {
       return false;
     }
   });
 
-  ipcMain.handle("netcatty:setTheme", (_event, theme) => {
+  ipcMain.handle("magiesTerminal:setTheme", (_event, theme) => {
     currentTheme = theme;
     nativeTheme.themeSource = theme;
     const effectiveTheme = theme === "system"
@@ -1069,7 +1069,7 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
     return true;
   });
 
-  ipcMain.handle("netcatty:setBackgroundColor", (_event, color) => {
+  ipcMain.handle("magiesTerminal:setBackgroundColor", (_event, color) => {
     const normalized = normalizeBackgroundColor(color);
     if (!normalized) return false;
     forEachMainWindow((win) => win.setBackgroundColor(normalized));
@@ -1079,12 +1079,12 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
     return true;
   });
 
-  ipcMain.handle("netcatty:setWindowOpacity", (_event, opacity) => {
+  ipcMain.handle("magiesTerminal:setWindowOpacity", (_event, opacity) => {
     applyWindowOpacity(opacity);
     return true;
   });
 
-  ipcMain.handle("netcatty:setAppIconVariant", (_event, variant) => {
+  ipcMain.handle("magiesTerminal:setAppIconVariant", (_event, variant) => {
     const { app, BrowserWindow, nativeImage } = require("electron");
     const appIconManager = require("./appIconManager.cjs");
     return appIconManager.applyAppIconVariant(variant, {
@@ -1096,7 +1096,7 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
     });
   });
 
-  ipcMain.handle("netcatty:setLanguage", (_event, language) => {
+  ipcMain.handle("magiesTerminal:setLanguage", (_event, language) => {
     currentLanguage = typeof language === "string" && language.length ? language : "en";
     rebuildApplicationMenu();
     broadcastLanguageChanged();
@@ -1104,7 +1104,7 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
   });
 
   // Settings window close handler
-  ipcMain.handle("netcatty:settings:close", (event) => {
+  ipcMain.handle("magiesTerminal:settings:close", (event) => {
     // Prefer hiding the tracked settings window (reused on next open).
     if (settingsWindow && !settingsWindow.isDestroyed()) {
       debugLog("settings:close (tracked)", {
@@ -1134,18 +1134,18 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
   });
 
   // Broadcast settings changed to all windows (for cross-window sync)
-  ipcMain.on("netcatty:settings:changed", (event, payload) => {
+  ipcMain.on("magiesTerminal:settings:changed", (event, payload) => {
     const senderId = event?.sender?.id;
     // Notify all windows except the sender
     // Check both isDestroyed() and webContents.isDestroyed() to handle HMR refresh
     try {
       forEachMainWindow((win) => {
         if (!win.webContents.isDestroyed() && win.webContents.id !== senderId) {
-          win.webContents.send("netcatty:settings:changed", payload);
+          win.webContents.send("magiesTerminal:settings:changed", payload);
         }
       });
       if (settingsWindow && !settingsWindow.isDestroyed() && !settingsWindow.webContents.isDestroyed() && settingsWindow.webContents.id !== senderId) {
-        settingsWindow.webContents.send("netcatty:settings:changed", payload);
+        settingsWindow.webContents.send("magiesTerminal:settings:changed", payload);
       }
     } catch {
       // ignore - frame may be disposed during HMR
@@ -1153,7 +1153,7 @@ function registerWindowHandlers(ipcMain, nativeTheme) {
   });
 
   // Renderer reports first meaningful paint/mount; used to avoid initial blank screen.
-  ipcMain.on("netcatty:renderer:ready", (event) => {
+  ipcMain.on("magiesTerminal:renderer:ready", (event) => {
     const wcId = event?.sender?.id;
     if (!wcId) return;
     resolveRendererReady(wcId);
@@ -1288,7 +1288,7 @@ function showAndFocusMainWindow(win) {
  */
 function notifyWindowFocusRequested(win) {
   if (!win || win.isDestroyed?.()) return;
-  safeSend(win.webContents, "netcatty:window:focus-requested");
+  safeSend(win.webContents, "magiesTerminal:window:focus-requested");
 }
 
 /**
@@ -1297,7 +1297,7 @@ function notifyWindowFocusRequested(win) {
  */
 function notifyWindowWillHide(win) {
   if (!win || win.isDestroyed?.()) return;
-  safeSend(win.webContents, "netcatty:window:will-hide");
+  safeSend(win.webContents, "magiesTerminal:window:will-hide");
 }
 
 module.exports = {

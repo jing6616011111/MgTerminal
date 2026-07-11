@@ -46,7 +46,7 @@ const TextEditorTabFallback = ({ tabId }: { tabId: string }) => {
         zIndex: 20,
         left: hostTreeLayoutWidth,
       }}
-      className="netcatty-lazy-fade-in absolute top-0 right-0 bottom-0 min-h-0 flex flex-col bg-background"
+      className="magiesTerminal-lazy-fade-in absolute top-0 right-0 bottom-0 min-h-0 flex flex-col bg-background"
       aria-hidden="true"
     />
   );
@@ -172,7 +172,7 @@ export function AppView({ ctx }: { ctx: AppViewContext }) {
         handleRequestCloseEditorTabRef.current = handleRequestCloseEditorTab;
 
         return (
-    <div className="flex flex-col h-screen text-foreground font-sans netcatty-shell" data-terminal-appearance-root onContextMenu={handleRootContextMenu}>
+    <div className="flex flex-col h-screen text-foreground font-sans magiesTerminal-shell" data-terminal-appearance-root onContextMenu={handleRootContextMenu}>
       <TopTabs
         theme={resolvedTheme}
         hosts={hosts}
@@ -455,7 +455,7 @@ export function AppView({ ctx }: { ctx: AppViewContext }) {
       </div>
 
       {/* Global "quick add / edit snippet" dialog, triggered by the
-          netcatty:snippets:add and :edit window events (from ScriptsSidePanel
+          magiesTerminal:snippets:add and :edit window events (from ScriptsSidePanel
           "+" button and right-click menu). Delete is handled by a sibling
           useEffect above — it does not need a dialog. */}
       <QuickAddSnippetDialog

@@ -4,7 +4,7 @@ const { getDriver, listBackends } = require("./index.cjs");
 const { buildSdkAgentEnv } = require("./env.cjs");
 const { buildInjectedMcpServers } = require("./injectMcp.cjs");
 const { createStreamEmitter } = require("./emit.cjs");
-const { buildNetcattySkillsOpenCodePathAllowlist } = require("./netcattySkillsOpenCodePermissions.cjs");
+const { buildMagiesTerminalSkillsOpenCodePathAllowlist } = require("./magiesTerminalSkillsOpenCodePermissions.cjs");
 const { getToolCliStateDir } = require("../../../cli/discoveryPath.cjs");
 const tempDirBridge = require("../../tempDirBridge.cjs");
 const { realpathSync } = require("node:fs");
@@ -256,8 +256,8 @@ function buildSdkTurnPrompt({
     if (hints.length > 0) {
       sections.push(
         [
-          "[Attached files: these paths are local to the machine running Netcatty, not remote hosts. Inspect them locally if needed.]",
-          "[If local filesystem tools are unavailable, use Netcatty's list_attachments and read_attachment MCP tools to inspect these user-supplied files.]",
+          "[Attached files: these paths are local to the machine running MagiesTerminal, not remote hosts. Inspect them locally if needed.]",
+          "[If local filesystem tools are unavailable, use MagiesTerminal's list_attachments and read_attachment MCP tools to inspect these user-supplied files.]",
           ...hints,
         ].join("\n"),
       );
@@ -278,7 +278,7 @@ function registerSdkStreamHandlers(ctx) {
     const sdkSessionIds = new Map(); // chatSessionId -> last sessionId
 
     ipcMain.handle(
-      "netcatty:ai:sdk-agent:stream",
+      "magiesTerminal:ai:sdk-agent:stream",
       async (event, payload) => {
         if (!validateSender(event)) return { ok: false, error: "Unauthorized IPC sender" };
         const {
@@ -289,7 +289,7 @@ function registerSdkStreamHandlers(ctx) {
 
         const backendKey = resolveBackendKey(sdkBackend);
         if (!backendKey) {
-          safeSend(event.sender, "netcatty:ai:sdk-agent:error", {
+          safeSend(event.sender, "magiesTerminal:ai:sdk-agent:error", {
             requestId, error: `Unknown SDK backend: ${sdkBackend}`,
           });
           return { ok: false, error: "Unknown SDK backend" };
@@ -313,12 +313,12 @@ function registerSdkStreamHandlers(ctx) {
             toolIntegrationMode: effectiveMode,
           });
 
-          // NETCATTY_CLAUDE_SETTINGS is a netcatty marker carrying the claude SDK
+          // MAGIES_TERMINAL_CLAUDE_SETTINGS is a magiesTerminal marker carrying the claude SDK
           // `settings` option (a settings.json path / inline JSON), NOT a real env
           // var — pull it out so it isn't handed to the agent process as env.
           const normalizedAgentEnv = normalizeAgentEnv(requestedAgentEnv);
-          const claudeSettings = normalizedAgentEnv.NETCATTY_CLAUDE_SETTINGS;
-          delete normalizedAgentEnv.NETCATTY_CLAUDE_SETTINGS;
+          const claudeSettings = normalizedAgentEnv.MAGIES_TERMINAL_CLAUDE_SETTINGS;
+          delete normalizedAgentEnv.MAGIES_TERMINAL_CLAUDE_SETTINGS;
 
           let env = buildSdkAgentEnv({
             shellEnv,
@@ -396,10 +396,10 @@ function registerSdkStreamHandlers(ctx) {
             },
           };
           const skillsPathAllowlist = effectiveMode === "skills" && backendKey === "opencode"
-            ? buildNetcattySkillsOpenCodePathAllowlist({
-              launcherPath: NETCATTY_TOOL_LAUNCHER_PATH,
-              cliScriptPath: NETCATTY_TOOL_CLI_PATH,
-              skillPath: NETCATTY_TOOL_SKILL_PATH,
+            ? buildMagiesTerminalSkillsOpenCodePathAllowlist({
+              launcherPath: MAGIES_TERMINAL_TOOL_LAUNCHER_PATH,
+              cliScriptPath: MAGIES_TERMINAL_TOOL_CLI_PATH,
+              skillPath: MAGIES_TERMINAL_TOOL_SKILL_PATH,
               discoveryFilePath: cliDiscoveryFilePath || undefined,
               cliStateDir: cliDiscoveryFilePath
                 ? undefined
@@ -444,7 +444,7 @@ function registerSdkStreamHandlers(ctx) {
       },
     );
 
-    ipcMain.handle("netcatty:ai:sdk-agent:list-models", async (event, payload) => {
+    ipcMain.handle("magiesTerminal:ai:sdk-agent:list-models", async (event, payload) => {
       if (!validateSender(event)) return { ok: false, error: "Unauthorized IPC sender" };
       const { sdkBackend, agentEnv: requestedAgentEnv, agentCommand } = payload || {};
       const backendKey = resolveBackendKey(sdkBackend);
@@ -477,7 +477,7 @@ function registerSdkStreamHandlers(ctx) {
         // claude/copilot enumerate models via the SDK; codex has no catalog (its
         // driver returns []), so the renderer falls back to curated presets.
         // OpenCode model catalogs are user-config driven and can change outside
-        // Netcatty, so do not cache them behind the generic SDK cache.
+        // MagiesTerminal, so do not cache them behind the generic SDK cache.
         const cacheKey = buildSdkModelCacheKey(backendKey, binPath);
         const shouldCacheModels = shouldCacheSdkRuntimeModels(backendKey);
         const cached = shouldCacheModels ? sdkModelCache.get(cacheKey) : null;
@@ -495,7 +495,7 @@ function registerSdkStreamHandlers(ctx) {
       }
     });
 
-    ipcMain.handle("netcatty:ai:sdk-agent:cancel", async (event, { requestId, chatSessionId }) => {
+    ipcMain.handle("magiesTerminal:ai:sdk-agent:cancel", async (event, { requestId, chatSessionId }) => {
       if (!validateSender(event)) return { ok: false, error: "Unauthorized IPC sender" };
       const effectiveChatSessionId = chatSessionId || sdkRequestSessions.get(requestId);
       mcpServerBridge.setChatSessionCancelled?.(effectiveChatSessionId, true);
@@ -511,7 +511,7 @@ function registerSdkStreamHandlers(ctx) {
       return { ok: false, error: "Stream not found" };
     });
 
-    ipcMain.handle("netcatty:ai:sdk-agent:cleanup", async (event, { chatSessionId }) => {
+    ipcMain.handle("magiesTerminal:ai:sdk-agent:cleanup", async (event, { chatSessionId }) => {
       if (!validateSender(event)) return { ok: false, error: "Unauthorized IPC sender" };
       mcpServerBridge.setChatSessionCancelled?.(chatSessionId, true);
       mcpServerBridge.cancelPtyExecsForSession(chatSessionId);

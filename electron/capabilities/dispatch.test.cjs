@@ -16,7 +16,7 @@ test("createRegistryDispatcher routes implemented capabilities to handlers", asy
     fallback: async (method) => ({ ok: false, error: `unknown:${method}` }),
   });
 
-  const result = await dispatch("netcatty/getStatus", { chatSessionId: "chat-1" });
+  const result = await dispatch("magiesTerminal/getStatus", { chatSessionId: "chat-1" });
   assert.equal(result.ok, true);
   assert.equal(result.params.chatSessionId, "chat-1");
   assert.equal(calls.length, 0);

@@ -19,7 +19,7 @@ test("listMcpTools exposes builtin terminal tools", () => {
 test("getMcpToolRpcMethod resolves tool names", () => {
   assert.equal(
     getMcpToolRpcMethod("terminal_execute", CAPABILITY_SURFACES.BUILTIN),
-    "netcatty/exec",
+    "magiesTerminal/exec",
   );
 });
 

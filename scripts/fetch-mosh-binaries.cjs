@@ -246,7 +246,7 @@ function replaceDir(srcDir, destDir) {
 }
 
 function unpackTarGz(buf, target, { resDir }) {
-  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-mosh-"));
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-mosh-"));
   const archive = path.join(tmpRoot, "bundle.tar.gz");
   const extractDir = path.join(tmpRoot, "extract");
   const destDir = path.join(resDir, target.localDir);

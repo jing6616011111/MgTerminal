@@ -33,7 +33,7 @@ test("isSshDeepLinkUrl accepts only ssh URLs", () => {
 test("collectSshDeepLinkUrls extracts ssh URLs from process arguments", () => {
   assert.deepEqual(
     collectSshDeepLinkUrls([
-      "/Applications/Netcatty.app/Contents/MacOS/Netcatty",
+      "/Applications/MagiesTerminal.app/Contents/MacOS/MagiesTerminal",
       "--flag",
       "ssh://alice@example.com",
       "file:///tmp/example",
@@ -141,7 +141,7 @@ test("isTelnetDeepLinkUrl accepts only telnet URLs", () => {
 test("collectTelnetDeepLinkUrls extracts telnet URLs from process arguments", () => {
   assert.deepEqual(
     collectTelnetDeepLinkUrls([
-      "/Applications/Netcatty.app/Contents/MacOS/Netcatty",
+      "/Applications/MagiesTerminal.app/Contents/MacOS/MagiesTerminal",
       "--flag",
       "telnet://example.com:2001",
       "file:///tmp/example",
@@ -155,7 +155,7 @@ test("ssh deep link enabled preference persists outside renderer localStorage", 
   const fs = require("node:fs");
   const os = require("node:os");
   const path = require("node:path");
-  const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-deeplink-"));
+  const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-deeplink-"));
   const app = { getPath: () => userDataDir };
 
   assert.equal(readSshDeepLinkEnabledPreference({ app }), true);
@@ -284,7 +284,7 @@ test("isJmsDeepLinkUrl accepts only jms URLs", () => {
 test("collectJmsDeepLinkUrls extracts jms URLs from process arguments", () => {
   assert.deepEqual(
     collectJmsDeepLinkUrls([
-      "/Applications/Netcatty.app/Contents/MacOS/Netcatty",
+      "/Applications/MagiesTerminal.app/Contents/MacOS/MagiesTerminal",
       "--flag",
       "jms://payload-one",
       "file:///tmp/example",
@@ -319,7 +319,7 @@ test("jms deep link enabled preference defaults to disabled", () => {
   const fs = require("node:fs");
   const os = require("node:os");
   const path = require("node:path");
-  const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-jms-deeplink-"));
+  const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-jms-deeplink-"));
   const app = { getPath: () => userDataDir };
 
   assert.equal(readJmsDeepLinkEnabledPreference({ app }), false);

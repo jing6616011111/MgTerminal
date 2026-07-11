@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { NetcattyBridge } from '../cattyAgent/executor';
+import type { MagiesTerminalBridge } from '../cattyAgent/executor';
 import type { ExecutorContext } from '../cattyAgent/executor';
 import type { AIPermissionMode, WebSearchConfig } from '../types';
 import type { ToolOutputStore } from './toolOutputStore';
@@ -24,7 +24,7 @@ export const cattyRuntimeContextSchema = z.object({
 export type CattyRuntimeContext = z.infer<typeof cattyRuntimeContextSchema>;
 
 export const cattyToolContextSchema = z.object({
-  bridge: z.custom<NetcattyBridge>(),
+  bridge: z.custom<MagiesTerminalBridge>(),
   chatSessionId: z.string().optional(),
   permissionMode: z.enum(['observer', 'confirm', 'auto']),
   commandBlocklist: z.array(z.string()).optional(),

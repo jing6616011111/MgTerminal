@@ -152,7 +152,7 @@ function createSender(parentPort, webContentsId, outputPorts) {
       return false;
     },
     send(channel, payload) {
-      if (channel === "netcatty:data") {
+      if (channel === "magiesTerminal:data") {
         const tapMessage = {
           kind: "output-tap",
           sessionId: payload?.sessionId,
@@ -177,7 +177,7 @@ function createSender(parentPort, webContentsId, outputPorts) {
         parentPort.postMessage(outputMessage);
         return;
       }
-      if (channel === "netcatty:exit" && payload?.sessionId) {
+      if (channel === "magiesTerminal:exit" && payload?.sessionId) {
         outputPorts?.closeSession?.(payload.sessionId);
       }
       parentPort.postMessage({
@@ -231,14 +231,14 @@ function createTerminalWorkerRuntime(options = {}) {
   function handleSend(message) {
     const listener = ipcMain.listeners.get(message.channel);
     if (!listener) return;
-    if (message.channel === "netcatty:interrupt") {
+    if (message.channel === "magiesTerminal:interrupt") {
       const trace = normalizeTrace(message.payload);
       logTerminalInterruptDebug("worker-received-send", {
         channel: message.channel,
         webContentsId: message.webContentsId,
       }, trace);
     }
-    if (message.channel === "netcatty:close" && message.payload?.sessionId) {
+    if (message.channel === "magiesTerminal:close" && message.payload?.sessionId) {
       outputPorts.closeSession(message.payload.sessionId);
     }
     listener({
@@ -249,7 +249,7 @@ function createTerminalWorkerRuntime(options = {}) {
   function handleUrgentInput(webContentsId, message) {
     if (message?.kind !== "interrupt" || !message.sessionId) return;
     handleSend({
-      channel: "netcatty:interrupt",
+      channel: "magiesTerminal:interrupt",
       payload: {
         sessionId: message.sessionId,
         trace: message.trace,

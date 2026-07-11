@@ -21,7 +21,7 @@ import {
   type SyncedFile,
   type PKCEChallenge,
 } from '../../../domain/sync';
-import { netcattyBridge } from '../netcattyBridge';
+import { magiesTerminalBridge } from '../magiesTerminalBridge';
 import { arrayBufferToBase64, generateRandomBytes } from '../EncryptionService';
 
 // ============================================================================
@@ -175,7 +175,7 @@ export const exchangeCodeForTokens = async (
   codeVerifier: string,
   redirectUri: string
 ): Promise<OAuthTokens> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (bridge?.onedriveExchangeCodeForTokens) {
     return bridge.onedriveExchangeCodeForTokens({
       clientId: SYNC_CONSTANTS.ONEDRIVE_CLIENT_ID,
@@ -220,7 +220,7 @@ export const exchangeCodeForTokens = async (
  * Refresh access token
  */
 export const refreshAccessToken = async (refreshToken: string): Promise<OAuthTokens> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (bridge?.onedriveRefreshAccessToken) {
     return bridge.onedriveRefreshAccessToken({
       clientId: SYNC_CONSTANTS.ONEDRIVE_CLIENT_ID,
@@ -264,7 +264,7 @@ export const refreshAccessToken = async (refreshToken: string): Promise<OAuthTok
  * Get authenticated user info
  */
 export const getUserInfo = async (accessToken: string): Promise<ProviderAccount> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (bridge?.onedriveGetUserInfo) {
     const user = await bridge.onedriveGetUserInfo({ accessToken });
     return {
@@ -315,7 +315,7 @@ export const getUserInfo = async (accessToken: string): Promise<ProviderAccount>
  * Validate access token
  */
 export const validateToken = async (accessToken: string): Promise<boolean> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (bridge?.onedriveGetUserInfo) {
     try {
       await bridge.onedriveGetUserInfo({ accessToken });
@@ -369,7 +369,7 @@ async function retryOnNotFound<T>(
  */
 export const findSyncFile = async (accessToken: string): Promise<string | null> => {
   const fetchOnce = async (): Promise<string | null> => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.onedriveFindSyncFile) {
       const result = await bridge.onedriveFindSyncFile({
         accessToken,
@@ -412,7 +412,7 @@ export const uploadSyncFile = async (
   accessToken: string,
   syncedFile: SyncedFile
 ): Promise<string> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (bridge?.onedriveUploadSyncFile) {
     const result = await bridge.onedriveUploadSyncFile({
       accessToken,
@@ -454,7 +454,7 @@ export const downloadSyncFile = async (
   fileId?: string
 ): Promise<SyncedFile | null> => {
   const fetchOnce = async (): Promise<SyncedFile | null> => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.onedriveDownloadSyncFile) {
       const result = await bridge.onedriveDownloadSyncFile({
         accessToken,
@@ -499,7 +499,7 @@ export const deleteSyncFile = async (
   accessToken: string,
   fileId: string
 ): Promise<void> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (bridge?.onedriveDeleteSyncFile) {
     await bridge.onedriveDeleteSyncFile({ accessToken, fileId });
     return;

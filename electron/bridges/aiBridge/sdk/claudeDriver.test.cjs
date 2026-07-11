@@ -36,12 +36,12 @@ test("assistant tool_use block -> toolCall event", () => {
   translateClaudeMessage(
     {
       type: "assistant",
-      message: { content: [{ type: "tool_use", id: "tu-1", name: "mcp__netcatty-remote-hosts__terminal_execute", input: { command: "ls" } }] },
+      message: { content: [{ type: "tool_use", id: "tu-1", name: "mcp__magiesTerminal-remote-hosts__terminal_execute", input: { command: "ls" } }] },
     },
     emitter,
   );
   assert.deepEqual(events, [
-    { k: "toolCall", name: "mcp__netcatty-remote-hosts__terminal_execute", args: { command: "ls" }, id: "tu-1" },
+    { k: "toolCall", name: "mcp__magiesTerminal-remote-hosts__terminal_execute", args: { command: "ls" }, id: "tu-1" },
   ]);
 });
 
@@ -74,9 +74,9 @@ test("buildClaudeQueryOptions sets bypassPermissions, built-in tools, mcp stdio,
     pathToClaudeCodeExecutable: "/abs/claude",
     abortController: ac,
     injectedMcpServers: [{
-      name: "netcatty-remote-hosts", type: "stdio",
+      name: "magiesTerminal-remote-hosts", type: "stdio",
       command: "/abs/electron", args: ["/abs/server.cjs"],
-      env: [{ name: "NETCATTY_MCP_PORT", value: "1" }],
+      env: [{ name: "MAGIES_TERMINAL_MCP_PORT", value: "1" }],
     }],
   });
   assert.equal(opts.permissionMode, "bypassPermissions");
@@ -90,15 +90,15 @@ test("buildClaudeQueryOptions sets bypassPermissions, built-in tools, mcp stdio,
   for (const t of ["EnterPlanMode", "ExitPlanMode", "AskUserQuestion"]) {
     assert.ok(opts.disallowedTools.includes(t), `expected ${t} disallowed`);
   }
-  // netcatty MCP wired as keyed stdio with env object (not pair array)
-  assert.equal(opts.mcpServers["netcatty-remote-hosts"].type, "stdio");
-  assert.deepEqual(opts.mcpServers["netcatty-remote-hosts"].env, { NETCATTY_MCP_PORT: "1" });
+  // magiesTerminal MCP wired as keyed stdio with env object (not pair array)
+  assert.equal(opts.mcpServers["magiesTerminal-remote-hosts"].type, "stdio");
+  assert.deepEqual(opts.mcpServers["magiesTerminal-remote-hosts"].env, { MAGIES_TERMINAL_MCP_PORT: "1" });
 });
 
 test("built-in tools are mode-aware: Skills+CLI allows only Bash/Skill, MCP blocks all built-ins", () => {
   const skills = buildClaudeQueryOptions({ env: {}, toolIntegrationMode: "skills" });
   // Bash + Skill are the only Claude Code built-ins exposed so the agent can
-  // drive the netcatty CLI skill without direct file/search/web/local tools.
+  // drive the magiesTerminal CLI skill without direct file/search/web/local tools.
   assert.deepEqual(skills.tools, ["Bash", "Skill"]);
   for (const t of ["Read", "Edit", "Write", "MultiEdit", "Glob", "Grep", "WebFetch", "WebSearch", "Task", "Agent", "REPL", "Workflow"]) {
     assert.ok(!skills.tools.includes(t), `expected ${t} absent from skills mode tool whitelist`);

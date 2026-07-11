@@ -2,7 +2,7 @@ import { useCallback, type Dispatch, type MutableRefObject, type SetStateAction 
 import type { SftpFileEntry, SftpFilenameEncoding, TransferStatus, TransferTask } from "../../../domain/models";
 import { STORAGE_KEY_SFTP_TRANSFER_CONCURRENCY } from "../../../infrastructure/config/storageKeys";
 import { localStorageAdapter } from "../../../infrastructure/persistence/localStorageAdapter";
-import { netcattyBridge } from "../../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../../infrastructure/services/magiesTerminalBridge";
 import { logger } from "../../../lib/logger";
 import { runSftpTransferWorkers } from "./transferConcurrency";
 import { joinPath } from "./utils";
@@ -177,7 +177,7 @@ export function useSftpDirectoryTransferOps({
         reject(new Error(error));
       };
 
-      netcattyBridge.require().startStreamTransfer!(
+      magiesTerminalBridge.require().startStreamTransfer!(
         options,
         onProgress,
         onComplete,
@@ -255,18 +255,18 @@ export function useSftpDirectoryTransferOps({
 
     if (targetIsLocal) {
       try {
-        await netcattyBridge.get()?.mkdirLocal?.(task.targetPath);
+        await magiesTerminalBridge.get()?.mkdirLocal?.(task.targetPath);
       } catch (mkdirErr: unknown) {
         const isEEXIST = mkdirErr instanceof Error && mkdirErr.message.includes("EEXIST");
         if (!isEEXIST) throw mkdirErr;
         // EEXIST: verify the existing path is actually a directory, not a file
-        const stat = await netcattyBridge.get()?.statLocal?.(task.targetPath);
+        const stat = await magiesTerminalBridge.get()?.statLocal?.(task.targetPath);
         if (stat && stat.type !== 'directory') {
           throw new Error(`Target path exists as a file: ${task.targetPath}`);
         }
       }
     } else if (targetSftpId) {
-      await netcattyBridge.get()?.mkdirSftp(targetSftpId, task.targetPath, targetEncoding);
+      await magiesTerminalBridge.get()?.mkdirSftp(targetSftpId, task.targetPath, targetEncoding);
     }
 
     let files: SftpFileEntry[];

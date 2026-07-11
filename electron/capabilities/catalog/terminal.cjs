@@ -19,7 +19,7 @@ const TERMINAL_CAPABILITIES = [
       bypassesChatCancel: false,
     },
     surfaces: {
-      builtin: { rpcMethod: "netcatty/exec", mcpTool: "terminal_execute" },
+      builtin: { rpcMethod: "magiesTerminal/exec", mcpTool: "terminal_execute" },
       public: { rpcMethod: "public/terminalExecute", mcpTool: "terminal_execute" },
       cli: { command: ["exec"] },
     },
@@ -39,7 +39,7 @@ const TERMINAL_CAPABILITIES = [
       bypassesChatCancel: false,
     },
     surfaces: {
-      builtin: { rpcMethod: "netcatty/jobStart", mcpTool: "terminal_start" },
+      builtin: { rpcMethod: "magiesTerminal/jobStart", mcpTool: "terminal_start" },
       public: { rpcMethod: "public/terminalStart", mcpTool: "terminal_start" },
       cli: { command: ["job-start"] },
     },
@@ -59,7 +59,7 @@ const TERMINAL_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      builtin: { rpcMethod: "netcatty/jobPoll", mcpTool: "terminal_poll" },
+      builtin: { rpcMethod: "magiesTerminal/jobPoll", mcpTool: "terminal_poll" },
       public: { rpcMethod: "public/terminalPoll", mcpTool: "terminal_poll" },
       cli: { command: ["job-poll"] },
     },
@@ -79,7 +79,7 @@ const TERMINAL_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      builtin: { rpcMethod: "netcatty/jobStop", mcpTool: "terminal_stop" },
+      builtin: { rpcMethod: "magiesTerminal/jobStop", mcpTool: "terminal_stop" },
       public: { rpcMethod: "public/terminalStop", mcpTool: "terminal_stop" },
       cli: { command: ["job-stop"] },
     },

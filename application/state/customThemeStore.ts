@@ -5,12 +5,12 @@ import { STORAGE_KEY_CUSTOM_THEMES } from '../../infrastructure/config/storageKe
 import { localStorageAdapter } from '../../infrastructure/persistence/localStorageAdapter';
 
 // Access the Electron bridge for cross-window IPC
-type NetcattyBridge = {
+type MagiesTerminalBridge = {
     notifySettingsChanged?(payload: { key: string; value: unknown }): void;
     onSettingsChanged?(cb: (payload: { key: string; value: unknown }) => void): () => void;
 };
-const getBridge = (): NetcattyBridge | undefined =>
-    (window as unknown as { netcatty?: NetcattyBridge }).netcatty;
+const getBridge = (): MagiesTerminalBridge | undefined =>
+    (window as unknown as { magiesTerminal?: MagiesTerminalBridge }).magiesTerminal;
 
 /**
  * Custom Theme Store - manages user-created terminal themes

@@ -1,6 +1,6 @@
 "use strict";
 
-const EXTERNAL_MCP_CLAUDE_NAME = "netcatty-external";
+const EXTERNAL_MCP_CLAUDE_NAME = "magiesTerminal-external";
 const {
   formatDiscoveryEnvCliFlags,
 } = require("../../cli/externalMcpDiscoveryPath.cjs");
@@ -25,7 +25,7 @@ function getCombinedOutput(result) {
 
 function isMissingClaudeServer(result) {
   const output = getCombinedOutput(result);
-  return /No MCP server (?:found with name:|named)\s*["']?netcatty-external["']?/i.test(output);
+  return /No MCP server (?:found with name:|named)\s*["']?magiesTerminal-external["']?/i.test(output);
 }
 
 function normalizePathForCompare(value) {

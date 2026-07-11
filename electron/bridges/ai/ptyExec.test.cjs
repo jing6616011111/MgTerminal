@@ -203,7 +203,7 @@ test("posix wrapper isolates explicit exit from the active shell and reports its
 
 test("posix wrapper keeps cd contained in the subshell (documented trade-off)", () => {
   const marker = "__NCMCP_TEST__";
-  const cwd = realpathSync(mkdtempSync(join(tmpdir(), "netcatty-pty-cd-")));
+  const cwd = realpathSync(mkdtempSync(join(tmpdir(), "magiesTerminal-pty-cd-")));
   try {
     const wrapped = buildWrappedCommand("cd / && pwd", "posix", marker);
     const result = spawnSync("sh", ["-c", `${wrapped}pwd`], {

@@ -5,7 +5,7 @@ import {
   STORAGE_KEY_AI_EXTERNAL_MCP_MODE,
 } from '../../infrastructure/config/storageKeys';
 import { localStorageAdapter } from '../../infrastructure/persistence/localStorageAdapter';
-import { netcattyBridge } from '../../infrastructure/services/netcattyBridge';
+import { magiesTerminalBridge } from '../../infrastructure/services/magiesTerminalBridge';
 import { AI_STATE_CHANGED_EVENT, emitAIStateChanged } from './aiStateEvents';
 
 export type ExternalMcpMode = 'temporary' | 'persistent';
@@ -108,7 +108,7 @@ export function readExternalMcpStartupSyncPlan(): ExternalMcpStartupSyncPlan {
   });
 }
 
-export function syncExternalMcpConfig(bridge: ExternalMcpBridge | undefined = netcattyBridge.get()): void {
+export function syncExternalMcpConfig(bridge: ExternalMcpBridge | undefined = magiesTerminalBridge.get()): void {
   void bridge?.externalMcpSetConfig?.({
     mode: readExternalMcpMode(),
     idleTimeoutMinutes: readExternalMcpIdleTimeoutMinutes(),
@@ -121,7 +121,7 @@ export function syncExternalMcpConfig(bridge: ExternalMcpBridge | undefined = ne
  * so Settings remounts cannot accidentally re-enable temporary mode.
  */
 export function syncExternalMcpStartupState(
-  bridge: ExternalMcpBridge | undefined = netcattyBridge.get(),
+  bridge: ExternalMcpBridge | undefined = magiesTerminalBridge.get(),
 ): ExternalMcpStartupSyncPlan {
   const plan = readExternalMcpStartupSyncPlan();
   void bridge?.externalMcpSetConfig?.(plan.config);
@@ -146,7 +146,7 @@ export function useExternalMcpToggleState() {
 
   const setEnabled = useCallback((nextEnabled: boolean) => {
     persistEnabled(nextEnabled);
-    void netcattyBridge.get()?.externalMcpSetEnabled?.(nextEnabled);
+    void magiesTerminalBridge.get()?.externalMcpSetEnabled?.(nextEnabled);
   }, [persistEnabled]);
 
   useEffect(() => {
@@ -177,7 +177,7 @@ export function useExternalMcpToggleState() {
     if (!enabled) return;
     const syncRuntimeStatus = async () => {
       try {
-        const status = await netcattyBridge.get()?.externalMcpGetStatus?.();
+        const status = await magiesTerminalBridge.get()?.externalMcpGetStatus?.();
         if (status?.ok && !status.enabled) {
           persistEnabled(false);
         }

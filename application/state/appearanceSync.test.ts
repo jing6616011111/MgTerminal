@@ -201,7 +201,7 @@ test("System on a light OS changes to Dark in every open follow-app terminal", (
     resolveGlobalTerminalAppearance({
       userIntent: idleThemeUserIntent(),
       settings: {
-        terminalThemeId: "netcatty-dark",
+        terminalThemeId: "magiesTerminal-dark",
         terminalThemeDarkId: "auto",
         terminalThemeLightId: "auto",
         followAppTerminalTheme: true,

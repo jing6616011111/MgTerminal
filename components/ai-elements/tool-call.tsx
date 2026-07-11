@@ -11,7 +11,7 @@ import { useI18n } from '../../application/i18n/I18nProvider';
  * Pull the user-meaningful shell command out of the tool-call args.
  *
  * Different tool surfaces hand us different shapes:
- *   - Netcatty's own `terminal_execute` MCP tool → `{command: "<string>"}`
+ *   - MagiesTerminal's own `terminal_execute` MCP tool → `{command: "<string>"}`
  *   - Codex `local_shell`                      → `{command: ["zsh","-lc","<full>"]}`
  *   - Codex command_execution (SDK)             → `{command: "/bin/zsh -lc '<full>'"}`
  *   - Claude `Bash`                             → `{command: "<string>"}`
@@ -21,10 +21,10 @@ import { useI18n } from '../../application/i18n/I18nProvider';
  * otherwise the outer shell quotes leak into the title.
  *
  * And under the "Skill + CLI" integration, the agent's shell tool wraps a
- * call to our internal `netcatty-tool-cli` binary, so the real intent is one
+ * call to our internal `magies-terminal-tool-cli` binary, so the real intent is one
  * level deeper:
  *
- *   netcatty-tool-cli exec --session <id> --chat-session <id> -- <real-cmd>
+ *   magies-terminal-tool-cli exec --session <id> --chat-session <id> -- <real-cmd>
  *
  * We unwrap both layers so the chat panel shows what the user actually
  * cares about (the remote command), not Codex's wrapper title which is
@@ -53,17 +53,17 @@ export function extractDisplayCommand(args: Record<string, unknown> | undefined)
   // Unwrap a STRING shell wrapper, e.g. Codex SDK's `/bin/zsh -lc '<full>'`.
   // The array branch above already extracts the inner command; the string form
   // (codex command_execution) does not, so strip `<shell> -l?c <quote>…<quote>`
-  // here. Without this the outer quote leaks into the netcatty-cli title below.
+  // here. Without this the outer quote leaks into the magiesTerminal-cli title below.
   const strWrap = cmdString.match(
     /^(?:\S*\/)?(?:sh|bash|zsh|fish|ash|dash)\s+-l?c\s+(['"])([\s\S]*)\1\s*$/,
   );
   if (strWrap) cmdString = strWrap[2];
 
-  // Netcatty CLI wrapper extraction.
-  const cliIdx = cmdString.indexOf('netcatty-tool-cli');
+  // MagiesTerminal CLI wrapper extraction.
+  const cliIdx = cmdString.indexOf('magies-terminal-tool-cli');
   if (cliIdx >= 0) {
     const afterCli = cmdString
-      .slice(cliIdx + 'netcatty-tool-cli'.length)
+      .slice(cliIdx + 'magies-terminal-tool-cli'.length)
       .replace(/^["']?\s*/, '');
     const subMatch = afterCli.match(/^(\S+)/);
     const sub = subMatch ? subMatch[1] : '';
@@ -83,12 +83,12 @@ export function extractDisplayCommand(args: Record<string, unknown> | undefined)
         return inner;
       }
     }
-    if (sub === 'job-poll') return 'netcatty: poll job';
-    if (sub === 'job-stop') return 'netcatty: stop job';
-    if (sub === 'session') return 'netcatty: inspect session';
-    if (sub === 'env') return 'netcatty: list sessions';
-    if (sub === 'status') return 'netcatty: status';
-    if (sub) return `netcatty: ${sub}`;
+    if (sub === 'job-poll') return 'magiesTerminal: poll job';
+    if (sub === 'job-stop') return 'magiesTerminal: stop job';
+    if (sub === 'session') return 'magiesTerminal: inspect session';
+    if (sub === 'env') return 'magiesTerminal: list sessions';
+    if (sub === 'status') return 'magiesTerminal: status';
+    if (sub) return `magiesTerminal: ${sub}`;
   }
 
   return cmdString;

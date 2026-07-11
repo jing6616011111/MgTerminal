@@ -48,7 +48,7 @@ async function proxyCattyExecToWorker({
   };
 
   try {
-    return await terminalWorkerManager.request("netcatty:ai:exec", {
+    return await terminalWorkerManager.request("magiesTerminal:ai:exec", {
       sessionId,
       command,
       chatSessionId,
@@ -66,7 +66,7 @@ async function proxyCattyExecToWorker({
 
 function registerCattyExecHandlers(ctx) {
   with (ctx) {
-  ipcMain.handle("netcatty:ai:exec", async (event, { sessionId, command, chatSessionId }) => {
+  ipcMain.handle("magiesTerminal:ai:exec", async (event, { sessionId, command, chatSessionId }) => {
     // Validate IPC sender (Issue #17)
     if (!validateSender(event)) {
       return { ok: false, error: "Unauthorized IPC sender" };
@@ -179,7 +179,7 @@ function registerCattyExecHandlers(ctx) {
             typedInput: true,
             echoCommand: (rawCommand) => {
               const contents = electronModule?.webContents?.fromId?.(session.webContentsId);
-              safeSend(contents, "netcatty:data", {
+              safeSend(contents, "magiesTerminal:data", {
                 sessionId,
                 data: formatSyntheticEcho(rawCommand),
                 syntheticEcho: true,
@@ -236,7 +236,7 @@ function registerCattyExecHandlers(ctx) {
   });
 
   // Cancel in-flight Catty Agent command executions for a chat session
-  ipcMain.handle("netcatty:ai:catty:cancel", async (event, { chatSessionId }) => {
+  ipcMain.handle("magiesTerminal:ai:catty:cancel", async (event, { chatSessionId }) => {
     if (!validateSender(event)) {
       return { ok: false, error: "Unauthorized IPC sender" };
     }
@@ -246,7 +246,7 @@ function registerCattyExecHandlers(ctx) {
       mcpServerBridge.cancelWorkerBackgroundJobsForSession(chatSessionId);
     } else {
       try {
-        terminalWorkerManager?.send?.("netcatty:ai:catty:cancel", { chatSessionId }, {
+        terminalWorkerManager?.send?.("magiesTerminal:ai:catty:cancel", { chatSessionId }, {
           webContentsId: event?.sender?.id,
         });
       } catch {
@@ -256,7 +256,7 @@ function registerCattyExecHandlers(ctx) {
     return { ok: true };
   });
 
-  ipcMain.handle("netcatty:ai:chat-session:set-cancelled", async (event, { chatSessionId, cancelled }) => {
+  ipcMain.handle("magiesTerminal:ai:chat-session:set-cancelled", async (event, { chatSessionId, cancelled }) => {
     if (!validateSender(event)) {
       return { ok: false, error: "Unauthorized IPC sender" };
     }
@@ -270,7 +270,7 @@ function registerCattyExecHandlers(ctx) {
     }
   });
 
-  ipcMain.handle("netcatty:ai:capability", async (event, { rpcMethod, params, chatSessionId }) => {
+  ipcMain.handle("magiesTerminal:ai:capability", async (event, { rpcMethod, params, chatSessionId }) => {
     if (!validateSender(event)) {
       return { ok: false, error: "Unauthorized IPC sender" };
     }

@@ -38,14 +38,14 @@ test("parseOpenCodeModel splits provider/model ids", () => {
   assert.equal(parseOpenCodeModel(""), undefined);
 });
 
-test("buildOpenCodeConfig isolates local tools and injects Netcatty MCP", () => {
+test("buildOpenCodeConfig isolates local tools and injects MagiesTerminal MCP", () => {
   const cfg = buildOpenCodeConfig({
     model: "openai/gpt-5.1",
     injectedMcpServers: [{
-      name: "netcatty-remote-hosts",
+      name: "magiesTerminal-remote-hosts",
       command: "/abs/electron",
       args: ["/abs/server.cjs"],
-      env: [{ name: "NETCATTY_MCP_PORT", value: "1" }],
+      env: [{ name: "MAGIES_TERMINAL_MCP_PORT", value: "1" }],
     }],
   });
 
@@ -59,20 +59,20 @@ test("buildOpenCodeConfig isolates local tools and injects Netcatty MCP", () => 
   assert.equal(cfg.permission.external_directory["*.opencode/skills/**"], "allow");
   assert.equal(cfg.permission.read["*.config/opencode/skills/**"], "allow");
   assert.equal(cfg.permission.read["*"], undefined);
-  assert.deepEqual(cfg.mcp["netcatty-remote-hosts"], {
+  assert.deepEqual(cfg.mcp["magiesTerminal-remote-hosts"], {
     type: "local",
     command: ["/abs/electron", "/abs/server.cjs"],
-    environment: { NETCATTY_MCP_PORT: "1" },
+    environment: { MAGIES_TERMINAL_MCP_PORT: "1" },
     enabled: true,
   });
 });
 
-test("buildOpenCodeConfig allowlists Netcatty CLI paths in skills mode", () => {
+test("buildOpenCodeConfig allowlists MagiesTerminal CLI paths in skills mode", () => {
   const cfg = buildOpenCodeConfig({
     toolIntegrationMode: "skills",
     skillsPathAllowlist: [
-      "/Applications/Netcatty.app/Contents/MacOS/**",
-      "/Users/me/Library/Application Support/netcatty/netcatty-tool-cli/**",
+      "/Applications/MagiesTerminal.app/Contents/MacOS/**",
+      "/Users/me/Library/Application Support/magiesTerminal/magies-terminal-tool-cli/**",
     ],
   });
 
@@ -80,9 +80,9 @@ test("buildOpenCodeConfig allowlists Netcatty CLI paths in skills mode", () => {
   assert.equal(cfg.permission.skill, "allow");
   assert.equal(cfg.permission.list, "deny");
   assert.equal(cfg.permission.external_directory["*"], "deny");
-  assert.equal(cfg.permission.external_directory["/Applications/Netcatty.app/Contents/MacOS/**"], "allow");
+  assert.equal(cfg.permission.external_directory["/Applications/MagiesTerminal.app/Contents/MacOS/**"], "allow");
   assert.equal(
-    cfg.permission.external_directory["/Users/me/Library/Application Support/netcatty/netcatty-tool-cli/**"],
+    cfg.permission.external_directory["/Users/me/Library/Application Support/magiesTerminal/magies-terminal-tool-cli/**"],
     "allow",
   );
   // Native OpenCode skill directories stay readable in skills mode too (issue #1939).
@@ -101,7 +101,7 @@ test("buildOpenCodePromptParts includes supported images as file parts", () => {
 });
 
 test("createOpenCodeProcessEnv creates an opencode shim for arbitrary custom binary paths", () => {
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-opencode-test-"));
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-opencode-test-"));
   const fakeBin = path.join(tempRoot, "my-opencode-wrapper");
   fs.writeFileSync(fakeBin, "#!/bin/sh\n");
   fs.chmodSync(fakeBin, 0o755);
@@ -128,7 +128,7 @@ test("createOpenCodeProcessEnv creates an opencode shim for arbitrary custom bin
 });
 
 test("createOpenCodeProcessEnv uses a unique shim directory per launch", () => {
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-opencode-test-"));
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-opencode-test-"));
   const fakeBin = path.join(tempRoot, "my-opencode-wrapper");
   fs.writeFileSync(fakeBin, "#!/bin/sh\n");
   fs.chmodSync(fakeBin, 0o755);
@@ -176,7 +176,7 @@ test("withOpenCodeProcessEnv launches before another call can overwrite process 
   const previousOpenCodeBin = process.env.OPENCODE_BIN;
   const previousPath = process.env.PATH;
   const observed = [];
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-opencode-test-"));
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-opencode-test-"));
   const firstBin = path.join(tempRoot, "opencode-one");
   const secondBin = path.join(tempRoot, "opencode-two");
   fs.writeFileSync(firstBin, "#!/bin/sh\nexit 0\n");
@@ -221,7 +221,7 @@ test("withOpenCodeProcessEnv restores process env before async startup settles",
   const previousOpenCodeBin = process.env.OPENCODE_BIN;
   const previousPath = process.env.PATH;
   let releaseStartup;
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-opencode-test-"));
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-opencode-test-"));
   const fakeBin = path.join(tempRoot, "opencode-starting");
   fs.writeFileSync(fakeBin, "#!/bin/sh\nexit 0\n");
   fs.chmodSync(fakeBin, 0o755);
@@ -263,12 +263,12 @@ test("translateOpenCodeEvent maps text, reasoning, tools, errors, and idle", () 
     state,
   );
   translateOpenCodeEvent(
-    { payload: { type: "message.part.updated", properties: { part: { type: "tool", callID: "tool-1", tool: "netcatty_run", state: { status: "running", input: { command: "uptime" } } } } } },
+    { payload: { type: "message.part.updated", properties: { part: { type: "tool", callID: "tool-1", tool: "magiesTerminal_run", state: { status: "running", input: { command: "uptime" } } } } } },
     emitter,
     state,
   );
   translateOpenCodeEvent(
-    { payload: { type: "message.part.updated", properties: { part: { type: "tool", callID: "tool-1", tool: "netcatty_run", state: { status: "completed", input: { command: "uptime" }, output: "ok" } } } } },
+    { payload: { type: "message.part.updated", properties: { part: { type: "tool", callID: "tool-1", tool: "magiesTerminal_run", state: { status: "completed", input: { command: "uptime" }, output: "ok" } } } } },
     emitter,
     state,
   );
@@ -286,8 +286,8 @@ test("translateOpenCodeEvent maps text, reasoning, tools, errors, and idle", () 
   assert.deepEqual(events, [
     { k: "text", t: "he" },
     { k: "reasoning", d: "think" },
-    { k: "toolCall", name: "netcatty_run", args: { command: "uptime" }, id: "tool-1" },
-    { k: "toolResult", id: "tool-1", out: "ok", name: "netcatty_run" },
+    { k: "toolCall", name: "magiesTerminal_run", args: { command: "uptime" }, id: "tool-1" },
+    { k: "toolResult", id: "tool-1", out: "ok", name: "magiesTerminal_run" },
     { k: "error", m: "bad key" },
     { k: "status", m: "OpenCode session idle" },
   ]);
@@ -389,13 +389,13 @@ test("translateOpenCodeEvent also accepts direct OpenCode SDK events", () => {
 test("translateOpenCodeEvent emits a tool call before a result when only completion arrives", () => {
   const { events, emitter } = collector();
   translateOpenCodeEvent(
-    { type: "message.part.updated", properties: { part: { type: "tool", callID: "tool-1", tool: "netcatty_run", state: { status: "completed", input: { command: "whoami" }, output: "me" } } } },
+    { type: "message.part.updated", properties: { part: { type: "tool", callID: "tool-1", tool: "magiesTerminal_run", state: { status: "completed", input: { command: "whoami" }, output: "me" } } } },
     emitter,
   );
 
   assert.deepEqual(events, [
-    { k: "toolCall", name: "netcatty_run", args: { command: "whoami" }, id: "tool-1" },
-    { k: "toolResult", id: "tool-1", out: "me", name: "netcatty_run" },
+    { k: "toolCall", name: "magiesTerminal_run", args: { command: "whoami" }, id: "tool-1" },
+    { k: "toolResult", id: "tool-1", out: "me", name: "magiesTerminal_run" },
   ]);
 });
 
@@ -487,7 +487,7 @@ test("runOpenCodeTurn creates a session, streams event deltas, and returns sessi
   ]);
 });
 
-test("runOpenCodeTurn sends Netcatty context via body.system instead of user parts", async () => {
+test("runOpenCodeTurn sends MagiesTerminal context via body.system instead of user parts", async () => {
   const { events, emitter } = collector();
   const abortController = new AbortController();
   const stream = {
@@ -501,7 +501,7 @@ test("runOpenCodeTurn sends Netcatty context via body.system instead of user par
     session: {
       create: async () => ({ data: { id: "sess-1" } }),
       promptAsync: async (args) => {
-        assert.equal(args.body.system, "[Context: You are inside Netcatty.]");
+        assert.equal(args.body.system, "[Context: You are inside MagiesTerminal.]");
         assert.deepEqual(args.body.parts, [{ type: "text", text: "看看这个机器的配置" }]);
         return { data: true };
       },
@@ -510,7 +510,7 @@ test("runOpenCodeTurn sends Netcatty context via body.system instead of user par
 
   await runOpenCodeTurn({
     prompt: "看看这个机器的配置",
-    systemPrompt: "[Context: You are inside Netcatty.]",
+    systemPrompt: "[Context: You are inside MagiesTerminal.]",
     emitter,
     abortController,
     openCodeFactory: async () => ({ client, server: { close() {} } }),
@@ -723,7 +723,7 @@ test("createOpenCodeProcessEnv drops stale OPENCODE_BIN when no usable binary ex
 });
 
 test("createOpenCodeProcessEnv prefers an existing opencode binary", () => {
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-opencode-test-"));
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-opencode-test-"));
   const fakeBin = path.join(tempRoot, "my-opencode-wrapper");
   fs.writeFileSync(fakeBin, "#!/bin/sh\nexit 0\n");
   fs.chmodSync(fakeBin, 0o755);

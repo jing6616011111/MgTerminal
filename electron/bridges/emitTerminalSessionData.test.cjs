@@ -30,7 +30,7 @@ test("emitTerminalSessionData prefers the dedicated terminal output channel", ()
   configureTerminalSessionDataEmitter({});
 });
 
-test("emitTerminalSessionData falls back to netcatty:data without an output port", () => {
+test("emitTerminalSessionData falls back to magiesTerminal:data without an output port", () => {
   const sent = [];
   const outputChannel = {
     send() {
@@ -50,7 +50,7 @@ test("emitTerminalSessionData falls back to netcatty:data without an output port
   emitTerminalSessionData(contents, "session-1", "hello");
 
   assert.deepEqual(sent, [
-    { channel: "netcatty:data", payload: { sessionId: "session-1", data: "hello" } },
+    { channel: "magiesTerminal:data", payload: { sessionId: "session-1", data: "hello" } },
   ]);
   configureTerminalSessionDataEmitter({});
 });
@@ -78,7 +78,7 @@ test("emitTerminalSessionData forwards terminal output metadata", () => {
 
   assert.deepEqual(sent, [
     {
-      channel: "netcatty:data",
+      channel: "magiesTerminal:data",
       payload: {
         sessionId: "session-1",
         data: "hello",

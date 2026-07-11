@@ -229,7 +229,7 @@ test("setupOsc7Tracking runs the setup command through the active session execut
   const conn = {
     exec(command, callback) {
       seenCommand = command;
-      callback(null, createFakeExecStream("__NETCATTY_OSC7_SETUP_SHELL__=bash\n"));
+      callback(null, createFakeExecStream("__MAGIES_TERMINAL_OSC7_SETUP_SHELL__=bash\n"));
     },
   };
   const sessions = new Map([["s1", { conn, type: "ssh" }]]);
@@ -244,7 +244,7 @@ test("setupOsc7Tracking runs the setup command through the active session execut
   });
 
   assert.equal(result.success, true);
-  assert.equal(result.stdout, "__NETCATTY_OSC7_SETUP_SHELL__=bash\n");
+  assert.equal(result.stdout, "__MAGIES_TERMINAL_OSC7_SETUP_SHELL__=bash\n");
   assert.equal(seenCommand, "printf setup-script");
 });
 

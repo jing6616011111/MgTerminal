@@ -32,7 +32,7 @@ const installBridgeStub = () => {
   Object.defineProperty(globalThis, "window", {
     configurable: true,
     value: {
-      netcatty: {
+      magiesTerminal: {
         startPortForward: async (options: Record<string, unknown>) => {
           started = true;
           capturedOptions = options;

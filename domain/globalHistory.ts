@@ -1,7 +1,7 @@
 import type { ShellHistoryEntry } from './models';
 import {
-  isNetcattyAiHistoryCommand,
-  isNetcattyManagedStartupHistoryCommand,
+  isMagiesTerminalAiHistoryCommand,
+  isMagiesTerminalManagedStartupHistoryCommand,
 } from './remoteHistory';
 
 const makeId = (): string => {
@@ -15,8 +15,8 @@ const makeId = (): string => {
 export function shouldRecordGlobalHistoryCommand(command: string): boolean {
   const cmd = command.trim();
   if (!cmd) return false;
-  if (isNetcattyAiHistoryCommand(cmd)) return false;
-  if (isNetcattyManagedStartupHistoryCommand(cmd)) return false;
+  if (isMagiesTerminalAiHistoryCommand(cmd)) return false;
+  if (isMagiesTerminalManagedStartupHistoryCommand(cmd)) return false;
   return true;
 }
 

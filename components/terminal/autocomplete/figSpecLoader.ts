@@ -52,7 +52,7 @@ interface FigSpecBridge {
 
 function getBridge(): FigSpecBridge | undefined {
   if (typeof window === "undefined") return undefined;
-  return (window as Window & { netcatty?: FigSpecBridge }).netcatty;
+  return (window as Window & { magiesTerminal?: FigSpecBridge }).magiesTerminal;
 }
 
 // Cache loaded specs

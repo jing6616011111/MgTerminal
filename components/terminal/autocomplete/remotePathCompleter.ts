@@ -36,7 +36,7 @@ interface PathBridge {
 }
 
 function getBridge(): PathBridge | undefined {
-  return (window as Window & { netcatty?: PathBridge }).netcatty;
+  return (window as Window & { magiesTerminal?: PathBridge }).magiesTerminal;
 }
 
 // Cache directory listings for 5 seconds. Full-directory cache is shared between

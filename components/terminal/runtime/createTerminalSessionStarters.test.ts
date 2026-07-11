@@ -369,7 +369,7 @@ test("startSSH recognizes Electron-prefixed jump-host auth failures", async () =
     execAvailable: () => true,
     startSSHSession: async () => {
       throw new Error(
-        'Error invoking remote method "netcatty:start": Error: Jump host authentication failed for "Bastion": All configured authentication methods failed',
+        'Error invoking remote method "magiesTerminal:start": Error: Jump host authentication failed for "Bastion": All configured authentication methods failed',
       );
     },
     startTelnetSession: async () => "telnet-session",

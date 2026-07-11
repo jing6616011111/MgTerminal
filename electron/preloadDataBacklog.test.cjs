@@ -39,7 +39,7 @@ function loadPreloadWithFakeElectron() {
       },
       send() {},
       async invoke(channel, payload) {
-        if (channel === "netcatty:local:start") {
+        if (channel === "magiesTerminal:local:start") {
           return { sessionId: payload?.sessionId };
         }
         return null;
@@ -70,8 +70,8 @@ function loadPreloadWithFakeElectron() {
   };
   delete require.cache[preloadPath];
   global.window = {
-    location: { origin: "app://netcatty" },
-    netcatty: undefined,
+    location: { origin: "app://magiesTerminal" },
+    magiesTerminal: undefined,
   };
 
   require(preloadPath);
@@ -309,7 +309,7 @@ test("legacy terminal data delivery preserves terminal perf metadata", () => {
       received.push({ chunk, meta });
     });
 
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "hello",
       meta: { terminalPerf },
@@ -334,7 +334,7 @@ test("terminal output port delivery preserves terminal perf metadata", () => {
       received.push({ chunk, meta });
     });
 
-    preload.handlers.get("netcatty:terminal-output-port")?.({ ports: [port] }, { sessionId: "session-1" });
+    preload.handlers.get("magiesTerminal:terminal-output-port")?.({ ports: [port] }, { sessionId: "session-1" });
     port.emit({
       sessionId: "session-1",
       data: "hello",
@@ -358,12 +358,12 @@ test("MCP-filtered terminal perf metadata is not carried to later output", () =>
       received.push({ chunk, meta });
     });
 
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "__NCMCP_TEST\n",
       meta: { terminalPerf: createTerminalPerfMeta() },
     });
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "READY\n",
     });
@@ -385,7 +385,7 @@ test("delayed MCP terminal data flush preserves metadata", async () => {
       received.push({ chunk, meta });
     });
 
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "prompt __NCM",
       meta: { droppedOutputMayAffectTerminalState: true },
@@ -411,12 +411,12 @@ test("MCP-filtered empty terminal data carries metadata to next visible output",
       received.push({ chunk, meta });
     });
 
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "__NCMCP_TEST\n",
       meta: { droppedOutputMayAffectTerminalState: true },
     });
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "READY\n",
     });
@@ -438,7 +438,7 @@ test("MCP metadata merge clears stale alternate-screen action on later unknown r
       received.push({ chunk, meta });
     });
 
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "__NCMCP_TEST\n",
       meta: {
@@ -446,7 +446,7 @@ test("MCP metadata merge clears stale alternate-screen action on later unknown r
         droppedOutputAlternateScreenAction: "leave",
       },
     });
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "READY\n",
       meta: { droppedOutputMayAffectTerminalState: true },
@@ -469,17 +469,17 @@ test("MCP-filtered empty terminal metadata is cleared on session exit", async ()
       received.push({ chunk, meta });
     }, { replayBacklog: true });
 
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "__NCMCP_TEST\n",
       meta: { droppedOutputMayAffectTerminalState: true },
     });
-    preload.handlers.get("netcatty:exit")?.({}, {
+    preload.handlers.get("magiesTerminal:exit")?.({}, {
       sessionId: "session-1",
       reason: "closed",
     });
     await preload.api.startLocalSession({ sessionId: "session-1" });
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "READY\n",
     });
@@ -648,28 +648,28 @@ test("backend exit preserves live listeners for same-id reconnect", async () => 
       exits.push(evt.reason);
     });
 
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "before exit",
     });
-    preload.handlers.get("netcatty:exit")?.({}, {
+    preload.handlers.get("magiesTerminal:exit")?.({}, {
       sessionId: "session-1",
       reason: "closed",
     });
-    preload.handlers.get("netcatty:exit")?.({}, {
+    preload.handlers.get("magiesTerminal:exit")?.({}, {
       sessionId: "session-1",
       reason: "duplicate-closed",
     });
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "dropped while closed",
     });
     await preload.api.startLocalSession({ sessionId: "session-1" });
-    preload.handlers.get("netcatty:data")?.({}, {
+    preload.handlers.get("magiesTerminal:data")?.({}, {
       sessionId: "session-1",
       data: "after reconnect",
     });
-    preload.handlers.get("netcatty:exit")?.({}, {
+    preload.handlers.get("magiesTerminal:exit")?.({}, {
       sessionId: "session-1",
       reason: "closed-again",
     });
@@ -694,14 +694,14 @@ test("zmodem events after explicit close and backend exit are gated", () => {
     });
 
     preload.api.closeSession("session-1");
-    preload.handlers.get("netcatty:exit")?.({}, {
+    preload.handlers.get("magiesTerminal:exit")?.({}, {
       sessionId: "session-1",
       reason: "closed",
     });
-    preload.handlers.get("netcatty:zmodem:detect")?.({}, {
+    preload.handlers.get("magiesTerminal:zmodem:detect")?.({}, {
       sessionId: "session-1",
     });
-    preload.handlers.get("netcatty:zmodem:overwrite-request")?.({}, {
+    preload.handlers.get("magiesTerminal:zmodem:overwrite-request")?.({}, {
       sessionId: "session-1",
     });
 
@@ -724,15 +724,15 @@ test("zmodem listeners survive backend exit and fire after same-session reconnec
       overwriteRequests.push(payload);
     });
 
-    preload.handlers.get("netcatty:exit")?.({}, {
+    preload.handlers.get("magiesTerminal:exit")?.({}, {
       sessionId: "session-1",
       reason: "error",
     });
     await preload.api.startLocalSession({ sessionId: "session-1" });
-    preload.handlers.get("netcatty:zmodem:detect")?.({}, {
+    preload.handlers.get("magiesTerminal:zmodem:detect")?.({}, {
       sessionId: "session-1",
     });
-    preload.handlers.get("netcatty:zmodem:overwrite-request")?.({}, {
+    preload.handlers.get("magiesTerminal:zmodem:overwrite-request")?.({}, {
       sessionId: "session-1",
       requestId: "r1",
       filename: "f",
@@ -764,16 +764,16 @@ test("zmodem listeners survive reconnect-style closeSession and resume after res
     // Reconnect path: closeSession is called while the terminal component
     // stays mounted, then the session restarts with the same id.
     preload.api.closeSession("session-1");
-    preload.handlers.get("netcatty:zmodem:detect")?.({}, {
+    preload.handlers.get("magiesTerminal:zmodem:detect")?.({}, {
       sessionId: "session-1",
     });
     assert.deepEqual(zmodemEvents, []);
 
     await preload.api.startLocalSession({ sessionId: "session-1" });
-    preload.handlers.get("netcatty:zmodem:detect")?.({}, {
+    preload.handlers.get("magiesTerminal:zmodem:detect")?.({}, {
       sessionId: "session-1",
     });
-    preload.handlers.get("netcatty:zmodem:overwrite-request")?.({}, {
+    preload.handlers.get("magiesTerminal:zmodem:overwrite-request")?.({}, {
       sessionId: "session-1",
       requestId: "r1",
       filename: "f",
@@ -794,12 +794,12 @@ test("onWindowFocusRequested is wired to the focus-requested IPC", () => {
       calls.push("focus");
     });
 
-    preload.handlers.get("netcatty:window:focus-requested")?.();
+    preload.handlers.get("magiesTerminal:window:focus-requested")?.();
 
     assert.deepEqual(calls, ["focus"]);
 
     unsubscribe();
-    preload.handlers.get("netcatty:window:focus-requested")?.();
+    preload.handlers.get("magiesTerminal:window:focus-requested")?.();
 
     assert.deepEqual(calls, ["focus"]);
   } finally {
@@ -921,7 +921,7 @@ test("closeSession clears terminal data state and marks the session closed", () 
   assert.equal(zmodemOverwriteListeners.has("session-1"), true);
   assert.deepEqual(closedPorts, ["session-1"]);
   assert.deepEqual(sent, [
-    { channel: "netcatty:close", payload: { sessionId: "session-1" } },
+    { channel: "magiesTerminal:close", payload: { sessionId: "session-1" } },
   ]);
 });
 
@@ -1003,7 +1003,7 @@ test("startLocalSession reopens a previously closed terminal data session", asyn
   assert.equal(sessionId, "session-1");
   assert.deepEqual(invoked, [
     {
-      channel: "netcatty:local:start",
+      channel: "magiesTerminal:local:start",
       payload: { sessionId: "session-1" },
       wasClosed: false,
     },

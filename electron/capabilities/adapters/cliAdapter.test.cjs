@@ -17,8 +17,8 @@ function fakeCreateError(code, message) {
 }
 
 test("getCliRpcMethod resolves implemented cli commands to rpc methods", () => {
-  assert.equal(getCliRpcMethod(["exec"]), "netcatty/exec");
-  assert.equal(getCliRpcMethod(["sftp", "list"]), "netcatty/sftp/list");
+  assert.equal(getCliRpcMethod(["exec"]), "magiesTerminal/exec");
+  assert.equal(getCliRpcMethod(["sftp", "list"]), "magiesTerminal/sftp/list");
   assert.equal(getCliRpcMethod(["vault", "host", "get"]), "vault/host/get");
   assert.equal(getCliRpcMethod(["portforward", "rules", "list"]), "portforward/rules/list");
   assert.equal(getCliRpcMethod(["capabilities"]), null);

@@ -1,6 +1,6 @@
 "use strict";
 
-const TERMINAL_OUTPUT_PORT_CHANNEL = "netcatty:terminal-output-port";
+const TERMINAL_OUTPUT_PORT_CHANNEL = "magiesTerminal:terminal-output-port";
 
 function createTerminalOutputChannel(options = {}) {
   const MessageChannelMain = options.MessageChannelMain;

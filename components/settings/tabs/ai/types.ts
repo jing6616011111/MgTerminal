@@ -103,7 +103,7 @@ export interface FetchBridge {
   aiAllowlistAddHost?: (baseURL: string) => Promise<{ ok: boolean }>;
 }
 
-export interface NetcattyAiBridge {
+export interface MagiesTerminalAiBridge {
   aiDiscoverAgents?: (options?: { refreshShellEnv?: boolean; apiKeyPresent?: boolean }) => Promise<Array<AgentPathInfo & { command: string }>>;
   aiPrewarmShellEnv?: () => Promise<{ ok: boolean; error?: string }>;
   aiCodexGetIntegration?: (options?: { refreshShellEnv?: boolean; validateChatGptAuth?: boolean; codexPath?: string }) => Promise<CodexIntegrationStatus>;
@@ -174,18 +174,18 @@ export const AGENT_DEFAULTS: Record<string, Omit<ExternalAgentConfig, "id" | "co
 // Bridge helpers
 // ---------------------------------------------------------------------------
 
-export function getBridge(): NetcattyAiBridge | undefined {
-  return (window as unknown as { netcatty?: NetcattyAiBridge }).netcatty;
+export function getBridge(): MagiesTerminalAiBridge | undefined {
+  return (window as unknown as { magiesTerminal?: MagiesTerminalAiBridge }).magiesTerminal;
 }
 
 export function getFetchBridge(): FetchBridge | undefined {
-  return (window as unknown as { netcatty?: FetchBridge }).netcatty;
+  return (window as unknown as { magiesTerminal?: FetchBridge }).magiesTerminal;
 }
 
 export function normalizeCodexBridgeError(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
-  if (message.includes("No handler registered for 'netcatty:ai:codex:")) {
-    return "Codex main-process handlers are not loaded yet. Fully restart Netcatty, or restart the Electron dev process, then try again.";
+  if (message.includes("No handler registered for 'magiesTerminal:ai:codex:")) {
+    return "Codex main-process handlers are not loaded yet. Fully restart MagiesTerminal, or restart the Electron dev process, then try again.";
   }
   return message;
 }

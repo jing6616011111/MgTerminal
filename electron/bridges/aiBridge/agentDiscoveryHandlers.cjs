@@ -33,7 +33,7 @@ async function probeCursorSdkAvailability(shellEnv, options = {}) {
 
 function registerAgentDiscoveryHandlers(ctx) {
   with (ctx) {
-  ipcMain.handle("netcatty:ai:agents:discover", async (event, options = {}) => {
+  ipcMain.handle("magiesTerminal:ai:agents:discover", async (event, options = {}) => {
     if (!validateSenderOrSettings(event)) return { ok: false, error: "Unauthorized IPC sender" };
     if (options?.refreshShellEnv) {
       invalidateShellEnvCache();
@@ -121,7 +121,7 @@ function registerAgentDiscoveryHandlers(ctx) {
     return agents;
   });
 
-  ipcMain.handle("netcatty:ai:shell-env:prewarm", async (event) => {
+  ipcMain.handle("magiesTerminal:ai:shell-env:prewarm", async (event) => {
     if (!validateSenderOrSettings(event)) return { ok: false, error: "Unauthorized IPC sender" };
     try {
       await getShellEnv();
@@ -132,7 +132,7 @@ function registerAgentDiscoveryHandlers(ctx) {
   });
 
   // Resolve a CLI binary path (auto-detect or validate custom path)
-  ipcMain.handle("netcatty:ai:resolve-cli", async (event, { command, customPath, refreshShellEnv, apiKeyPresent }) => {
+  ipcMain.handle("magiesTerminal:ai:resolve-cli", async (event, { command, customPath, refreshShellEnv, apiKeyPresent }) => {
     if (!validateSenderOrSettings(event)) return { ok: false, error: "Unauthorized IPC sender" };
     if (refreshShellEnv) {
       invalidateShellEnvCache();
@@ -181,11 +181,11 @@ function registerAgentDiscoveryHandlers(ctx) {
     return { path: resolvedPath, binPath: resolvedPath, version: probe.version, available: true, installed: true };
   });
 
-  ipcMain.handle("netcatty:ai:codex:get-integration", async (event, options) => {
+  ipcMain.handle("magiesTerminal:ai:codex:get-integration", async (event, options) => {
     if (!validateSenderOrSettings(event)) return { ok: false, error: "Unauthorized IPC sender" };
     // When the user clicks "Refresh Status" in Settings we also want to
     // rescan the shell env — otherwise a newly-exported variable in
-    // .zshrc stays invisible until they restart netcatty entirely.
+    // .zshrc stays invisible until they restart magiesTerminal entirely.
     if (options && options.refreshShellEnv) {
       invalidateShellEnvCache();
     }
@@ -258,7 +258,7 @@ function registerAgentDiscoveryHandlers(ctx) {
     }
   });
 
-  ipcMain.handle("netcatty:ai:codex:start-login", async (event, options = {}) => {
+  ipcMain.handle("magiesTerminal:ai:codex:start-login", async (event, options = {}) => {
     if (!validateSenderOrSettings(event)) return { ok: false, error: "Unauthorized IPC sender" };
     const requestedPath = String(options?.codexPath || "").trim();
     const requestedCodexPath = requestedPath ? normalizeCliPathForPlatform?.(requestedPath) : null;
@@ -338,7 +338,7 @@ function registerAgentDiscoveryHandlers(ctx) {
     }
   });
 
-  ipcMain.handle("netcatty:ai:codex:get-login-session", async (event, { sessionId }) => {
+  ipcMain.handle("magiesTerminal:ai:codex:get-login-session", async (event, { sessionId }) => {
     if (!validateSenderOrSettings(event)) return { ok: false, error: "Unauthorized IPC sender" };
     const session = codexLoginSessions.get(sessionId);
     if (!session) {
@@ -347,7 +347,7 @@ function registerAgentDiscoveryHandlers(ctx) {
     return { ok: true, session: toCodexLoginSessionResponse(session) };
   });
 
-  ipcMain.handle("netcatty:ai:codex:cancel-login", async (event, { sessionId }) => {
+  ipcMain.handle("magiesTerminal:ai:codex:cancel-login", async (event, { sessionId }) => {
     if (!validateSenderOrSettings(event)) return { ok: false, error: "Unauthorized IPC sender" };
     const session = codexLoginSessions.get(sessionId);
     if (!session) {
@@ -364,7 +364,7 @@ function registerAgentDiscoveryHandlers(ctx) {
     return { ok: true, found: true, session: toCodexLoginSessionResponse(session) };
   });
 
-  ipcMain.handle("netcatty:ai:codex:logout", async (event, options = {}) => {
+  ipcMain.handle("magiesTerminal:ai:codex:logout", async (event, options = {}) => {
     if (!validateSenderOrSettings(event)) return { ok: false, error: "Unauthorized IPC sender" };
     try {
       const codexCliOptions = { codexPath: options?.codexPath };

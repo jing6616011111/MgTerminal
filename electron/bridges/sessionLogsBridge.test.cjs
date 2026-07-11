@@ -300,7 +300,7 @@ test("registerHandlers taps terminal worker output into main-process manual sess
   assert.equal(typeof outputTap, "function");
 
   try {
-    const startResult = await handlers.get("netcatty:sessionLog:manualStart")(null, {
+    const startResult = await handlers.get("magiesTerminal:sessionLog:manualStart")(null, {
       sessionId,
       sessionName: "worker host",
       preferredDirectory: directory,
@@ -315,7 +315,7 @@ test("registerHandlers taps terminal worker output into main-process manual sess
     outputTap("other-session", "ignored\r\n");
     outputTap(sessionId, undefined);
 
-    const stopResult = await handlers.get("netcatty:sessionLog:manualStop")(null, { sessionId });
+    const stopResult = await handlers.get("magiesTerminal:sessionLog:manualStop")(null, { sessionId });
     assert.equal(stopResult.success, true);
     assert.equal(stopResult.stopped, true);
     assert.equal(fs.readFileSync(filePath, "utf8"), "root@host:~# ls\r\nfile\r\n");

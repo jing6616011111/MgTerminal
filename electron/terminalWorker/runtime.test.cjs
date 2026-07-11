@@ -59,7 +59,7 @@ test("runtime invokes registered request handlers and posts responses", async ()
   const runtime = createTerminalWorkerRuntime({
     parentPort,
     registerBridges(ipcMain) {
-      ipcMain.handle("netcatty:test", async (_event, payload) => ({ ok: true, payload }));
+      ipcMain.handle("magiesTerminal:test", async (_event, payload) => ({ ok: true, payload }));
     },
   });
   runtime.start();
@@ -67,7 +67,7 @@ test("runtime invokes registered request handlers and posts responses", async ()
   parentPort.emitMessage({
     kind: "request",
     requestId: "req-1",
-    channel: "netcatty:test",
+    channel: "magiesTerminal:test",
     payload: { value: 1 },
     webContentsId: 7,
   });
@@ -88,14 +88,14 @@ test("runtime invokes fire-and-forget listeners", () => {
   const runtime = createTerminalWorkerRuntime({
     parentPort,
     registerBridges(ipcMain) {
-      ipcMain.on("netcatty:write", (_event, payload) => calls.push(payload));
+      ipcMain.on("magiesTerminal:write", (_event, payload) => calls.push(payload));
     },
   });
   runtime.start();
 
   parentPort.emitMessage({
     kind: "send",
-    channel: "netcatty:write",
+    channel: "magiesTerminal:write",
     payload: { sessionId: "s1", data: "x" },
     webContentsId: 7,
   });
@@ -110,7 +110,7 @@ test("runtime routes urgent input port interrupts to the interrupt listener", ()
   const runtime = createTerminalWorkerRuntime({
     parentPort,
     registerBridges(ipcMain) {
-      ipcMain.on("netcatty:interrupt", (event, payload) => {
+      ipcMain.on("magiesTerminal:interrupt", (event, payload) => {
         calls.push({ senderId: event.sender.id, payload });
       });
     },
@@ -148,8 +148,8 @@ test("runtime routes terminal data over output messages", async () => {
   const runtime = createTerminalWorkerRuntime({
     parentPort,
     registerBridges(ipcMain) {
-      ipcMain.handle("netcatty:test", (event) => {
-        event.sender.send("netcatty:data", { sessionId: "s1", data: "hello" });
+      ipcMain.handle("magiesTerminal:test", (event) => {
+        event.sender.send("magiesTerminal:data", { sessionId: "s1", data: "hello" });
         return { done: true };
       });
     },
@@ -159,7 +159,7 @@ test("runtime routes terminal data over output messages", async () => {
   parentPort.emitMessage({
     kind: "request",
     requestId: "req-1",
-    channel: "netcatty:test",
+    channel: "magiesTerminal:test",
     payload: {},
     webContentsId: 7,
   });
@@ -184,8 +184,8 @@ test("runtime routes terminal data over a transferred output port", async () => 
   const runtime = createTerminalWorkerRuntime({
     parentPort,
     registerBridges(ipcMain) {
-      ipcMain.handle("netcatty:test", (event) => {
-        event.sender.send("netcatty:data", { sessionId: "s1", data: "hello" });
+      ipcMain.handle("magiesTerminal:test", (event) => {
+        event.sender.send("magiesTerminal:data", { sessionId: "s1", data: "hello" });
         return { done: true };
       });
     },
@@ -203,7 +203,7 @@ test("runtime routes terminal data over a transferred output port", async () => 
   parentPort.emitMessage({
     kind: "request",
     requestId: "req-1",
-    channel: "netcatty:test",
+    channel: "magiesTerminal:test",
     payload: {},
     webContentsId: 7,
   });
@@ -236,7 +236,7 @@ test("runtime.createSender uses the transferred output port", () => {
     data: { kind: "output-port", sessionId: "s1" },
     ports: [outputPort],
   });
-  runtime.createSender(7).send("netcatty:data", { sessionId: "s1", data: "hello" });
+  runtime.createSender(7).send("magiesTerminal:data", { sessionId: "s1", data: "hello" });
 
   assert.deepEqual(outputPort.messages, [{ sessionId: "s1", data: "hello" }]);
   assert.deepEqual(parentPort.messages.at(-1), {
@@ -251,8 +251,8 @@ test("runtime forwards non-output renderer events to the parent", async () => {
   const runtime = createTerminalWorkerRuntime({
     parentPort,
     registerBridges(ipcMain) {
-      ipcMain.handle("netcatty:test", (event) => {
-        event.sender.send("netcatty:exit", { sessionId: "s1", reason: "closed" });
+      ipcMain.handle("magiesTerminal:test", (event) => {
+        event.sender.send("magiesTerminal:exit", { sessionId: "s1", reason: "closed" });
         return { done: true };
       });
     },
@@ -262,7 +262,7 @@ test("runtime forwards non-output renderer events to the parent", async () => {
   parentPort.emitMessage({
     kind: "request",
     requestId: "req-1",
-    channel: "netcatty:test",
+    channel: "magiesTerminal:test",
     payload: {},
     webContentsId: 7,
   });
@@ -271,7 +271,7 @@ test("runtime forwards non-output renderer events to the parent", async () => {
   assert.deepEqual(parentPort.messages[0], {
     kind: "renderer-event",
     webContentsId: 7,
-    channel: "netcatty:exit",
+    channel: "magiesTerminal:exit",
     payload: { sessionId: "s1", reason: "closed" },
   });
 });

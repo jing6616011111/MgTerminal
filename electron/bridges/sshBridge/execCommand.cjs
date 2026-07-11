@@ -125,7 +125,7 @@ function createExecCommandApi(ctx) {
         const effectivePrivateKey = inlineKey?.privateKey || identityFilePrivateKey;
         const effectivePassphrase = inlineKey?.passphrase || identityFilePassphrase;
         if (hasCertificate) {
-          authAgent = new NetcattyAgent({
+          authAgent = new MagiesTerminalAgent({
             mode: "certificate",
             webContents: event.sender,
             meta: {

@@ -7,7 +7,7 @@ const path = require("node:path");
 const { bundledMoshClient } = require("./terminalBridge.cjs");
 
 function makeTmp() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-mosh-"));
+  return fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-mosh-"));
 }
 
 function writeExecutable(filePath, contents = "#!/bin/sh\nexit 0\n") {

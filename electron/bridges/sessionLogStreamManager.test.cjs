@@ -373,7 +373,7 @@ test("startStreamToFile can write human-readable text logs from ANSI terminal ou
 test("raw stream hides sudo autofill prompt markers and rewritten command echoes", async () => {
   const directory = path.join(TEMP_ROOT, `stream-sudo-${Date.now()}-${Math.random().toString(16).slice(2)}`);
   const sessionId = `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const marker = "__NETCATTY_SUDO_test__";
+  const marker = "__MAGIES_TERMINAL_SUDO_test__";
   const prepared = `sudo -p '[sudo] password for %p: ${marker}' whoami`;
 
   try {
@@ -393,7 +393,7 @@ test("raw stream hides sudo autofill prompt markers and rewritten command echoes
     const content = fs.readFileSync(finalPath, "utf8");
 
     assert.equal(content, "sudo whoami\r\n[sudo] password for alice: \r\nroot\n");
-    assert.ok(!content.includes("NETCATTY_SUDO"));
+    assert.ok(!content.includes("MAGIES_TERMINAL_SUDO"));
     assert.ok(!content.includes("sudo -p"));
   } finally {
     await stopStream(sessionId);
@@ -475,7 +475,7 @@ test("raw stream keeps programmatic command rewrites isolated per session", asyn
 test("raw stream hides split sudo autofill markers", async () => {
   const directory = path.join(TEMP_ROOT, `stream-sudo-split-${Date.now()}-${Math.random().toString(16).slice(2)}`);
   const sessionId = `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const marker = "__NETCATTY_SUDO_split__";
+  const marker = "__MAGIES_TERMINAL_SUDO_split__";
   const prepared = `sudo -p '[sudo] password for %p: ${marker}' id`;
 
   try {
@@ -487,15 +487,15 @@ test("raw stream hides split sudo autofill markers", async () => {
       startTime: Date.UTC(2026, 0, 2, 3, 4, 5),
     });
     registerSudoAutofillInput(sessionId, `\x15${prepared}\r`);
-    appendData(sessionId, "sudo -p '[sudo] password for %p: __NET");
-    appendData(sessionId, "CATTY_SUDO_split__' id\r\n[sudo] password for alice: __NET");
-    appendData(sessionId, "CATTY_SUDO_split__\r\nuid=0\n");
+    appendData(sessionId, "sudo -p '[sudo] password for %p: __MAGIES_");
+    appendData(sessionId, "TERMINAL_SUDO_split__' id\r\n[sudo] password for alice: __MAGIES_");
+    appendData(sessionId, "TERMINAL_SUDO_split__\r\nuid=0\n");
 
     const finalPath = await stopStream(sessionId);
     const content = fs.readFileSync(finalPath, "utf8");
 
     assert.equal(content, "sudo id\r\n[sudo] password for alice: \r\nuid=0\n");
-    assert.ok(!content.includes("NETCATTY_SUDO"));
+    assert.ok(!content.includes("MAGIES_TERMINAL_SUDO"));
     assert.ok(!content.includes("sudo -p"));
   } finally {
     await stopStream(sessionId);
@@ -506,7 +506,7 @@ test("raw stream hides split sudo autofill markers", async () => {
 test("raw stream hides sudo autofill rewrites for long commands", async () => {
   const directory = path.join(TEMP_ROOT, `stream-sudo-long-${Date.now()}-${Math.random().toString(16).slice(2)}`);
   const sessionId = `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const marker = "__NETCATTY_SUDO_long__";
+  const marker = "__MAGIES_TERMINAL_SUDO_long__";
   const longArg = "a".repeat(6000);
   const original = `sudo printf '${longArg}'`;
   const prepared = `sudo -p '[sudo] password for %p: ${marker}' printf '${longArg}'`;
@@ -529,7 +529,7 @@ test("raw stream hides sudo autofill rewrites for long commands", async () => {
     const content = fs.readFileSync(finalPath, "utf8");
 
     assert.equal(content, `${original}\r\n[sudo] password for alice: \r\n`);
-    assert.ok(!content.includes("NETCATTY_SUDO"));
+    assert.ok(!content.includes("MAGIES_TERMINAL_SUDO"));
     assert.ok(!content.includes("sudo -p"));
   } finally {
     await stopStream(sessionId);
@@ -540,7 +540,7 @@ test("raw stream hides sudo autofill rewrites for long commands", async () => {
 test("raw stream releases non-prompt output after sudo autofill rewrite", async () => {
   const directory = path.join(TEMP_ROOT, `stream-sudo-warm-${Date.now()}-${Math.random().toString(16).slice(2)}`);
   const sessionId = `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const marker = "__NETCATTY_SUDO_warm__";
+  const marker = "__MAGIES_TERMINAL_SUDO_warm__";
   const prepared = `sudo -p '[sudo] password for %p: ${marker}' printf ok`;
 
   try {
@@ -559,7 +559,7 @@ test("raw stream releases non-prompt output after sudo autofill rewrite", async 
     const content = fs.readFileSync(finalPath, "utf8");
 
     assert.equal(content, "sudo printf ok\r\nok");
-    assert.ok(!content.includes("NETCATTY_SUDO"));
+    assert.ok(!content.includes("MAGIES_TERMINAL_SUDO"));
     assert.ok(!content.includes("sudo -p"));
   } finally {
     await stopStream(sessionId);
@@ -570,7 +570,7 @@ test("raw stream releases non-prompt output after sudo autofill rewrite", async 
 test("raw stream keeps sudo autofill rewrite after ordinary output before prompt", async () => {
   const directory = path.join(TEMP_ROOT, `stream-sudo-notice-${Date.now()}-${Math.random().toString(16).slice(2)}`);
   const sessionId = `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const marker = "__NETCATTY_SUDO_notice__";
+  const marker = "__MAGIES_TERMINAL_SUDO_notice__";
   const prepared = `sudo -p '[sudo] password for %p: ${marker}' whoami`;
 
   try {
@@ -589,7 +589,7 @@ test("raw stream keeps sudo autofill rewrite after ordinary output before prompt
     const content = fs.readFileSync(finalPath, "utf8");
 
     assert.equal(content, "sudo: this is the first time notice[sudo] password for alice: \r\nroot\n");
-    assert.ok(!content.includes("NETCATTY_SUDO"));
+    assert.ok(!content.includes("MAGIES_TERMINAL_SUDO"));
   } finally {
     await stopStream(sessionId);
     fs.rmSync(directory, { recursive: true, force: true });
@@ -599,7 +599,7 @@ test("raw stream keeps sudo autofill rewrite after ordinary output before prompt
 test("raw stream releases prompt-shaped warm sudo output", async () => {
   const directory = path.join(TEMP_ROOT, `stream-sudo-warm-prompt-${Date.now()}-${Math.random().toString(16).slice(2)}`);
   const sessionId = `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const marker = "__NETCATTY_SUDO_warm_prompt__";
+  const marker = "__MAGIES_TERMINAL_SUDO_warm_prompt__";
   const prepared = `sudo -p '[sudo] password for %p: ${marker}' printf '[sudo] password for alice: '`;
 
   try {
@@ -617,7 +617,7 @@ test("raw stream releases prompt-shaped warm sudo output", async () => {
     const content = fs.readFileSync(finalPath, "utf8");
 
     assert.equal(content, "[sudo] password for alice: ");
-    assert.ok(!content.includes("NETCATTY_SUDO"));
+    assert.ok(!content.includes("MAGIES_TERMINAL_SUDO"));
   } finally {
     await stopStream(sessionId);
     fs.rmSync(directory, { recursive: true, force: true });
@@ -627,7 +627,7 @@ test("raw stream releases prompt-shaped warm sudo output", async () => {
 test("raw stream sanitizes later shell-history echoes after sudo autofill completes", async () => {
   const directory = path.join(TEMP_ROOT, `stream-sudo-history-${Date.now()}-${Math.random().toString(16).slice(2)}`);
   const sessionId = `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const marker = "__NETCATTY_SUDO_history__";
+  const marker = "__MAGIES_TERMINAL_SUDO_history__";
   const prepared = `sudo -p '[sudo] password for %p: ${marker}' whoami`;
 
   try {
@@ -646,7 +646,7 @@ test("raw stream sanitizes later shell-history echoes after sudo autofill comple
     const content = fs.readFileSync(finalPath, "utf8");
 
     assert.equal(content, "[sudo] password for alice: \r\nroot\nsudo whoami\r\n");
-    assert.ok(!content.includes("NETCATTY_SUDO"));
+    assert.ok(!content.includes("MAGIES_TERMINAL_SUDO"));
     assert.ok(!content.includes("sudo -p"));
   } finally {
     await stopStream(sessionId);

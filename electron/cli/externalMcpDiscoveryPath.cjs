@@ -5,9 +5,9 @@ const path = require("node:path");
 const fs = require("node:fs");
 
 const EXTERNAL_MCP_STATE_DIR_NAME = "external-mcp";
-const EXTERNAL_MCP_DISCOVERY_ENV_VAR = "NETCATTY_EXTERNAL_MCP_DISCOVERY_FILE";
+const EXTERNAL_MCP_DISCOVERY_ENV_VAR = "MAGIES_TERMINAL_EXTERNAL_MCP_DISCOVERY_FILE";
 const EXTERNAL_MCP_CHAT_SESSION_ID = "__external_mcp__";
-const FALLBACK_APP_DATA_DIR_NAME = "Netcatty";
+const FALLBACK_APP_DATA_DIR_NAME = "MagiesTerminal";
 
 function toUnpackedAsarPath(filePath) {
   return filePath.replace(/app\.asar([\\/])/, "app.asar.unpacked$1");
@@ -33,7 +33,7 @@ function getDefaultAppDataDirName(options = {}) {
     }
   }
 
-  // Prefer Electron productName casing over package.json "name" (netcatty).
+  // Prefer Electron productName casing over package.json "name" (magiesTerminal).
   return FALLBACK_APP_DATA_DIR_NAME;
 }
 
@@ -55,14 +55,14 @@ function getDefaultUserDataDir() {
 
 /**
  * Candidate userData roots the launcher may need when env is missing.
- * Includes packaged (Netcatty), lowercase package name, and Electron Dev (/dev).
+ * Includes packaged (MagiesTerminal), lowercase package name, and Electron Dev (/dev).
  */
 function listCandidateUserDataDirs(options = {}) {
   const names = Array.from(new Set([
     getDefaultAppDataDirName(options),
-    "Netcatty",
-    "netcatty",
-    "Netcatty Dev",
+    "MagiesTerminal",
+    "magiesTerminal",
+    "MagiesTerminal Dev",
   ].filter(Boolean)));
   const roots = [];
   for (const name of names) {
@@ -126,8 +126,8 @@ function resolveExistingExternalMcpDiscoveryFilePath(options = {}) {
 
 function getExternalMcpLauncherPath() {
   const fileName = process.platform === "win32"
-    ? "netcatty-external-mcp.cmd"
-    : "netcatty-external-mcp";
+    ? "magies-terminal-external-mcp.cmd"
+    : "magies-terminal-external-mcp";
   return toUnpackedAsarPath(path.join(__dirname, fileName));
 }
 

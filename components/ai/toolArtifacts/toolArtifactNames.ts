@@ -91,7 +91,7 @@ export function inferArtifactToolNameFromCliArgs(
   if (!command) return undefined;
 
   const unwrapped = unwrapShellCommand(command);
-  const cliMatch = unwrapped.match(/(?:^|\s|["'])(?:\S*\/)?netcatty-tool-cli(?:\.(?:cjs|cmd))?(?=["'\s]|$)([\s\S]*)$/);
+  const cliMatch = unwrapped.match(/(?:^|\s|["'])(?:\S*\/)?magies-terminal-tool-cli(?:\.(?:cjs|cmd))?(?=["'\s]|$)([\s\S]*)$/);
   if (!cliMatch) return undefined;
 
   const afterCli = stripWrappingQuote(cliMatch[1] ?? '').replace(/^["']?\s*/, '');

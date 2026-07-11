@@ -31,11 +31,11 @@ test("ssh2 accepts an empty softwareversion for compatibility", () => {
 });
 
 test("ssh2 still accepts standard identification strings", () => {
-  const header = parseIdentification("SSH-2.0-OpenSSH_9.9 Netcatty");
+  const header = parseIdentification("SSH-2.0-OpenSSH_9.9 MagiesTerminal");
 
   assert.equal(header.versions.protocol, "2.0");
   assert.equal(header.versions.software, "OpenSSH_9.9");
-  assert.equal(header.comments, "Netcatty");
+  assert.equal(header.comments, "MagiesTerminal");
 });
 
 test("ssh2 still rejects malformed identification strings", () => {

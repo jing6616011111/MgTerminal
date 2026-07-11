@@ -16,7 +16,7 @@ import {
   type ProviderAccount,
   type OAuthTokens,
 } from '../../../domain/sync';
-import { netcattyBridge } from '../netcattyBridge';
+import { magiesTerminalBridge } from '../magiesTerminalBridge';
 
 const normalizeEndpoint = (endpoint: string): string => {
   const trimmed = endpoint.trim();
@@ -82,7 +82,7 @@ export class S3Adapter {
     if (!this.config) {
       throw new Error('Missing S3 config');
     }
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.cloudSyncS3Initialize) {
       const result = await bridge.cloudSyncS3Initialize(this.config);
       this.resource = result?.resourceId || this.getObjectKey();
@@ -111,7 +111,7 @@ export class S3Adapter {
     if (!this.config) {
       throw new Error('Missing S3 config');
     }
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.cloudSyncS3Upload) {
       const result = await bridge.cloudSyncS3Upload(this.config, syncedFile);
       this.resource = result?.resourceId || this.getObjectKey();
@@ -133,7 +133,7 @@ export class S3Adapter {
     if (!this.config) {
       throw new Error('Missing S3 config');
     }
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.cloudSyncS3Download) {
       const result = await bridge.cloudSyncS3Download(this.config);
       return (result?.syncedFile ?? null) as SyncedFile | null;
@@ -159,7 +159,7 @@ export class S3Adapter {
     if (!this.config) {
       return;
     }
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.cloudSyncS3Delete) {
       await bridge.cloudSyncS3Delete(this.config);
       return;
@@ -185,7 +185,7 @@ export class S3Adapter {
   private getClient(): S3Client {
     if (!this.config || !this.client) {
       if (this.config?.allowInsecure) {
-        throw new Error('S3 insecure connections require the Netcatty desktop sync bridge');
+        throw new Error('S3 insecure connections require the MagiesTerminal desktop sync bridge');
       }
       throw new Error('Missing S3 config');
     }

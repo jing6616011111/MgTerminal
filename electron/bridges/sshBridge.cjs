@@ -12,7 +12,7 @@ const crypto = require("node:crypto");
 const { exec } = require("node:child_process");
 require("./boringSslDhCompat.cjs").installBoringSslDhCompat();
 const { Client: SSHClient, utils: sshUtils } = require("ssh2");
-const { NetcattyAgent } = require("./netcattyAgent.cjs");
+const { MagiesTerminalAgent } = require("./magiesTerminalAgent.cjs");
 const keyboardInteractiveHandler = require("./keyboardInteractiveHandler.cjs");
 const passphraseHandler = require("./passphraseHandler.cjs");
 const hostKeyVerifier = require("./hostKeyVerifier.cjs");
@@ -280,8 +280,8 @@ const SSH_DEBUG_REDACTED_KEYS = new Set([
   "key",
   "certificate",
 ]);
-let sshDebugLoggingEnabled = process.env.NETCATTY_SSH_DEBUG === "1";
-let sshDebugLogFilePath = tempDirBridge.getTempFilePath("netcatty-ssh.log");
+let sshDebugLoggingEnabled = process.env.MAGIES_TERMINAL_SSH_DEBUG === "1";
+let sshDebugLogFilePath = tempDirBridge.getTempFilePath("magiesTerminal-ssh.log");
 
 function sanitizeSshDebugValue(value, key = "") {
   if (SSH_DEBUG_REDACTED_KEYS.has(key)) return "[redacted]";
@@ -495,7 +495,7 @@ async function connectThroughChain(event, options, jumpHosts, targetHost, target
 
   const sendProgress = (hop, total, label, status, error) => {
     if (!sender.isDestroyed()) {
-      sender.send("netcatty:chain:progress", { sessionId, hop, total, label, status, error });
+      sender.send("magiesTerminal:chain:progress", { sessionId, hop, total, label, status, error });
     }
   };
 
@@ -631,7 +631,7 @@ async function connectThroughChain(event, options, jumpHosts, targetHost, target
 
       let authAgent = null;
       if (hasCertificate) {
-        authAgent = new NetcattyAgent({
+        authAgent = new MagiesTerminalAgent({
           mode: "certificate",
           webContents: event.sender,
           meta: {
@@ -858,7 +858,7 @@ const { createStartSessionApi } = require("./sshBridge/startSession.cjs");
 const startSessionApi = createStartSessionApi({
   get sessions() { return sessions; },
   get electronModule() { return electronModule; },
-  SSHClient, sshUtils, NetcattyAgent, keyboardInteractiveHandler, passphraseHandler, hostKeyVerifier,
+  SSHClient, sshUtils, MagiesTerminalAgent, keyboardInteractiveHandler, passphraseHandler, hostKeyVerifier,
   fs, path, os, net, crypto, Buffer, process, console, setTimeout, clearTimeout,
   createProxySocket, attachX11Forwarding, createPtyOutputBuffer, sessionLogStreamManager,
   trackSessionIdlePrompt, looksLikeIdleAutoLogout, createZmodemSentry, enableSshNoDelay, enableTcpNoDelay,
@@ -880,7 +880,7 @@ const startSessionApi = createStartSessionApi({
 const { startSSHSession } = startSessionApi;
 const { createExecCommandApi } = require("./sshBridge/execCommand.cjs");
 const execCommandApi = createExecCommandApi({
-  SSHClient, NetcattyAgent, randomUUID, console, setTimeout, clearTimeout, Error,
+  SSHClient, MagiesTerminalAgent, randomUUID, console, setTimeout, clearTimeout, Error,
   findAllDefaultPrivateKeysFromHelper, preparePrivateKeyForAuth, loadIdentityFileForAuth,
   isPassphraseCancelledError, buildAlgorithms, buildAuthHandler, applyAuthToConnOpts,
   createKeyboardInteractiveHandler,
@@ -915,7 +915,7 @@ async function generateKeyPair(event, options) {
 
     const result = sshUtils.generateKeyPairSync(keyType, {
       bits: keyBits,
-      comment: comment || 'netcatty-generated-key',
+      comment: comment || 'magiesTerminal-generated-key',
     });
 
     const privateKey = result.private;
@@ -981,7 +981,7 @@ function canReuseExistingSession(options) {
 function sendFinalStartFailureExit(event, options, err) {
   const sessionId = options.sessionId;
   if (!sessionId || event.sender?.isDestroyed?.()) return;
-  safeSend(event.sender, "netcatty:exit", {
+  safeSend(event.sender, "magiesTerminal:exit", {
     sessionId,
     exitCode: 1,
     error: err?.message || String(err),
@@ -1063,7 +1063,7 @@ async function startSSHSessionWrapper(event, options) {
               if (isPassphraseError) {
                 try {
                   const failedKeyPaths = passphraseResult.keys.map(k => k.keyPath);
-                  event.sender.send('netcatty:passphrase-auth-failed', { keyPaths: failedKeyPaths });
+                  event.sender.send('magiesTerminal:passphrase-auth-failed', { keyPaths: failedKeyPaths });
                 } catch (_) { /* sender may be destroyed */ }
               }
 
@@ -1113,7 +1113,7 @@ async function startSSHSessionWrapper(event, options) {
     // Non-auth errors (e.g. ECONNRESET, ETIMEDOUT) — wrap in a clean Error
     // so Electron's ipcMain.handle can serialize it back to the renderer
     // instead of it becoming an uncaught exception that crashes the app.
-    // See: https://github.com/nicely-gg/netcatty/issues/482
+    // See: https://github.com/nicely-gg/magiesTerminal/issues/482
     const connError = new Error(err.message);
     connError.level = err.level || 'client-socket';
     connError.code = err.code;
@@ -1141,7 +1141,7 @@ async function startSSHSessionWrapper(event, options) {
 const { createSystemKnownHostsApi } = require("./sshBridge/systemKnownHosts.cjs");
 // Lets the Mosh stats companion trust a host whose key is already recorded in
 // the user's system OpenSSH known_hosts (the trust source the Mosh handshake's
-// system `ssh` actually uses), in addition to Netcatty's in-app vault.
+// system `ssh` actually uses), in addition to MagiesTerminal's in-app vault.
 const { isHostKeyTrustedBySystem } = createSystemKnownHostsApi({
   fs, path, os, crypto, log,
 });
@@ -1149,7 +1149,7 @@ const { isHostKeyTrustedBySystem } = createSystemKnownHostsApi({
 const { createMoshStatsConnectionApi } = require("./sshBridge/moshStatsConnection.cjs");
 const { ensureMoshStatsConnection, ensureEtStatsConnection } = createMoshStatsConnectionApi({
   get sessions() { return sessions; },
-  SSHClient, sshUtils, NetcattyAgent, buildAlgorithms, getSshAgentSocket,
+  SSHClient, sshUtils, MagiesTerminalAgent, buildAlgorithms, getSshAgentSocket,
   readFileNoFollow, expandIdentityFilePath, isAutoFillablePasswordChallenge,
   hostKeyVerifier, isHostKeyTrustedBySystem, log,
 });
@@ -1193,35 +1193,35 @@ function registerHandlers(ipcMain, options = {}) {
   const terminalWorkerManager = options.terminalWorkerManager || null;
   if (terminalWorkerManager) {
     [
-      "netcatty:start",
-      "netcatty:ssh:exec",
-      "netcatty:ssh:pwd",
-      "netcatty:ssh:remoteInfo",
-      "netcatty:ssh:distroInfo",
-      "netcatty:ssh:readRemoteHistory",
-      "netcatty:ssh:listdir",
-      "netcatty:ssh:stats",
-      "netcatty:ssh:setEncoding",
-      "netcatty:keyboard-interactive:respond",
-      "netcatty:passphrase:respond",
-      "netcatty:host-key:respond",
+      "magiesTerminal:start",
+      "magiesTerminal:ssh:exec",
+      "magiesTerminal:ssh:pwd",
+      "magiesTerminal:ssh:remoteInfo",
+      "magiesTerminal:ssh:distroInfo",
+      "magiesTerminal:ssh:readRemoteHistory",
+      "magiesTerminal:ssh:listdir",
+      "magiesTerminal:ssh:stats",
+      "magiesTerminal:ssh:setEncoding",
+      "magiesTerminal:keyboard-interactive:respond",
+      "magiesTerminal:passphrase:respond",
+      "magiesTerminal:host-key:respond",
     ].forEach((channel) => registerWorkerHandle(ipcMain, terminalWorkerManager, channel));
-    ipcMain.on("netcatty:zmodem:overwrite-response", (event, payload) => {
-      terminalWorkerManager.send("netcatty:zmodem:overwrite-response", payload, {
+    ipcMain.on("magiesTerminal:zmodem:overwrite-response", (event, payload) => {
+      terminalWorkerManager.send("magiesTerminal:zmodem:overwrite-response", payload, {
         webContentsId: event?.sender?.id,
       });
     });
   } else {
-    ipcMain.handle("netcatty:start", startSSHSessionWrapper);
-    ipcMain.handle("netcatty:ssh:exec", execCommand);
-    ipcMain.handle("netcatty:ssh:pwd", getSessionPwd);
-    ipcMain.handle("netcatty:ssh:remoteInfo", getSessionRemoteInfo);
-    ipcMain.handle("netcatty:ssh:distroInfo", getSessionDistroInfo);
-    ipcMain.handle("netcatty:ssh:readRemoteHistory", readRemoteHistory);
-    ipcMain.handle("netcatty:ssh:listdir", listSessionDir);
-    ipcMain.handle("netcatty:ssh:stats", getServerStats);
-    ipcMain.handle("netcatty:ssh:setEncoding", setSessionEncoding);
-    ipcMain.on("netcatty:zmodem:overwrite-response", (_event, payload) => {
+    ipcMain.handle("magiesTerminal:start", startSSHSessionWrapper);
+    ipcMain.handle("magiesTerminal:ssh:exec", execCommand);
+    ipcMain.handle("magiesTerminal:ssh:pwd", getSessionPwd);
+    ipcMain.handle("magiesTerminal:ssh:remoteInfo", getSessionRemoteInfo);
+    ipcMain.handle("magiesTerminal:ssh:distroInfo", getSessionDistroInfo);
+    ipcMain.handle("magiesTerminal:ssh:readRemoteHistory", readRemoteHistory);
+    ipcMain.handle("magiesTerminal:ssh:listdir", listSessionDir);
+    ipcMain.handle("magiesTerminal:ssh:stats", getServerStats);
+    ipcMain.handle("magiesTerminal:ssh:setEncoding", setSessionEncoding);
+    ipcMain.on("magiesTerminal:zmodem:overwrite-response", (_event, payload) => {
       const resolve = zmodemOverwritePending.get(payload?.requestId);
       if (resolve) { zmodemOverwritePending.delete(payload.requestId); resolve(payload); }
     });
@@ -1232,13 +1232,13 @@ function registerHandlers(ipcMain, options = {}) {
     // Register the SSH host key verification response handler
     hostKeyVerifier.registerHandler(ipcMain);
   }
-  ipcMain.handle("netcatty:key:generate", generateKeyPair);
-  ipcMain.handle("netcatty:sshDebugLog:info", getSshDebugLogInfo);
-  ipcMain.handle("netcatty:sshDebugLog:openDir", openSshDebugLogDir);
-  ipcMain.handle("netcatty:ssh:check-agent", async () => {
+  ipcMain.handle("magiesTerminal:key:generate", generateKeyPair);
+  ipcMain.handle("magiesTerminal:sshDebugLog:info", getSshDebugLogInfo);
+  ipcMain.handle("magiesTerminal:sshDebugLog:openDir", openSshDebugLogDir);
+  ipcMain.handle("magiesTerminal:ssh:check-agent", async () => {
     return await checkWindowsSshAgent();
   });
-  ipcMain.handle("netcatty:ssh:get-default-keys", async () => {
+  ipcMain.handle("magiesTerminal:ssh:get-default-keys", async () => {
     const sshDir = path.join(os.homedir(), ".ssh");
     const keys = [];
     try {

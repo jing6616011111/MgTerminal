@@ -198,7 +198,7 @@ test("telnet auto-login handles wake banners concatenated with preceding text", 
     write: (data) => writes.push(data),
   });
 
-  autoLogin.handleText("Netcatty local Telnet test servicePress RETURN to get started.");
+  autoLogin.handleText("MagiesTerminal local Telnet test servicePress RETURN to get started.");
   autoLogin.handleText("Username: ");
   autoLogin.handleText("\r\nPassword: ");
 

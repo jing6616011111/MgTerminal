@@ -67,7 +67,7 @@ function createBridgeRegistrarForTest({
     app: {
       getPath: () => tempDir,
       getVersion: () => "0.0.0",
-      getName: () => "Netcatty",
+      getName: () => "MagiesTerminal",
     },
     BrowserWindow: { getAllWindows: () => [] },
     shell: { openExternal() {}, openPath() {} },
@@ -114,7 +114,7 @@ function createBridgeRegistrarForTest({
 }
 
 test("downloadToTemp applies shared SFTP transfer limits to direct fastGet downloads", async (t) => {
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "netcatty-download-temp-test-"));
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-download-temp-test-"));
   t.after(async () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });
@@ -140,7 +140,7 @@ test("downloadToTemp applies shared SFTP transfer limits to direct fastGet downl
 
   registerBridges({});
 
-  const handler = ipcMain.handlers.get("netcatty:sftp:downloadToTemp");
+  const handler = ipcMain.handlers.get("magiesTerminal:sftp:downloadToTemp");
   assert.equal(typeof handler, "function");
 
   const localPath = await handler(
@@ -161,7 +161,7 @@ test("downloadToTemp applies shared SFTP transfer limits to direct fastGet downl
 });
 
 test("downloadToTemp proxies to the terminal worker in worker mode", async (t) => {
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "netcatty-download-worker-test-"));
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-download-worker-test-"));
   t.after(async () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });
@@ -182,7 +182,7 @@ test("downloadToTemp proxies to the terminal worker in worker mode", async (t) =
 
   registerBridges({});
 
-  const handler = ipcMain.handlers.get("netcatty:sftp:downloadToTemp");
+  const handler = ipcMain.handlers.get("magiesTerminal:sftp:downloadToTemp");
   const promise = handler(
     { sender: { id: 12 } },
     {
@@ -194,7 +194,7 @@ test("downloadToTemp proxies to the terminal worker in worker mode", async (t) =
   );
   await new Promise((resolve) => setImmediate(resolve));
 
-  assert.equal(child.messages[0].channel, "netcatty:sftp:downloadToLocal");
+  assert.equal(child.messages[0].channel, "magiesTerminal:sftp:downloadToLocal");
   assert.equal(child.messages[0].webContentsId, 12);
   assert.deepEqual(child.messages[0].payload, {
     sftpId: "worker-sftp-1",
@@ -212,7 +212,7 @@ test("downloadToTemp proxies to the terminal worker in worker mode", async (t) =
 });
 
 test("downloadToTempWithProgress proxies transfer work to the terminal worker in worker mode", async (t) => {
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "netcatty-download-worker-progress-test-"));
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-download-worker-progress-test-"));
   t.after(async () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });
@@ -233,7 +233,7 @@ test("downloadToTempWithProgress proxies transfer work to the terminal worker in
 
   registerBridges({});
 
-  const handler = ipcMain.handlers.get("netcatty:sftp:downloadToTempWithProgress");
+  const handler = ipcMain.handlers.get("magiesTerminal:sftp:downloadToTempWithProgress");
   const promise = handler(
     { sender: { id: 13 } },
     {
@@ -246,7 +246,7 @@ test("downloadToTempWithProgress proxies transfer work to the terminal worker in
   );
   await new Promise((resolve) => setImmediate(resolve));
 
-  assert.equal(child.messages[0].channel, "netcatty:transfer:start");
+  assert.equal(child.messages[0].channel, "magiesTerminal:transfer:start");
   assert.equal(child.messages[0].webContentsId, 13);
   assert.deepEqual(child.messages[0].payload, {
     transferId: "transfer-1",

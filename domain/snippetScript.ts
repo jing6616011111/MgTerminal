@@ -20,16 +20,16 @@ export const SHELL_PROMPT_END_REGEX = /(?:~[#$]\s*|[@][^\n]{0,120}[:][^\n]{0,120
 /** Minimal smoke script for verifying manual run and onOutput triggers. */
 export const SCRIPT_SMOKE_TEST = `// === Smoke test ===
 // Manual:  trigger=manual, pick a target host, click "Run now"
-// onOutput: trigger=onOutput, pattern=NETCATTY_SMOKE, save, connect to target host, then run: echo NETCATTY_SMOKE
+// onOutput: trigger=onOutput, pattern=MAGIES_TERMINAL_SMOKE, save, connect to target host, then run: echo MAGIES_TERMINAL_SMOKE
 //
 await nct.screen.waitForPrompt(30000);
-await nct.screen.sendLine('echo netcatty-smoke-ok');
+await nct.screen.sendLine('echo magiesTerminal-smoke-ok');
 nct.log('Smoke test passed');
-await nct.dialog.alert('Netcatty script smoke test OK');
+await nct.dialog.alert('MagiesTerminal script smoke test OK');
 `;
 
 /** Full integration test for onConnect / manual run; dialog API enabled by default. */
-export const SCRIPT_INTEGRATION_TEST = `// Netcatty Integration Test — onConnect / manual full API exercise
+export const SCRIPT_INTEGRATION_TEST = `// MagiesTerminal Integration Test — onConnect / manual full API exercise
 // Trigger: onConnect or Run now | Permission: Auto or Confirm (dialogs need non-Observer)
 
 const CONFIG = {
@@ -44,7 +44,7 @@ const CONFIG = {
 
 async function main() {
   const tag = \`nc-it-\${Date.now().toString(36)}\`;
-  nct.log('=== Netcatty Integration Test START ===');
+  nct.log('=== MagiesTerminal Integration Test START ===');
   nct.log(\`tag=\${tag}  nct.version=\${nct.version}\`);
   nct.log(\`session: host=\${nct.session.hostname} user=\${nct.session.username} connected=\${nct.session.connected}\`);
 
@@ -112,7 +112,7 @@ async function main() {
 
   if (CONFIG.RUN_SESSION_LOG) {
     nct.log('[10/12] startLog / stopLog');
-    await nct.session.startLog(\`./netcatty-it-\${tag}.log\`);
+    await nct.session.startLog(\`./magiesTerminal-it-\${tag}.log\`);
     await nct.screen.sendLine(\`echo "\${tag}_LOGGED"\`);
     await nct.screen.waitForText(\`\${tag}_LOGGED\`, CONFIG.STEP_TIMEOUT_MS);
     await nct.session.stopLog();
@@ -146,13 +146,13 @@ async function main() {
 
   await nct.screen.sendLine(\`echo "=== \${tag} ALL_PASSED ==="\`);
   await nct.screen.waitForText(\`\${tag} ALL_PASSED\`, CONFIG.STEP_TIMEOUT_MS);
-  nct.log('=== Netcatty Integration Test PASSED ===');
+  nct.log('=== MagiesTerminal Integration Test PASSED ===');
 }
 
 await main();
 `;
 
-export const DEFAULT_SCRIPT_TEMPLATE = `// Netcatty automation script - async JS in the active terminal session
+export const DEFAULT_SCRIPT_TEMPLATE = `// MagiesTerminal automation script - async JS in the active terminal session
 //
 // nct.screen.waitForPrompt(ms?)          wait for shell prompt (# root / $ user)
 // nct.screen.waitForText(text, ms?)       wait for exact output text

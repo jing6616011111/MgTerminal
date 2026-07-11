@@ -7,7 +7,7 @@ import { useI18n } from "../../../application/i18n/I18nProvider";
 import { useSftpFileAssociations } from "../../../application/state/useSftpFileAssociations";
 import { useSettingsState } from "../../../application/state/useSettingsState";
 import type { FileOpenerType, SystemAppInfo } from "../../../lib/sftpFileUtils";
-import { netcattyBridge } from "../../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../../infrastructure/services/magiesTerminalBridge";
 import { Button } from "../../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip";
 import {
@@ -56,7 +56,7 @@ export default function SettingsFileAssociationsTab() {
   const handleSelectDefaultSystemApp = useCallback(async () => {
     setIsSelectingDefaultApp(true);
     try {
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge?.selectApplication) return;
       const result = await bridge.selectApplication();
       if (result) {
@@ -84,7 +84,7 @@ export default function SettingsFileAssociationsTab() {
   const handleEdit = useCallback(async (extension: string) => {
     setEditingExtension(extension);
     try {
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge?.selectApplication) {
         return;
       }

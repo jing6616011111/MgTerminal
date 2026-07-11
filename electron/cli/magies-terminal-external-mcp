@@ -1,0 +1,29 @@
+#!/bin/sh
+
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+SERVER_SCRIPT="$SCRIPT_DIR/../mcp/magies-terminal-external-mcp-server.cjs"
+
+APP_BIN=""
+if [ -n "${MAGIES_TERMINAL_CLI_ELECTRON_EXEC_PATH:-}" ] && [ -x "${MAGIES_TERMINAL_CLI_ELECTRON_EXEC_PATH}" ]; then
+  APP_BIN="${MAGIES_TERMINAL_CLI_ELECTRON_EXEC_PATH}"
+elif [ -x "$SCRIPT_DIR/../../../../MacOS/MagiesTerminal" ]; then
+  APP_BIN="$SCRIPT_DIR/../../../../MacOS/MagiesTerminal"
+elif [ -x "$SCRIPT_DIR/../../../../MagiesTerminal" ]; then
+  APP_BIN="$SCRIPT_DIR/../../../../MagiesTerminal"
+elif [ -x "$SCRIPT_DIR/../../../../magiesTerminal" ]; then
+  APP_BIN="$SCRIPT_DIR/../../../../magiesTerminal"
+fi
+
+if [ -n "$APP_BIN" ]; then
+  export ELECTRON_RUN_AS_NODE=1
+  exec "$APP_BIN" "$SERVER_SCRIPT" "$@"
+fi
+
+if command -v node >/dev/null 2>&1; then
+  exec node "$SERVER_SCRIPT" "$@"
+fi
+
+printf '%s\n' "Failed to locate the bundled MagiesTerminal runtime for magies-terminal-external-mcp." >&2
+exit 1

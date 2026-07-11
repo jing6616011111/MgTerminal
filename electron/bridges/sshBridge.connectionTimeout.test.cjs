@@ -85,7 +85,7 @@ function registerStartHandler(bridge, sessions) {
     on() {},
   };
   bridge.registerHandlers(ipcMain);
-  return ipcMain.handlers.get("netcatty:start");
+  return ipcMain.handlers.get("magiesTerminal:start");
 }
 
 test("SSH start uses a 20s TCP dial timeout while keeping 120s auth readiness", async (t) => {
@@ -115,12 +115,12 @@ test("SSH start uses a 20s TCP dial timeout while keeping 120s auth readiness", 
   assert.equal(client.connectOpts.readyTimeout, 120_000);
   assert.deepEqual(client._sock.timeouts, [0]);
   assert.ok(sender.sent.some((message) => (
-    message.channel === "netcatty:chain:progress"
+    message.channel === "magiesTerminal:chain:progress"
     && message.payload.sessionId === "ssh-timeout"
     && message.payload.status === "tcp-connected"
   )));
   assert.ok(sender.sent.some((message) => (
-    message.channel === "netcatty:exit"
+    message.channel === "magiesTerminal:exit"
     && message.payload.sessionId === "ssh-timeout"
     && message.payload.reason === "timeout"
   )));

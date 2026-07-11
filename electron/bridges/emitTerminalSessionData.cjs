@@ -94,7 +94,7 @@ function emitTerminalSessionData(contents, sessionId, data, options = {}) {
     logTerminalOutputPerf("backend-emit", emitPerfDetails);
   }
   if (outputChannel?.send?.(sessionId, data, meta)) return;
-  contents?.send("netcatty:data", meta ? { sessionId, data, meta } : { sessionId, data });
+  contents?.send("magiesTerminal:data", meta ? { sessionId, data, meta } : { sessionId, data });
 }
 
 module.exports = {

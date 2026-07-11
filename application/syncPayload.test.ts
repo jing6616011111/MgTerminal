@@ -239,7 +239,7 @@ test("buildSyncPayload omits device-bound encrypted AI API keys", () => {
 test("buildCloudSyncPayload includes decrypted AI API keys for portable cloud sync", async () => {
   Object.defineProperty(globalThis, "window", {
     value: {
-      netcatty: {
+      magiesTerminal: {
         credentialsDecrypt: async (value: string) => {
           if (value === "enc:v1:djEwPROVIDER") return "sk-provider";
           if (value === "enc:v1:djEwWEB") return "sk-web";
@@ -272,7 +272,7 @@ test("buildCloudSyncPayload includes decrypted AI API keys for portable cloud sy
 test("buildCloudSyncPayload fails instead of deleting API keys when decrypt fails", async () => {
   Object.defineProperty(globalThis, "window", {
     value: {
-      netcatty: {
+      magiesTerminal: {
         credentialsDecrypt: async (value: string) => value,
       },
     },
@@ -353,7 +353,7 @@ test("applySyncPayload restores AI configuration settings", async () => {
 test("applySyncPayload encrypts synced plaintext AI API keys before saving locally", async () => {
   Object.defineProperty(globalThis, "window", {
     value: {
-      netcatty: {
+      magiesTerminal: {
         credentialsEncrypt: async (value: string) => `enc:v1:djEwLOCAL_${value}`,
       },
       dispatchEvent: () => true,
@@ -445,7 +445,7 @@ test("applySyncPayload dispatches a same-window AI-state-changed event so the op
 
     await applySyncPayload(payload, { importVaultData: () => {} });
 
-    const events = dispatched.filter((e) => e.type === "netcatty:ai-state-changed");
+    const events = dispatched.filter((e) => e.type === "magiesTerminal:ai-state-changed");
     const keys = events.map((e) => (e.detail as { key?: string })?.key);
     assert.ok(keys.includes(storageKeys.STORAGE_KEY_AI_PROVIDERS), "providers nudge");
     assert.ok(keys.includes(storageKeys.STORAGE_KEY_AI_AGENT_PROVIDER_MAP), "agentProviderMap nudge");

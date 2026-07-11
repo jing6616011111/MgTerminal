@@ -7,7 +7,7 @@ const test = require("node:test");
 const { ensureNodePtySpawnHelperExecutable } = require("./nodePtySpawnHelperPermissions.cjs");
 
 function makeTempPackageRoot() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-node-pty-perms-"));
+  return fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-node-pty-perms-"));
 }
 
 function writeHelper(root, relativePath, mode = 0o644) {

@@ -232,11 +232,11 @@ async function applyHttpNetworkProxy(raw, deps = {}) {
  * @param {import('electron')=} electronModule
  */
 function registerHandlers(ipcMain, electronModule) {
-  ipcMain.handle("netcatty:networkProxy:set", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:networkProxy:set", async (_event, payload) => {
     return applyHttpNetworkProxy(payload, { electronModule });
   });
 
-  ipcMain.handle("netcatty:networkProxy:get", async () => {
+  ipcMain.handle("magiesTerminal:networkProxy:get", async () => {
     return { settings: getCurrentProxySettings() };
   });
 }

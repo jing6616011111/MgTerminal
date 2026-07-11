@@ -228,9 +228,9 @@ export function handleEscapeKeyDownImpl(getCtx: AppContextGetter, e: KeyboardEve
 }
 
 export function handleKeyboardInteractiveSubmitImpl(getCtx: AppContextGetter, requestId: string, responses: string[], savePassword?: string) {
-  const { hosts, keyboardInteractiveQueue, netcattyBridge, sessions, setKeyboardInteractiveQueue, updateHosts } = getCtx();
+  const { hosts, keyboardInteractiveQueue, magiesTerminalBridge, sessions, setKeyboardInteractiveQueue, updateHosts } = getCtx();
 {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.respondKeyboardInteractive) {
       void bridge.respondKeyboardInteractive(requestId, responses, false);
     }
@@ -255,9 +255,9 @@ export function handleKeyboardInteractiveSubmitImpl(getCtx: AppContextGetter, re
 }
 
 export function handleKeyboardInteractiveCancelImpl(getCtx: AppContextGetter, requestId: string) {
-  const { netcattyBridge, setKeyboardInteractiveQueue } = getCtx();
+  const { magiesTerminalBridge, setKeyboardInteractiveQueue } = getCtx();
 {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.respondKeyboardInteractive) {
       void bridge.respondKeyboardInteractive(requestId, [], true);
     }
@@ -267,9 +267,9 @@ export function handleKeyboardInteractiveCancelImpl(getCtx: AppContextGetter, re
 }
 
 export async function handlePassphraseSubmitImpl(getCtx: AppContextGetter, requestId: string, passphrase: string, remember: boolean) {
-  const { keysRef, netcattyBridge, passphraseQueue, rememberKeyPassphrase, setPassphraseQueue, updateKeys } = getCtx();
+  const { keysRef, magiesTerminalBridge, passphraseQueue, rememberKeyPassphrase, setPassphraseQueue, updateKeys } = getCtx();
 {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     const request = passphraseQueue.find((r: PassphraseRequest) => r.requestId === requestId);
 
     // Save passphrase if requested
@@ -299,9 +299,9 @@ export async function handlePassphraseSubmitImpl(getCtx: AppContextGetter, reque
 }
 
 export function handlePassphraseCancelImpl(getCtx: AppContextGetter, requestId: string) {
-  const { netcattyBridge, setPassphraseQueue } = getCtx();
+  const { magiesTerminalBridge, setPassphraseQueue } = getCtx();
 {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.respondPassphrase) {
       // Cancel = stop the entire passphrase flow
       void bridge.respondPassphrase(requestId, '', true);
@@ -311,9 +311,9 @@ export function handlePassphraseCancelImpl(getCtx: AppContextGetter, requestId: 
 }
 
 export function handlePassphraseSkipImpl(getCtx: AppContextGetter, requestId: string) {
-  const { netcattyBridge, setPassphraseQueue } = getCtx();
+  const { magiesTerminalBridge, setPassphraseQueue } = getCtx();
 {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.respondPassphraseSkip) {
       // Skip = skip this key but continue asking for others
       void bridge.respondPassphraseSkip(requestId);
@@ -361,13 +361,13 @@ export function copySessionWithCurrentShellImpl(getCtx: AppContextGetter, sessio
 }
 
 export async function copySessionToNewWindowWithCurrentShellImpl(getCtx: AppContextGetter, sessionId: string) {
-  const { classifyLocalShellType, discoveredShells, netcattyBridge, resolveShellSetting, sessions, terminalSettings, t, toast } = getCtx();
+  const { classifyLocalShellType, discoveredShells, magiesTerminalBridge, resolveShellSetting, sessions, terminalSettings, t, toast } = getCtx();
 {
     const sourceSession = sessions.find((session: { id: string }) => session.id === sessionId);
     if (!sourceSession) return false;
 
     const resolved = resolveShellSetting(terminalSettings.localShell, discoveredShells);
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.openSessionInNewWindow) {
       toast?.error?.(t?.('tabs.copyTabToNewWindowFailed') ?? 'Failed to open tab in a new window');
       return false;
@@ -391,9 +391,9 @@ export async function copySessionToNewWindowWithCurrentShellImpl(getCtx: AppCont
 }
 
 export async function confirmIfBusyLocalTerminalImpl(getCtx: AppContextGetter, sessionIds: string[]) {
-  const { netcattyBridge, sessions, t } = getCtx();
+  const { magiesTerminalBridge, sessions, t } = getCtx();
 {
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       const localIds = sessionIds.filter((id) => {
         const s = sessions.find((x) => x.id === id);
         return s?.protocol === 'local';

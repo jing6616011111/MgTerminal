@@ -80,7 +80,7 @@ export const ImportVaultDialog: React.FC<ImportVaultDialogProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "netcatty-vault-template.csv";
+    a.download = "magiesTerminal-vault-template.csv";
     a.click();
     URL.revokeObjectURL(url);
   }, []);

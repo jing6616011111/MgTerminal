@@ -35,13 +35,13 @@ npm run pack:linux
 
 ## Architecture
 
-Netcatty is an Electron + React desktop app (SSH manager, terminal, SFTP browser). It has two runtimes:
+MagiesTerminal is an Electron + React desktop app (SSH manager, terminal, SFTP browser). It has two runtimes:
 
 ### Electron Main Process (`electron/`)
 - **`main.cjs`** — entry point; wires crash logging, process error guards, and delegates to `main/registerBridges.cjs`
 - **`bridges/`** — one `.cjs` file per capability domain (sshBridge, sftpBridge, terminalBridge, portForwardingBridge, aiBridge, etc.). Each bridge exposes IPC handlers via `ipcMain`. Tests live alongside the bridge file (`*.test.cjs`).
 - **`preload.cjs`** — exposes a typed `window.electron` API to the renderer via `contextBridge`. Uses `preload/api.cjs` for the generated API surface.
-- **`cli/`** — `netcatty-tool-cli.cjs` is a separate internal binary for tool/MCP integration; treat as internal surface only.
+- **`cli/`** — `magies-terminal-tool-cli.cjs` is a separate internal binary for tool/MCP integration; treat as internal surface only.
 
 ### Renderer Process (React + Vite)
 Three-layer architecture (see `AGENTS.md` for full detail):

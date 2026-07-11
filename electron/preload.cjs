@@ -226,14 +226,14 @@ terminalUrgentInputPorts.register();
 // (disposed on unmount); delivery is gated by closedTerminalDataSessions so
 // events stop after exit/close and resume automatically when a session
 // restarts with the same id.
-ipcRenderer.on("netcatty:zmodem:detect", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:zmodem:detect", (_event, payload) => {
   if (closedTerminalDataSessions.has(payload.sessionId)) return;
   const set = zmodemListeners.get(payload.sessionId);
   if (!set) return;
   set.forEach((cb) => { try { cb({ type: "detect", ...payload }); } catch {} });
 });
 
-ipcRenderer.on("netcatty:window:terminalPopupConfig", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:window:terminalPopupConfig", (_event, payload) => {
   if (terminalPopupConfigState.listeners.size === 0) {
     terminalPopupConfigState.pending = payload;
     return;
@@ -246,31 +246,31 @@ ipcRenderer.on("netcatty:window:terminalPopupConfig", (_event, payload) => {
     }
   });
 });
-ipcRenderer.on("netcatty:zmodem:progress", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:zmodem:progress", (_event, payload) => {
   if (closedTerminalDataSessions.has(payload.sessionId)) return;
   const set = zmodemListeners.get(payload.sessionId);
   if (!set) return;
   set.forEach((cb) => { try { cb({ type: "progress", ...payload }); } catch {} });
 });
-ipcRenderer.on("netcatty:zmodem:complete", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:zmodem:complete", (_event, payload) => {
   if (closedTerminalDataSessions.has(payload.sessionId)) return;
   const set = zmodemListeners.get(payload.sessionId);
   if (!set) return;
   set.forEach((cb) => { try { cb({ type: "complete", ...payload }); } catch {} });
 });
-ipcRenderer.on("netcatty:zmodem:error", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:zmodem:error", (_event, payload) => {
   if (closedTerminalDataSessions.has(payload.sessionId)) return;
   const set = zmodemListeners.get(payload.sessionId);
   if (!set) return;
   set.forEach((cb) => { try { cb({ type: "error", ...payload }); } catch {} });
 });
-ipcRenderer.on("netcatty:zmodem:overwrite-request", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:zmodem:overwrite-request", (_event, payload) => {
   if (closedTerminalDataSessions.has(payload.sessionId)) return;
   const set = zmodemOverwriteListeners.get(payload.sessionId);
   if (set) set.forEach((cb) => cb(payload));
 });
 
-ipcRenderer.on("netcatty:data", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:data", (_event, payload) => {
   deliverTerminalData(payload?.sessionId, payload?.data, {
     syntheticEcho: payload?.syntheticEcho,
     meta: payload?.meta,
@@ -281,7 +281,7 @@ ipcRenderer.on("netcatty:data", (_event, payload) => {
 // subscribers and disposed on unmount. Delivery is gated by
 // closedTerminalDataSessions (see zmodem handlers above), so events stop after
 // exit/close and resume when a session restarts with the same id.
-ipcRenderer.on("netcatty:exit", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:exit", (_event, payload) => {
   const sessionId = payload?.sessionId;
   if (!sessionId) return;
   const wasClosed = closedTerminalDataSessions.has(sessionId);
@@ -313,7 +313,7 @@ ipcRenderer.on("netcatty:exit", (_event, payload) => {
 });
 
 // Chain progress events (for jump host connections)
-ipcRenderer.on("netcatty:chain:progress", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:chain:progress", (_event, payload) => {
   const { sessionId, hop, total, label, status, error } = payload;
   // Notify all registered chain progress listeners
   chainProgressListeners.forEach((cb) => {
@@ -325,7 +325,7 @@ ipcRenderer.on("netcatty:chain:progress", (_event, payload) => {
   });
 });
 
-ipcRenderer.on("netcatty:connection-reuse:fallback", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:connection-reuse:fallback", (_event, payload) => {
   connectionReuseFallbackListeners.forEach((cb) => {
     try {
       cb(payload.sessionId, payload.sourceSessionId);
@@ -336,7 +336,7 @@ ipcRenderer.on("netcatty:connection-reuse:fallback", (_event, payload) => {
 });
 
 // SFTP connection progress events (auth method logs)
-ipcRenderer.on("netcatty:sftp:connection-progress", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:sftp:connection-progress", (_event, payload) => {
   sftpConnectionProgressListeners.forEach((cb) => {
     try {
       cb(payload.sessionId, payload.label, payload.status, payload.detail);
@@ -346,7 +346,7 @@ ipcRenderer.on("netcatty:sftp:connection-progress", (_event, payload) => {
   });
 });
 
-ipcRenderer.on("netcatty:languageChanged", (_event, language) => {
+ipcRenderer.on("magiesTerminal:languageChanged", (_event, language) => {
   languageChangeListeners.forEach((cb) => {
     try {
       cb(language);
@@ -356,7 +356,7 @@ ipcRenderer.on("netcatty:languageChanged", (_event, language) => {
   });
 });
 
-ipcRenderer.on("netcatty:window:fullscreen-changed", (_event, isFullscreen) => {
+ipcRenderer.on("magiesTerminal:window:fullscreen-changed", (_event, isFullscreen) => {
   fullscreenChangeListeners.forEach((cb) => {
     try {
       cb(isFullscreen);
@@ -366,7 +366,7 @@ ipcRenderer.on("netcatty:window:fullscreen-changed", (_event, isFullscreen) => {
   });
 });
 
-ipcRenderer.on("netcatty:window:shown", () => {
+ipcRenderer.on("magiesTerminal:window:shown", () => {
   windowShownListeners.forEach((cb) => {
     try {
       cb();
@@ -376,7 +376,7 @@ ipcRenderer.on("netcatty:window:shown", () => {
   });
 });
 
-ipcRenderer.on("netcatty:window:focus-requested", () => {
+ipcRenderer.on("magiesTerminal:window:focus-requested", () => {
   windowFocusRequestedListeners.forEach((cb) => {
     try {
       cb();
@@ -386,7 +386,7 @@ ipcRenderer.on("netcatty:window:focus-requested", () => {
   });
 });
 
-ipcRenderer.on("netcatty:window:will-hide", () => {
+ipcRenderer.on("magiesTerminal:window:will-hide", () => {
   windowWillHideListeners.forEach((cb) => {
     try {
       cb();
@@ -399,7 +399,7 @@ ipcRenderer.on("netcatty:window:will-hide", () => {
 
 
 // Authentication failed events
-ipcRenderer.on("netcatty:auth:failed", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:auth:failed", (_event, payload) => {
   const set = authFailedListeners.get(payload.sessionId);
   if (set) {
     set.forEach((cb) => {
@@ -412,7 +412,7 @@ ipcRenderer.on("netcatty:auth:failed", (_event, payload) => {
   }
 });
 
-ipcRenderer.on("netcatty:telnet:auto-login-complete", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:telnet:auto-login-complete", (_event, payload) => {
   const set = telnetAutoLoginCompleteListeners.get(payload.sessionId);
   if (!set) return;
   set.forEach((cb) => {
@@ -424,7 +424,7 @@ ipcRenderer.on("netcatty:telnet:auto-login-complete", (_event, payload) => {
   });
 });
 
-ipcRenderer.on("netcatty:telnet:auto-login-cancelled", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:telnet:auto-login-cancelled", (_event, payload) => {
   const set = telnetAutoLoginCancelledListeners.get(payload.sessionId);
   if (!set) return;
   set.forEach((cb) => {
@@ -436,7 +436,7 @@ ipcRenderer.on("netcatty:telnet:auto-login-cancelled", (_event, payload) => {
   });
 });
 
-ipcRenderer.on("netcatty:telnet:echo-mode", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:telnet:echo-mode", (_event, payload) => {
   const set = telnetEchoModeListeners.get(payload.sessionId);
   if (!set) return;
   set.forEach((cb) => {
@@ -449,7 +449,7 @@ ipcRenderer.on("netcatty:telnet:echo-mode", (_event, payload) => {
 });
 
 // Keyboard-interactive authentication events (2FA/MFA)
-ipcRenderer.on("netcatty:keyboard-interactive", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:keyboard-interactive", (_event, payload) => {
   keyboardInteractiveListeners.forEach((cb) => {
     try {
       cb(payload);
@@ -459,7 +459,7 @@ ipcRenderer.on("netcatty:keyboard-interactive", (_event, payload) => {
   });
 });
 
-ipcRenderer.on("netcatty:host-key:verify", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:host-key:verify", (_event, payload) => {
   hostKeyVerificationListeners.forEach((cb) => {
     try {
       cb(payload);
@@ -470,7 +470,7 @@ ipcRenderer.on("netcatty:host-key:verify", (_event, payload) => {
 });
 
 // Passphrase request events for encrypted SSH keys
-ipcRenderer.on("netcatty:passphrase-request", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:passphrase-request", (_event, payload) => {
   passphraseListeners.forEach((cb) => {
     try {
       cb(payload);
@@ -481,7 +481,7 @@ ipcRenderer.on("netcatty:passphrase-request", (_event, payload) => {
 });
 
 // Passphrase timeout events (request expired)
-ipcRenderer.on("netcatty:passphrase-timeout", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:passphrase-timeout", (_event, payload) => {
   passphraseTimeoutListeners.forEach((cb) => {
     try {
       cb(payload);
@@ -492,7 +492,7 @@ ipcRenderer.on("netcatty:passphrase-timeout", (_event, payload) => {
 });
 
 // Passphrase cancelled events (request ended because the owning operation stopped)
-ipcRenderer.on("netcatty:passphrase-cancelled", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:passphrase-cancelled", (_event, payload) => {
   passphraseCancelledListeners.forEach((cb) => {
     try {
       cb(payload);
@@ -503,7 +503,7 @@ ipcRenderer.on("netcatty:passphrase-cancelled", (_event, payload) => {
 });
 
 // Passphrase auth failed events (saved passphrase was wrong)
-ipcRenderer.on("netcatty:passphrase-auth-failed", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:passphrase-auth-failed", (_event, payload) => {
   passphraseAuthFailedListeners.forEach((cb) => {
     try {
       cb(payload);
@@ -514,7 +514,7 @@ ipcRenderer.on("netcatty:passphrase-auth-failed", (_event, payload) => {
 });
 
 // Auto-update events
-ipcRenderer.on("netcatty:update:update-available", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:update:update-available", (_event, payload) => {
   updateAvailableListeners.forEach((cb) => {
     try {
       cb(payload);
@@ -524,7 +524,7 @@ ipcRenderer.on("netcatty:update:update-available", (_event, payload) => {
   });
 });
 
-ipcRenderer.on("netcatty:update:update-not-available", () => {
+ipcRenderer.on("magiesTerminal:update:update-not-available", () => {
   updateNotAvailableListeners.forEach((cb) => {
     try {
       cb();
@@ -534,7 +534,7 @@ ipcRenderer.on("netcatty:update:update-not-available", () => {
   });
 });
 
-ipcRenderer.on("netcatty:update:download-progress", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:update:download-progress", (_event, payload) => {
   updateDownloadProgressListeners.forEach((cb) => {
     try {
       cb(payload);
@@ -544,7 +544,7 @@ ipcRenderer.on("netcatty:update:download-progress", (_event, payload) => {
   });
 });
 
-ipcRenderer.on("netcatty:update:downloaded", () => {
+ipcRenderer.on("magiesTerminal:update:downloaded", () => {
   updateDownloadedListeners.forEach((cb) => {
     try {
       cb();
@@ -554,7 +554,7 @@ ipcRenderer.on("netcatty:update:downloaded", () => {
   });
 });
 
-ipcRenderer.on("netcatty:update:error", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:update:error", (_event, payload) => {
   updateErrorListeners.forEach((cb) => {
     try {
       cb(payload);
@@ -565,7 +565,7 @@ ipcRenderer.on("netcatty:update:error", (_event, payload) => {
 });
 
 // Update can't install yet because there are unsaved editors (#1215).
-ipcRenderer.on("netcatty:update:needs-save", () => {
+ipcRenderer.on("magiesTerminal:update:needs-save", () => {
   updateNeedsSaveListeners.forEach((cb) => {
     try {
       cb();
@@ -576,7 +576,7 @@ ipcRenderer.on("netcatty:update:needs-save", () => {
 });
 
 // Transfer progress events
-ipcRenderer.on("netcatty:transfer:progress", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:transfer:progress", (_event, payload) => {
   const cb = transferProgressListeners.get(payload.transferId);
   if (cb) {
     try {
@@ -587,7 +587,7 @@ ipcRenderer.on("netcatty:transfer:progress", (_event, payload) => {
   }
 });
 
-ipcRenderer.on("netcatty:transfer:complete", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:transfer:complete", (_event, payload) => {
   const cb = transferCompleteListeners.get(payload.transferId);
   if (cb) {
     try {
@@ -599,7 +599,7 @@ ipcRenderer.on("netcatty:transfer:complete", (_event, payload) => {
   cleanupTransferListeners(payload.transferId);
 });
 
-ipcRenderer.on("netcatty:transfer:error", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:transfer:error", (_event, payload) => {
   const cb = transferErrorListeners.get(payload.transferId);
   if (cb) {
     try {
@@ -611,7 +611,7 @@ ipcRenderer.on("netcatty:transfer:error", (_event, payload) => {
   cleanupTransferListeners(payload.transferId);
 });
 
-ipcRenderer.on("netcatty:transfer:cancelled", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:transfer:cancelled", (_event, payload) => {
   const cb = transferCancelledListeners.get(payload.transferId);
   if (cb) {
     try { cb(); } catch { }
@@ -629,7 +629,7 @@ const compressProgressListeners = new Map();
 const compressCompleteListeners = new Map();
 const compressErrorListeners = new Map();
 
-ipcRenderer.on("netcatty:upload:progress", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:upload:progress", (_event, payload) => {
   const cb = uploadProgressListeners.get(payload.transferId);
   if (cb) {
     try {
@@ -640,7 +640,7 @@ ipcRenderer.on("netcatty:upload:progress", (_event, payload) => {
   }
 });
 
-ipcRenderer.on("netcatty:upload:complete", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:upload:complete", (_event, payload) => {
   const cb = uploadCompleteListeners.get(payload.transferId);
   if (cb) {
     try {
@@ -655,7 +655,7 @@ ipcRenderer.on("netcatty:upload:complete", (_event, payload) => {
   uploadErrorListeners.delete(payload.transferId);
 });
 
-ipcRenderer.on("netcatty:upload:error", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:upload:error", (_event, payload) => {
   const cb = uploadErrorListeners.get(payload.transferId);
   if (cb) {
     try {
@@ -671,7 +671,7 @@ ipcRenderer.on("netcatty:upload:error", (_event, payload) => {
 });
 
 // Compress upload events
-ipcRenderer.on("netcatty:compress:progress", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:compress:progress", (_event, payload) => {
   const cb = compressProgressListeners.get(payload.compressionId);
   if (cb) {
     try {
@@ -682,7 +682,7 @@ ipcRenderer.on("netcatty:compress:progress", (_event, payload) => {
   }
 });
 
-ipcRenderer.on("netcatty:compress:complete", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:compress:complete", (_event, payload) => {
   const cb = compressCompleteListeners.get(payload.compressionId);
   if (cb) {
     try {
@@ -697,7 +697,7 @@ ipcRenderer.on("netcatty:compress:complete", (_event, payload) => {
   compressErrorListeners.delete(payload.compressionId);
 });
 
-ipcRenderer.on("netcatty:compress:error", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:compress:error", (_event, payload) => {
   const cb = compressErrorListeners.get(payload.compressionId);
   if (cb) {
     try {
@@ -712,7 +712,7 @@ ipcRenderer.on("netcatty:compress:error", (_event, payload) => {
   compressErrorListeners.delete(payload.compressionId);
 });
 
-ipcRenderer.on("netcatty:compress:cancelled", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:compress:cancelled", (_event, payload) => {
   // Just cleanup listeners, the UI already knows it's cancelled
   compressProgressListeners.delete(payload.compressionId);
   compressCompleteListeners.delete(payload.compressionId);
@@ -722,7 +722,7 @@ ipcRenderer.on("netcatty:compress:cancelled", (_event, payload) => {
 // Port forwarding status listeners
 const portForwardStatusListeners = new Map();
 
-ipcRenderer.on("netcatty:portforward:status", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:portforward:status", (_event, payload) => {
   const { tunnelId, status, error } = payload;
   const callbacks = portForwardStatusListeners.get(tunnelId);
   if (callbacks) {
@@ -740,7 +740,7 @@ ipcRenderer.on("netcatty:portforward:status", (_event, payload) => {
 const fileWatchSyncedListeners = new Set();
 const fileWatchErrorListeners = new Set();
 
-ipcRenderer.on("netcatty:filewatch:synced", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:filewatch:synced", (_event, payload) => {
   fileWatchSyncedListeners.forEach((cb) => {
     try {
       cb(payload);
@@ -750,7 +750,7 @@ ipcRenderer.on("netcatty:filewatch:synced", (_event, payload) => {
   });
 });
 
-ipcRenderer.on("netcatty:filewatch:error", (_event, payload) => {
+ipcRenderer.on("magiesTerminal:filewatch:error", (_event, payload) => {
   fileWatchErrorListeners.forEach((cb) => {
     try {
       cb(payload);
@@ -763,7 +763,7 @@ ipcRenderer.on("netcatty:filewatch:error", (_event, payload) => {
 // Buffer the latest tray menu data so it can be replayed when the React
 // component subscribes after lazy-mount (avoiding the first-open race).
 let _lastTrayMenuData = null;
-ipcRenderer.on("netcatty:trayPanel:setMenuData", (_event, data) => {
+ipcRenderer.on("magiesTerminal:trayPanel:setMenuData", (_event, data) => {
   _lastTrayMenuData = data;
 });
 
@@ -826,16 +826,16 @@ const api = createPreloadApi({
 
 // Fig autocomplete spec loading via main process
 const figSpecApi = {
-  listFigSpecs: () => ipcRenderer.invoke("netcatty:figspec:list"),
-  loadFigSpec: (commandName) => ipcRenderer.invoke("netcatty:figspec:load", commandName),
-  listAutocompleteRemoteDir: (sessionId, dirPath, foldersOnly, filterPrefix, limit) => ipcRenderer.invoke("netcatty:ssh:listdir", {
+  listFigSpecs: () => ipcRenderer.invoke("magiesTerminal:figspec:list"),
+  loadFigSpec: (commandName) => ipcRenderer.invoke("magiesTerminal:figspec:load", commandName),
+  listAutocompleteRemoteDir: (sessionId, dirPath, foldersOnly, filterPrefix, limit) => ipcRenderer.invoke("magiesTerminal:ssh:listdir", {
     sessionId,
     path: dirPath,
     foldersOnly,
     filterPrefix,
     limit,
   }),
-  listAutocompleteLocalDir: (dirPath, foldersOnly, filterPrefix, limit) => ipcRenderer.invoke("netcatty:local:listdir", {
+  listAutocompleteLocalDir: (dirPath, foldersOnly, filterPrefix, limit) => ipcRenderer.invoke("magiesTerminal:local:listdir", {
     path: dirPath,
     foldersOnly,
     filterPrefix,
@@ -843,11 +843,11 @@ const figSpecApi = {
   }),
 };
 
-// Merge with existing netcatty (if any) to avoid stale objects on hot reload
-const existing = (typeof window !== "undefined" && window.netcatty) ? window.netcatty : {};
+// Merge with existing magiesTerminal (if any) to avoid stale objects on hot reload
+const existing = (typeof window !== "undefined" && window.magiesTerminal) ? window.magiesTerminal : {};
 
 function getAllowedRendererOrigins() {
-  const origins = new Set(["app://netcatty"]);
+  const origins = new Set(["app://magiesTerminal"]);
   const devServerUrl = process.env.VITE_DEV_SERVER_URL;
   if (typeof devServerUrl === "string" && devServerUrl.length > 0) {
     try {
@@ -883,11 +883,11 @@ function isTrustedRendererLocation(allowedOrigins) {
 
 const allowedOrigins = getAllowedRendererOrigins();
 if (isTrustedRendererLocation(allowedOrigins)) {
-  contextBridge.exposeInMainWorld("netcatty", { ...existing, ...api, ...figSpecApi });
+  contextBridge.exposeInMainWorld("magiesTerminal", { ...existing, ...api, ...figSpecApi });
 } else {
   // If a window navigates to an untrusted origin, do NOT expose the bridge.
   try {
-    console.warn("[Preload] Refusing to expose netcatty bridge to untrusted origin:", window?.location?.origin);
+    console.warn("[Preload] Refusing to expose magiesTerminal bridge to untrusted origin:", window?.location?.origin);
   } catch {
     // ignore
   }

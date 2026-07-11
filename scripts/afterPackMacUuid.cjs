@@ -35,7 +35,7 @@ const MACH_HEADER_64_SIZE = 32;
  * @returns {Buffer}
  */
 function deriveUuid(appId) {
-  const hash = crypto.createHash("sha1").update(`netcatty-local-network|${appId}`).digest();
+  const hash = crypto.createHash("sha1").update(`magiesTerminal-local-network|${appId}`).digest();
   const uuid = Buffer.from(hash.subarray(0, 16));
   uuid[6] = (uuid[6] & 0x0f) | 0x50; // version 5
   uuid[8] = (uuid[8] & 0x3f) | 0x80; // RFC 4122 variant
@@ -301,7 +301,7 @@ async function afterPack(context) {
 
   if (context.electronPlatformName !== "darwin") return;
 
-  const appId = context.packager.appInfo.id || "com.netcatty.app";
+  const appId = context.packager.appInfo.id || "top.magies.terminal";
   const productFilename = context.packager.appInfo.productFilename;
   const appPath = path.join(context.appOutDir, `${productFilename}.app`);
   const exePath = path.join(

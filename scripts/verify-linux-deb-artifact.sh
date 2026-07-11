@@ -184,11 +184,11 @@ main() {
   trap 'rm -rf "${TEMP_DIR:-}"' EXIT
   dpkg-deb -x "${deb_file}" "${TEMP_DIR}"
 
-  electron_bin="${TEMP_DIR}/opt/Netcatty/netcatty"
-  main_binary="${TEMP_DIR}/opt/Netcatty/netcatty"
-  build_release_pty="${TEMP_DIR}/opt/Netcatty/resources/app.asar.unpacked/node_modules/node-pty/build/Release/pty.node"
-  prebuild_pty="${TEMP_DIR}/opt/Netcatty/resources/app.asar.unpacked/node_modules/node-pty/prebuilds/linux-${prebuild_arch}/pty.node"
-  serialport_root="${TEMP_DIR}/opt/Netcatty/resources/app.asar.unpacked/node_modules/@serialport/bindings-cpp"
+  electron_bin="${TEMP_DIR}/opt/MagiesTerminal/magiesTerminal"
+  main_binary="${TEMP_DIR}/opt/MagiesTerminal/magiesTerminal"
+  build_release_pty="${TEMP_DIR}/opt/MagiesTerminal/resources/app.asar.unpacked/node_modules/node-pty/build/Release/pty.node"
+  prebuild_pty="${TEMP_DIR}/opt/MagiesTerminal/resources/app.asar.unpacked/node_modules/node-pty/prebuilds/linux-${prebuild_arch}/pty.node"
+  serialport_root="${TEMP_DIR}/opt/MagiesTerminal/resources/app.asar.unpacked/node_modules/@serialport/bindings-cpp"
   build_release_serialport="${serialport_root}/build/Release/bindings.node"
   prebuild_serialport="$(resolve_serialport_prebuild "${serialport_root}" "${prebuild_arch}")"
 

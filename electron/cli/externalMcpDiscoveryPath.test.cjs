@@ -24,14 +24,14 @@ const {
 
 describe("externalMcpDiscoveryPath", () => {
   it("returns a discovery path under the external-mcp state dir", () => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-ext-mcp-"));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-ext-mcp-"));
     const discoveryPath = getExternalMcpDiscoveryFilePath({ userDataDir: tmp });
     assert.equal(discoveryPath, path.join(tmp, "external-mcp", "discovery.json"));
     assert.equal(EXTERNAL_MCP_CHAT_SESSION_ID, "__external_mcp__");
-    assert.ok(getExternalMcpLauncherPath().includes("netcatty-external-mcp"));
+    assert.ok(getExternalMcpLauncherPath().includes("magies-terminal-external-mcp"));
   });
 
-  it("honors NETCATTY_EXTERNAL_MCP_DISCOVERY_FILE without falling back", () => {
+  it("honors MAGIES_TERMINAL_EXTERNAL_MCP_DISCOVERY_FILE without falling back", () => {
     const previous = process.env[EXTERNAL_MCP_DISCOVERY_ENV_VAR];
     const custom = path.join(os.tmpdir(), "missing-external-discovery.json");
     process.env[EXTERNAL_MCP_DISCOVERY_ENV_VAR] = custom;
@@ -45,7 +45,7 @@ describe("externalMcpDiscoveryPath", () => {
   });
 
   it("resolves an existing discovery under candidate userData dirs", () => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-ext-mcp-"));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-ext-mcp-"));
     const discoveryPath = path.join(tmp, "external-mcp", "discovery.json");
     writeExternalDiscovery(discoveryPath, {
       port: 1,
@@ -71,7 +71,7 @@ describe("externalMcpDiscoveryPath", () => {
 
 describe("externalMcpDiscovery", () => {
   it("writes and reads discovery with chatSessionId", () => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-ext-mcp-"));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-ext-mcp-"));
     const filePath = path.join(tmp, "discovery.json");
     const payload = writeExternalDiscovery(filePath, {
       port: 41234,

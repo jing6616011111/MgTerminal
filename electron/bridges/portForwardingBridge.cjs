@@ -6,7 +6,7 @@
 const net = require("node:net");
 require("./boringSslDhCompat.cjs").installBoringSslDhCompat();
 const { Client: SSHClient } = require("ssh2");
-const { NetcattyAgent } = require("./netcattyAgent.cjs");
+const { MagiesTerminalAgent } = require("./magiesTerminalAgent.cjs");
 const keyboardInteractiveHandler = require("./keyboardInteractiveHandler.cjs");
 const { connectThroughChain, buildAlgorithms } = require("./sshBridge.cjs");
 const hostKeyVerifier = require("./hostKeyVerifier.cjs");
@@ -114,7 +114,7 @@ async function startPortForward(event, payload) {
 
   const sendStatus = (status, error = null) => {
     if (!sender.isDestroyed()) {
-      sender.send("netcatty:portforward:status", { tunnelId, status, error });
+      sender.send("magiesTerminal:portforward:status", { tunnelId, status, error });
     }
   };
 
@@ -191,7 +191,7 @@ async function startPortForward(event, payload) {
     }
 
     if (hasCertificate) {
-      connectOpts.agent = new NetcattyAgent({
+      connectOpts.agent = new MagiesTerminalAgent({
         mode: "certificate",
         webContents: sender,
         meta: {
@@ -580,7 +580,7 @@ async function stopPortForward(event, payload) {
   try {
     cancelTunnel(tunnelId, tunnel, null, { deleteEntry: true });
     if (!event.sender.isDestroyed()) {
-      event.sender.send("netcatty:portforward:status", { tunnelId, status: 'inactive', error: null });
+      event.sender.send("magiesTerminal:portforward:status", { tunnelId, status: 'inactive', error: null });
     }
     return { tunnelId, success: true };
   } catch (err) {
@@ -658,12 +658,12 @@ function stopPortForwardByRuleId(_event, { ruleId }) {
  * Register IPC handlers for port forwarding operations
  */
 function registerHandlers(ipcMain) {
-  ipcMain.handle("netcatty:portforward:start", startPortForward);
-  ipcMain.handle("netcatty:portforward:stop", stopPortForward);
-  ipcMain.handle("netcatty:portforward:status", getPortForwardStatus);
-  ipcMain.handle("netcatty:portforward:list", listPortForwards);
-  ipcMain.handle("netcatty:portforward:stopAll", () => stopAllPortForwards());
-  ipcMain.handle("netcatty:portforward:stopByRuleId", stopPortForwardByRuleId);
+  ipcMain.handle("magiesTerminal:portforward:start", startPortForward);
+  ipcMain.handle("magiesTerminal:portforward:stop", stopPortForward);
+  ipcMain.handle("magiesTerminal:portforward:status", getPortForwardStatus);
+  ipcMain.handle("magiesTerminal:portforward:list", listPortForwards);
+  ipcMain.handle("magiesTerminal:portforward:stopAll", () => stopAllPortForwards());
+  ipcMain.handle("magiesTerminal:portforward:stopByRuleId", stopPortForwardByRuleId);
 }
 
 module.exports = {

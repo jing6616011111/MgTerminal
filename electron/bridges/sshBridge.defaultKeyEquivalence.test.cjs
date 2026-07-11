@@ -28,7 +28,7 @@ const ENCRYPTED =
   "-----BEGIN ENCRYPTED PRIVATE KEY-----\nMIIBfake\n-----END ENCRYPTED PRIVATE KEY-----\n";
 
 async function withFakeSshDir(files, run) {
-  const home = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-default-key-"));
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-default-key-"));
   const sshDir = path.join(home, ".ssh");
   fs.mkdirSync(sshDir);
   for (const [name, content] of Object.entries(files)) {

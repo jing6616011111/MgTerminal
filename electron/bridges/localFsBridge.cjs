@@ -388,18 +388,18 @@ async function listDrives() {
  * Register IPC handlers for local filesystem operations
  */
 function registerHandlers(ipcMain) {
-  ipcMain.handle("netcatty:local:list", listLocalDir);
-  ipcMain.handle("netcatty:local:read", readLocalFile);
-  ipcMain.handle("netcatty:local:write", writeLocalFile);
-  ipcMain.handle("netcatty:local:delete", deleteLocalFile);
-  ipcMain.handle("netcatty:local:rename", renameLocalFile);
-  ipcMain.handle("netcatty:local:mkdir", mkdirLocal);
-  ipcMain.handle("netcatty:local:stat", statLocal);
-  ipcMain.handle("netcatty:local:tree", listLocalTree);
-  ipcMain.handle("netcatty:local:homedir", getHomeDir);
-  ipcMain.handle("netcatty:local:drives", listDrives);
-  ipcMain.handle("netcatty:system:info", getSystemInfo);
-  ipcMain.handle("netcatty:known-hosts:read", readKnownHosts);
+  ipcMain.handle("magiesTerminal:local:list", listLocalDir);
+  ipcMain.handle("magiesTerminal:local:read", readLocalFile);
+  ipcMain.handle("magiesTerminal:local:write", writeLocalFile);
+  ipcMain.handle("magiesTerminal:local:delete", deleteLocalFile);
+  ipcMain.handle("magiesTerminal:local:rename", renameLocalFile);
+  ipcMain.handle("magiesTerminal:local:mkdir", mkdirLocal);
+  ipcMain.handle("magiesTerminal:local:stat", statLocal);
+  ipcMain.handle("magiesTerminal:local:tree", listLocalTree);
+  ipcMain.handle("magiesTerminal:local:homedir", getHomeDir);
+  ipcMain.handle("magiesTerminal:local:drives", listDrives);
+  ipcMain.handle("magiesTerminal:system:info", getSystemInfo);
+  ipcMain.handle("magiesTerminal:known-hosts:read", readKnownHosts);
 }
 
 module.exports = {

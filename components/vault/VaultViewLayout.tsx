@@ -14,7 +14,7 @@ import { LazyLoadBoundary } from "../ui/lazy-load-boundary";
 type VaultViewLayoutContext = Record<string, any>;
 
 const VaultSectionLoading = () => (
-  <div className="netcatty-lazy-fade-in min-h-[320px] flex-1" aria-hidden="true" />
+  <div className="magiesTerminal-lazy-fade-in min-h-[320px] flex-1" aria-hidden="true" />
 );
 
 export function VaultViewLayout({ ctx }: { ctx: VaultViewLayoutContext }) {
@@ -107,7 +107,7 @@ export function VaultViewLayout({ ctx }: { ctx: VaultViewLayoutContext }) {
                   <AppLogo className="h-8 w-8 flex-shrink-0" />
                   {!sidebarCollapsed && (
                     <p className="text-xl font-black italic tracking-tight text-foreground leading-none">
-                      Netcatty
+                      MagiesTerminal
                     </p>
                   )}
                 </button>

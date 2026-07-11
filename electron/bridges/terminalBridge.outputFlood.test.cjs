@@ -276,7 +276,7 @@ test("local terminal exit waits for paced buffered output drain", async () => {
   spawns[0].emitData(Buffer.from(output));
   spawns[0].emitExit({ exitCode: 0, signal: 0 });
 
-  assert.equal(sent.some((item) => item.channel === "netcatty:exit"), false);
+  assert.equal(sent.some((item) => item.channel === "magiesTerminal:exit"), false);
 
   bridge.ackSessionFlow(
     { sender: {} },
@@ -286,11 +286,11 @@ test("local terminal exit waits for paced buffered output drain", async () => {
   await new Promise((resolve) => setTimeout(resolve, 20));
 
   const data = sent
-    .filter((item) => item.channel === "netcatty:data")
+    .filter((item) => item.channel === "magiesTerminal:data")
     .map((item) => item.payload.data)
     .join("");
   assert.equal(data, output);
-  assert.equal(sent.some((item) => item.channel === "netcatty:exit"), true);
+  assert.equal(sent.some((item) => item.channel === "magiesTerminal:exit"), true);
   assert.equal(sessions.has("local-flood-exit"), false);
 });
 
@@ -324,7 +324,7 @@ test("local terminal exit completes while renderer flow is paused", () => {
   spawns[0].emitData(Buffer.from("pending output"));
   spawns[0].emitExit({ exitCode: 0, signal: 0 });
 
-  assert.equal(sent.some((item) => item.channel === "netcatty:data"), false);
-  assert.equal(sent.some((item) => item.channel === "netcatty:exit"), true);
+  assert.equal(sent.some((item) => item.channel === "magiesTerminal:data"), false);
+  assert.equal(sent.some((item) => item.channel === "magiesTerminal:exit"), true);
   assert.equal(sessions.has("local-paused-exit"), false);
 });

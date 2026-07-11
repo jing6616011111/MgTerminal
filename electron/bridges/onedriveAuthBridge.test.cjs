@@ -39,7 +39,7 @@ test("onedrive refresh tags invalid_grant with the reauth marker", async () => {
       error_description: "AADSTS70000: refresh token expired",
     })
   );
-  const refresh = ipcMain.handlers.get("netcatty:onedrive:oauth:refresh");
+  const refresh = ipcMain.handlers.get("magiesTerminal:onedrive:oauth:refresh");
   assert.ok(refresh, "refresh handler registered");
 
   await assert.rejects(
@@ -59,7 +59,7 @@ test("onedrive refresh does NOT tag generic failures with the reauth marker", as
   const ipcMain = registerWithFetch(async () =>
     makeJsonResponse(500, { error: "temporarily_unavailable" })
   );
-  const refresh = ipcMain.handlers.get("netcatty:onedrive:oauth:refresh");
+  const refresh = ipcMain.handlers.get("magiesTerminal:onedrive:oauth:refresh");
 
   await assert.rejects(
     () => refresh({}, { clientId: "client", refreshToken: "ok-refresh" }),
@@ -84,7 +84,7 @@ test("onedrive refresh returns the rotated refresh token from the response", asy
       scope: "scope",
     })
   );
-  const refresh = ipcMain.handlers.get("netcatty:onedrive:oauth:refresh");
+  const refresh = ipcMain.handlers.get("magiesTerminal:onedrive:oauth:refresh");
 
   const tokens = await refresh({}, { clientId: "client", refreshToken: "old-refresh" });
   assert.equal(tokens.accessToken, "new-access");
@@ -101,7 +101,7 @@ test("onedrive refresh falls back to the supplied refresh token when none is ret
       token_type: "Bearer",
     })
   );
-  const refresh = ipcMain.handlers.get("netcatty:onedrive:oauth:refresh");
+  const refresh = ipcMain.handlers.get("magiesTerminal:onedrive:oauth:refresh");
 
   const tokens = await refresh({}, { clientId: "client", refreshToken: "kept-refresh" });
   assert.equal(tokens.refreshToken, "kept-refresh");

@@ -151,7 +151,7 @@ export const enCoreMessages: Messages = {
   'settings.update.downloadError': 'Download failed.',
   'settings.update.manualDownload': 'Download from GitHub',
   'settings.update.manualDownloadHint': 'Auto-update is not available on this platform. Download the latest version from GitHub.',
-  'settings.update.hint': 'Netcatty checks for updates from GitHub Releases.',
+  'settings.update.hint': 'MagiesTerminal checks for updates from GitHub Releases.',
   'settings.update.lastCheckedJustNow': 'just now',
   'settings.update.lastCheckedMinutesAgo': '{n} min ago',
   'settings.update.lastCheckedHoursAgo': '{n} hr ago',
@@ -226,7 +226,7 @@ export const enCoreMessages: Messages = {
   'tray.recentHosts': 'Recent Hosts',
   'tray.empty.title': 'Nothing here yet',
   'tray.empty.subtitle': 'Go connect to a server, they miss you 🚀',
-  'tray.quit': 'Quit Netcatty',
+  'tray.quit': 'Quit MagiesTerminal',
 
   // Vault Sidebar
   'vault.sidebar.collapse': 'Collapse sidebar',
@@ -303,7 +303,7 @@ export const enCoreMessages: Messages = {
   'settings.appearance.windowOpacity': 'Window Opacity',
   'settings.appearance.windowOpacity.desc': 'Adjust the transparency of the entire application window. Lower values also fade terminal text. Some Linux desktop environments may not support this.',
   'settings.appearance.appIcon': 'App Icon',
-  'settings.appearance.appIcon.desc': 'Choose a dock/taskbar icon style to make Netcatty easier to spot when switching apps. Applies at runtime; the installed app bundle icon is unchanged.',
+  'settings.appearance.appIcon.desc': 'Choose a dock/taskbar icon style to make MagiesTerminal easier to spot when switching apps. Applies at runtime; the installed app bundle icon is unchanged.',
   'settings.appearance.appIcon.original': 'Original',
   'settings.appearance.appIcon.bright': 'Bright',
   'settings.appearance.appIcon.dark': 'Dark',

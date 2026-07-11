@@ -1,6 +1,6 @@
 "use strict";
 
-const SDK_SESSION_ID_PREFIX = "netcatty-sdk-session:";
+const SDK_SESSION_ID_PREFIX = "magiesTerminal-sdk-session:";
 
 function encodeSdkSessionIdentity(sessionId, sdkBackend, binPath) {
   if (!sessionId || !sdkBackend) return sessionId;

@@ -500,39 +500,39 @@ function createExternalMcpController(options = {}) {
       ? validateSender
       : () => true;
 
-    ipcMain.handle("netcatty:external-mcp:get-status", async (event) => {
+    ipcMain.handle("magiesTerminal:external-mcp:get-status", async (event) => {
       if (!guard(event)) return { ok: false, error: "Unauthorized IPC sender" };
       return getStatus();
     });
-    ipcMain.handle("netcatty:external-mcp:set-enabled", async (event, payload) => {
+    ipcMain.handle("magiesTerminal:external-mcp:set-enabled", async (event, payload) => {
       if (!guard(event)) return { ok: false, error: "Unauthorized IPC sender" };
       return await setEnabled(Boolean(payload?.enabled));
     });
-    ipcMain.handle("netcatty:external-mcp:set-config", async (event, payload) => {
+    ipcMain.handle("magiesTerminal:external-mcp:set-config", async (event, payload) => {
       if (!guard(event)) return { ok: false, error: "Unauthorized IPC sender" };
       return setConfig(payload || {});
     });
-    ipcMain.handle("netcatty:external-mcp:codex:get-status", async (event) => {
+    ipcMain.handle("magiesTerminal:external-mcp:codex:get-status", async (event) => {
       if (!guard(event)) return { ok: false, error: "Unauthorized IPC sender" };
       return await getCodexStatus();
     });
-    ipcMain.handle("netcatty:external-mcp:codex:add", async (event) => {
+    ipcMain.handle("magiesTerminal:external-mcp:codex:add", async (event) => {
       if (!guard(event)) return { ok: false, error: "Unauthorized IPC sender" };
       return await addToCodex();
     });
-    ipcMain.handle("netcatty:external-mcp:claude:get-status", async (event) => {
+    ipcMain.handle("magiesTerminal:external-mcp:claude:get-status", async (event) => {
       if (!guard(event)) return { ok: false, error: "Unauthorized IPC sender" };
       return await getClaudeStatus();
     });
-    ipcMain.handle("netcatty:external-mcp:claude:add", async (event) => {
+    ipcMain.handle("magiesTerminal:external-mcp:claude:add", async (event) => {
       if (!guard(event)) return { ok: false, error: "Unauthorized IPC sender" };
       return await addToClaude();
     });
-    ipcMain.handle("netcatty:external-mcp:grok:get-status", async (event) => {
+    ipcMain.handle("magiesTerminal:external-mcp:grok:get-status", async (event) => {
       if (!guard(event)) return { ok: false, error: "Unauthorized IPC sender" };
       return await getGrokStatus();
     });
-    ipcMain.handle("netcatty:external-mcp:grok:add", async (event) => {
+    ipcMain.handle("magiesTerminal:external-mcp:grok:add", async (event) => {
       if (!guard(event)) return { ok: false, error: "Unauthorized IPC sender" };
       return await addToGrok();
     });

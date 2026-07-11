@@ -33,7 +33,7 @@ test("MCP/Catty capability context uses scoped metadata when terminal sessions l
     },
   ], "chat-1");
 
-  const result = await bridge.dispatchBuiltinRpc("netcatty/getContext", {
+  const result = await bridge.dispatchBuiltinRpc("magiesTerminal/getContext", {
     chatSessionId: "chat-1",
   });
 
@@ -82,7 +82,7 @@ test("MCP/Catty terminal_execute proxies to worker when terminal sessions live i
     },
   ], "chat-1");
 
-  const result = await bridge.dispatchBuiltinRpc("netcatty/exec", {
+  const result = await bridge.dispatchBuiltinRpc("magiesTerminal/exec", {
     sessionId: "ssh-1",
     command: "pwd",
     chatSessionId: "chat-1",
@@ -91,7 +91,7 @@ test("MCP/Catty terminal_execute proxies to worker when terminal sessions live i
   assert.deepEqual(result, { ok: true, stdout: "ok\n", stderr: "", exitCode: 0 });
   assert.deepEqual(requests, [
     {
-      channel: "netcatty:ai:exec",
+      channel: "magiesTerminal:ai:exec",
       payload: {
         sessionId: "ssh-1",
         command: "pwd",
@@ -126,15 +126,15 @@ test("MCP/Catty SFTP tools proxy to worker when terminal sessions live in worker
     terminalWorkerManager: {
       request(channel, payload, options) {
         requests.push({ channel, payload, options });
-        if (channel === "netcatty:sftp:openForSession") {
+        if (channel === "magiesTerminal:sftp:openForSession") {
           return Promise.resolve({ ok: true, sftpId: "worker-sftp-1" });
         }
-        if (channel === "netcatty:sftp:list") {
+        if (channel === "magiesTerminal:sftp:list") {
           return Promise.resolve([
             { name: "app.log", type: "file", size: "12 bytes" },
           ]);
         }
-        if (channel === "netcatty:sftp:close") {
+        if (channel === "magiesTerminal:sftp:close") {
           return Promise.resolve({ ok: true });
         }
         return Promise.reject(new Error(`unexpected worker request: ${channel}`));
@@ -152,7 +152,7 @@ test("MCP/Catty SFTP tools proxy to worker when terminal sessions live in worker
     },
   ], "chat-1");
 
-  const result = await bridge.dispatchBuiltinRpc("netcatty/sftp/list", {
+  const result = await bridge.dispatchBuiltinRpc("magiesTerminal/sftp/list", {
     sessionId: "ssh-1",
     path: "/var/log",
     chatSessionId: "chat-1",
@@ -164,7 +164,7 @@ test("MCP/Catty SFTP tools proxy to worker when terminal sessions live in worker
   });
   assert.deepEqual(requests, [
     {
-      channel: "netcatty:sftp:openForSession",
+      channel: "magiesTerminal:sftp:openForSession",
       payload: {
         sessionId: "ssh-1",
         encodingStateKey: "chat:chat-1:session:ssh-1",
@@ -173,7 +173,7 @@ test("MCP/Catty SFTP tools proxy to worker when terminal sessions live in worker
       options: {},
     },
     {
-      channel: "netcatty:sftp:list",
+      channel: "magiesTerminal:sftp:list",
       payload: {
         sessionId: "ssh-1",
         path: "/var/log",
@@ -184,7 +184,7 @@ test("MCP/Catty SFTP tools proxy to worker when terminal sessions live in worker
       options: {},
     },
     {
-      channel: "netcatty:sftp:close",
+      channel: "magiesTerminal:sftp:close",
       payload: {
         sftpId: "worker-sftp-1",
         encodingStateKey: "chat:chat-1:session:ssh-1",
@@ -203,7 +203,7 @@ test("MCP/Catty terminal_start, poll, and stop proxy worker background jobs", as
     terminalWorkerManager: {
       request(channel, payload, options) {
         requests.push({ channel, payload, options });
-        if (channel === "netcatty:ai:jobStart") {
+        if (channel === "magiesTerminal:ai:jobStart") {
           return Promise.resolve({
             ok: true,
             jobId: "worker-job-1",
@@ -212,7 +212,7 @@ test("MCP/Catty terminal_start, poll, and stop proxy worker background jobs", as
             status: "running",
           });
         }
-        if (channel === "netcatty:ai:jobPoll") {
+        if (channel === "magiesTerminal:ai:jobPoll") {
           return Promise.resolve({
             ok: true,
             jobId: payload.jobId,
@@ -224,7 +224,7 @@ test("MCP/Catty terminal_start, poll, and stop proxy worker background jobs", as
             nextOffset: 5,
           });
         }
-        if (channel === "netcatty:ai:jobStop") {
+        if (channel === "magiesTerminal:ai:jobStop") {
           return Promise.resolve({
             ok: true,
             jobId: payload.jobId,
@@ -250,21 +250,21 @@ test("MCP/Catty terminal_start, poll, and stop proxy worker background jobs", as
     },
   ], "chat-1");
 
-  const started = await bridge.dispatchBuiltinRpc("netcatty/jobStart", {
+  const started = await bridge.dispatchBuiltinRpc("magiesTerminal/jobStart", {
     sessionId: "ssh-1",
     command: "npm test",
     chatSessionId: "chat-1",
   });
-  const polled = await bridge.dispatchBuiltinRpc("netcatty/jobPoll", {
+  const polled = await bridge.dispatchBuiltinRpc("magiesTerminal/jobPoll", {
     jobId: "worker-job-1",
     offset: 0,
     chatSessionId: "chat-1",
   });
-  const stopped = await bridge.dispatchBuiltinRpc("netcatty/jobStop", {
+  const stopped = await bridge.dispatchBuiltinRpc("magiesTerminal/jobStop", {
     jobId: "worker-job-1",
     chatSessionId: "chat-1",
   });
-  const polledAfterStop = await bridge.dispatchBuiltinRpc("netcatty/jobPoll", {
+  const polledAfterStop = await bridge.dispatchBuiltinRpc("magiesTerminal/jobPoll", {
     jobId: "worker-job-1",
     offset: 5,
     chatSessionId: "chat-1",
@@ -275,10 +275,10 @@ test("MCP/Catty terminal_start, poll, and stop proxy worker background jobs", as
   assert.equal(stopped.status, "stopping");
   assert.equal(polledAfterStop.ok, true);
   assert.deepEqual(requests.map((entry) => entry.channel), [
-    "netcatty:ai:jobStart",
-    "netcatty:ai:jobPoll",
-    "netcatty:ai:jobStop",
-    "netcatty:ai:jobPoll",
+    "magiesTerminal:ai:jobStart",
+    "magiesTerminal:ai:jobPoll",
+    "magiesTerminal:ai:jobStop",
+    "magiesTerminal:ai:jobPoll",
   ]);
   assert.deepEqual(requests[0].payload, {
     sessionId: "ssh-1",
@@ -311,7 +311,7 @@ test("MCP/Catty chat cancellation forwards to worker background jobs", async () 
     terminalWorkerManager: {
       request(channel, payload, options) {
         requests.push({ channel, payload, options });
-        if (channel === "netcatty:ai:jobStart") {
+        if (channel === "magiesTerminal:ai:jobStart") {
           return Promise.resolve({
             ok: true,
             jobId: "worker-job-1",
@@ -338,7 +338,7 @@ test("MCP/Catty chat cancellation forwards to worker background jobs", async () 
     },
   ], "chat-1");
 
-  const started = await bridge.dispatchBuiltinRpc("netcatty/jobStart", {
+  const started = await bridge.dispatchBuiltinRpc("magiesTerminal/jobStart", {
     sessionId: "ssh-1",
     command: "sleep 30",
     chatSessionId: "chat-1",
@@ -353,13 +353,13 @@ test("MCP/Catty chat cancellation forwards to worker background jobs", async () 
   });
   assert.deepEqual(sends, [
     {
-      channel: "netcatty:ai:catty:cancel",
+      channel: "magiesTerminal:ai:catty:cancel",
       payload: { chatSessionId: "chat-1" },
       options: {},
     },
   ]);
 
-  const pollAfterCancel = await bridge.dispatchBuiltinRpc("netcatty/jobPoll", {
+  const pollAfterCancel = await bridge.dispatchBuiltinRpc("magiesTerminal/jobPoll", {
     jobId: "worker-job-1",
     chatSessionId: "chat-1",
   });

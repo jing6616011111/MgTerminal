@@ -96,7 +96,7 @@ test("session restore persistence can be disabled for non-main windows", () => {
   assert.match(mainWindowSource, /registerAsMainWindow = true/);
   assert.match(mainWindowSource, /if \(registerAsMainWindow\)/);
   assert.match(mainWindowSource, /loadURL\(`\$\{getDevRendererBaseUrl\(devServerUrl\)\}\$\{rendererHash\}`\)/);
-  assert.match(mainWindowSource, /loadURL\(`app:\/\/netcatty\/index\.html\$\{rendererHash\}`\)/);
+  assert.match(mainWindowSource, /loadURL\(`app:\/\/magiesTerminal\/index\.html\$\{rendererHash\}`\)/);
 });
 
 test("session peer windows do not run main-window startup effects", () => {
@@ -128,7 +128,7 @@ test("session peer windows do not run main-window startup effects", () => {
   assert.match(settingsStateSource, /const enableSettingsSync = options\.enableSettingsSync !== false/);
   assert.match(settingsStateSource, /useSettingsIpcSync\(\{[^}]*enabled: enableSettingsSync/s);
   assert.match(settingsStateSource, /useSettingsStorageSync\(\{[^}]*enabled: enableSettingsSync/s);
-  assert.match(settingsStateSource, /if \(!enableSettingsSync\) return;\s*try \{\s*netcattyBridge\.get\(\)\?\.notifySettingsChanged/s);
+  assert.match(settingsStateSource, /if \(!enableSettingsSync\) return;\s*try \{\s*magiesTerminalBridge\.get\(\)\?\.notifySettingsChanged/s);
   assert.match(settingsStateSource, /useSystemSettingsEffects\(\{[^}]*enabled: enableSystemEffects/s);
   assert.match(settingsIpcSyncSource, /enabled\?: boolean/);
   assert.match(settingsIpcSyncSource, /if \(!enabled\) return;/);
@@ -151,7 +151,7 @@ test("session peer windows do not run main-window startup effects", () => {
   assert.match(startupEffectsSource, /shouldQueueKeyboardInteractiveRequest\(request, sessionsRef\.current\)/);
   assert.doesNotMatch(
     startupEffectsSource,
-    /if \(!enabled\) return;\s*const bridge = netcattyBridge\.get\(\);\s*if \(!bridge\?\.onCheckDirtyEditors\) return;/,
+    /if \(!enabled\) return;\s*const bridge = magiesTerminalBridge\.get\(\);\s*if \(!bridge\?\.onCheckDirtyEditors\) return;/,
     "dirty editor quit guard must remain registered in peer session windows",
   );
 });
@@ -170,7 +170,7 @@ test("restore previous session re-arms after cross-window settings ipc sync", ()
   const settingsIpcSyncSource = readFileSync(new URL("./settingsIpcSync.ts", import.meta.url), "utf8");
 
   assert.match(settingsIpcSyncSource, /STORAGE_KEY_RESTORE_PREVIOUS_SESSION/);
-  assert.match(hookSource, /netcattyBridge/);
+  assert.match(hookSource, /magiesTerminalBridge/);
   assert.match(hookSource, /onSettingsChanged/);
   assert.match(hookSource, /handleRestorePreviousSessionChanged\(payload\?\.key\)/);
   assert.match(hookSource, /key !== STORAGE_KEY_RESTORE_PREVIOUS_SESSION/);

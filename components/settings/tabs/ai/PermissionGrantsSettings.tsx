@@ -94,7 +94,7 @@ export const PermissionGrantsSettings: React.FC<{
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = 'netcatty-permission-grants.json';
+    anchor.download = 'magiesTerminal-permission-grants.json';
     anchor.click();
     URL.revokeObjectURL(url);
   }, [exportGrants]);

@@ -38,7 +38,7 @@ interface UseSftpHostCredentialsParams {
 export const buildSftpReuseCredentials = (
   host: Pick<Host, "hostname" | "username" | "port">,
   sourceSessionId: string,
-): NetcattySSHOptions => ({
+): MagiesTerminalSSHOptions => ({
   hostname: host.hostname,
   username: host.username || "root",
   port: host.port || 22,
@@ -54,7 +54,7 @@ export const buildSftpHostCredentials = ({
   identities,
   knownHosts,
   terminalSettings,
-}: UseSftpHostCredentialsParams & { host: Host }): NetcattySSHOptions => {
+}: UseSftpHostCredentialsParams & { host: Host }): MagiesTerminalSSHOptions => {
   const globalTerminalSettings = { ...FALLBACK_TERMINAL_SETTINGS, ...(terminalSettings ?? {}) };
   if (host.proxyProfileId && !host.proxyConfig) {
     throw new Error(`Saved proxy for host "${host.label || host.hostname}" is missing. Open host settings and select a valid proxy.`);
@@ -72,7 +72,7 @@ export const buildSftpHostCredentials = ({
   const proxyConfig = host.proxyConfig
     ? resolveProxyConfigAuth(host.proxyConfig, identities)
     : undefined;
-  let jumpHosts: NetcattyJumpHost[] | undefined;
+  let jumpHosts: MagiesTerminalJumpHost[] | undefined;
   if (host.hostChain?.hostIds && host.hostChain.hostIds.length > 0) {
     jumpHosts = host.hostChain.hostIds.map((hostId) => {
       const jumpHost = hosts.find((candidate) => candidate.id === hostId);
@@ -213,6 +213,6 @@ export const useSftpHostCredentials = ({
   terminalSettings,
 }: UseSftpHostCredentialsParams) =>
   useCallback(
-    (host: Host): NetcattySSHOptions => buildSftpHostCredentials({ host, hosts, keys, identities, knownHosts, terminalSettings }),
+    (host: Host): MagiesTerminalSSHOptions => buildSftpHostCredentials({ host, hosts, keys, identities, knownHosts, terminalSettings }),
     [hosts, identities, keys, knownHosts, terminalSettings],
   );

@@ -521,7 +521,7 @@ export const CloudSyncDialogs: React.FC<CloudSyncDialogsProps> = ({
                                 <Input
                                     value={s3Bucket}
                                     onChange={(e) => setS3Bucket(e.target.value)}
-                                    placeholder="netcatty-backups"
+                                    placeholder="magiesTerminal-backups"
                                 />
                             </div>
                         </div>
@@ -560,7 +560,7 @@ export const CloudSyncDialogs: React.FC<CloudSyncDialogsProps> = ({
                             <Input
                                 value={s3Prefix}
                                 onChange={(e) => setS3Prefix(e.target.value)}
-                                placeholder="backups/netcatty"
+                                placeholder="backups/magiesTerminal"
                             />
                         </div>
 

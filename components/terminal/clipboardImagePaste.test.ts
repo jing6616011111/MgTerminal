@@ -10,8 +10,8 @@ import {
 
 test("remote clipboard image path is placed under the current directory", () => {
   assert.equal(
-    buildRemoteClipboardImagePath("/srv/app", "netcatty paste:1.png"),
-    "/srv/app/.netcatty-paste-images/netcatty_paste_1.png",
+    buildRemoteClipboardImagePath("/srv/app", "magiesTerminal paste:1.png"),
+    "/srv/app/.magiesTerminal-paste-images/magiesTerminal_paste_1.png",
   );
 });
 
@@ -24,8 +24,8 @@ test("remote clipboard image path is empty when cwd is unavailable", () => {
 
 test("remote paths are quoted for shell-safe insertion", () => {
   assert.equal(
-    quoteRemotePathForShell("/srv/app/.netcatty-paste-images/a b's.png"),
-    "'/srv/app/.netcatty-paste-images/a b'\\''s.png'",
+    quoteRemotePathForShell("/srv/app/.magiesTerminal-paste-images/a b's.png"),
+    "'/srv/app/.magiesTerminal-paste-images/a b'\\''s.png'",
   );
 });
 
@@ -41,7 +41,7 @@ test("remote clipboard image upload inserts the remote image path without broadc
   const result = await handleRemoteClipboardImageUpload({
     bridge: {
       readClipboardImage: async () => ({
-        path: "/tmp/netcatty/shot.png",
+        path: "/tmp/magiesTerminal/shot.png",
         name: "shot 1.png",
         mediaType: "image/png",
         size: 12,
@@ -78,14 +78,14 @@ test("remote clipboard image upload inserts the remote image path without broadc
 
   assert.deepEqual(result, {
     ok: true,
-    remotePath: "/home/alice/project/.netcatty-paste-images/shot_1.png",
-    pastedPath: "/home/alice/project/.netcatty-paste-images/shot_1.png",
+    remotePath: "/home/alice/project/.magiesTerminal-paste-images/shot_1.png",
+    pastedPath: "/home/alice/project/.magiesTerminal-paste-images/shot_1.png",
   });
   assert.deepEqual(transferPayloads, [
     {
       transferId: "transfer-1",
-      sourcePath: "/tmp/netcatty/shot.png",
-      targetPath: "/home/alice/project/.netcatty-paste-images/shot_1.png",
+      sourcePath: "/tmp/magiesTerminal/shot.png",
+      targetPath: "/home/alice/project/.magiesTerminal-paste-images/shot_1.png",
       sourceType: "local",
       targetType: "sftp",
       targetSftpId: "sftp-1",
@@ -95,14 +95,14 @@ test("remote clipboard image upload inserts the remote image path without broadc
   assert.deepEqual(writes, [
     {
       sessionId: "session-1",
-      data: "/home/alice/project/.netcatty-paste-images/shot_1.png",
+      data: "/home/alice/project/.magiesTerminal-paste-images/shot_1.png",
     },
   ]);
-  assert.deepEqual(scrolled, ["/home/alice/project/.netcatty-paste-images/shot_1.png"]);
+  assert.deepEqual(scrolled, ["/home/alice/project/.magiesTerminal-paste-images/shot_1.png"]);
   assert.deepEqual(broadcastData, []);
   assert.equal(focused, true);
   assert.equal(closedSftpId, "sftp-1");
-  assert.equal(deletedTempFile, "/tmp/netcatty/shot.png");
+  assert.equal(deletedTempFile, "/tmp/magiesTerminal/shot.png");
 });
 
 test("remote clipboard image upload reports no image when no image exists", async () => {
@@ -148,7 +148,7 @@ test("remote clipboard image upload skips upload without a reliable cwd", async 
   const result = await handleRemoteClipboardImageUpload({
     bridge: {
       readClipboardImage: async () => ({
-        path: "/tmp/netcatty/shot.png",
+        path: "/tmp/magiesTerminal/shot.png",
         name: "shot.png",
         mediaType: "image/png",
         size: 12,
@@ -174,7 +174,7 @@ test("remote clipboard image upload skips upload without a reliable cwd", async 
 
   assert.deepEqual(result, { ok: false, reason: "no-cwd" });
   assert.deepEqual(transferPayloads, []);
-  assert.equal(deletedTempFile, "/tmp/netcatty/shot.png");
+  assert.equal(deletedTempFile, "/tmp/magiesTerminal/shot.png");
 });
 
 test("remote clipboard image upload does not insert a path when upload returns an error", async () => {
@@ -184,7 +184,7 @@ test("remote clipboard image upload does not insert a path when upload returns a
   const result = await handleRemoteClipboardImageUpload({
     bridge: {
       readClipboardImage: async () => ({
-        path: "/tmp/netcatty/shot.png",
+        path: "/tmp/magiesTerminal/shot.png",
         name: "shot.png",
         mediaType: "image/png",
         size: 12,
@@ -208,14 +208,14 @@ test("remote clipboard image upload does not insert a path when upload returns a
 
   assert.deepEqual(result, { ok: false, reason: "upload-failed" });
   assert.equal(closedSftpId, "sftp-1");
-  assert.equal(deletedTempFile, "/tmp/netcatty/shot.png");
+  assert.equal(deletedTempFile, "/tmp/magiesTerminal/shot.png");
 });
 
 test("remote clipboard image upload reports transfer failures without inserting a path", async () => {
   const result = await handleRemoteClipboardImageUpload({
     bridge: {
       readClipboardImage: async () => ({
-        path: "/tmp/netcatty/shot.png",
+        path: "/tmp/magiesTerminal/shot.png",
         name: "shot.png",
         mediaType: "image/png",
         size: 12,

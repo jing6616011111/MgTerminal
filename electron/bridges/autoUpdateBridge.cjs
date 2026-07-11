@@ -113,7 +113,7 @@ function setupGlobalListeners() {
     // Reset stale status so late-opening windows don't hydrate from a
     // previous 'error' or 'ready' snapshot after a "no update" check.
     _lastStatus = { status: 'idle', percent: 0, error: null, version: null, isChecking: false };
-    broadcastToAllWindows("netcatty:update:update-not-available", {});
+    broadcastToAllWindows("magiesTerminal:update:update-not-available", {});
   });
 
   updater.on("update-available", (info) => {
@@ -124,7 +124,7 @@ function setupGlobalListeners() {
     const willDownload = updater.autoDownload !== false;
     _isDownloading = willDownload;
     _lastStatus = { status: willDownload ? 'downloading' : 'available', percent: 0, error: null, version: info.version || null, isChecking: false };
-    broadcastToAllWindows("netcatty:update:update-available", {
+    broadcastToAllWindows("magiesTerminal:update:update-available", {
       version: info.version || "",
       releaseNotes: typeof info.releaseNotes === "string" ? info.releaseNotes : "",
       releaseDate: info.releaseDate || null,
@@ -133,7 +133,7 @@ function setupGlobalListeners() {
 
   updater.on("download-progress", (info) => {
     _lastStatus.percent = Math.round(info.percent ?? 0);
-    broadcastToAllWindows("netcatty:update:download-progress", {
+    broadcastToAllWindows("magiesTerminal:update:download-progress", {
       percent: info.percent ?? 0,
       bytesPerSecond: info.bytesPerSecond ?? 0,
       transferred: info.transferred ?? 0,
@@ -144,7 +144,7 @@ function setupGlobalListeners() {
   updater.on("update-downloaded", () => {
     _isDownloading = false;
     _lastStatus = { ..._lastStatus, status: 'ready', percent: 100 };
-    broadcastToAllWindows("netcatty:update:downloaded");
+    broadcastToAllWindows("magiesTerminal:update:downloaded");
   });
 
   updater.on("error", (err) => {
@@ -159,7 +159,7 @@ function setupGlobalListeners() {
     _isDownloading = false;
     const errorMsg = err?.message || "Unknown update error";
     _lastStatus = { ..._lastStatus, status: 'error', error: errorMsg };
-    broadcastToAllWindows("netcatty:update:error", {
+    broadcastToAllWindows("magiesTerminal:update:error", {
       error: errorMsg,
     });
   });
@@ -273,7 +273,7 @@ function getAppContentWebContentsList() {
  * "save first" notice so it lands wherever the user is.
  */
 function notifyNeedsSave() {
-  broadcastToAllWindows("netcatty:update:needs-save");
+  broadcastToAllWindows("magiesTerminal:update:needs-save");
 }
 
 /** Max time to wait for the renderer's unsaved-editors reply before the install
@@ -367,7 +367,7 @@ function broadcastToAllWindows(channel, payload) {
 
 function registerHandlers(ipcMain) {
   // ---- Check for updates ------------------------------------------------
-  ipcMain.handle("netcatty:update:check", async () => {
+  ipcMain.handle("magiesTerminal:update:check", async () => {
     // Cancel any pending auto-check to prevent concurrent checkForUpdates()
     // calls — electron-updater rejects them and surfaces false errors.
     cancelAutoCheck();
@@ -447,7 +447,7 @@ function registerHandlers(ipcMain) {
   });
 
   // ---- Download update ---------------------------------------------------
-  ipcMain.handle("netcatty:update:download", async () => {
+  ipcMain.handle("magiesTerminal:update:download", async () => {
     if (_isDownloading) {
       return { success: true };
     }
@@ -470,12 +470,12 @@ function registerHandlers(ipcMain) {
   });
 
   // ---- Get current update status (for late-opening windows) ---------------
-  ipcMain.handle("netcatty:update:getStatus", () => {
+  ipcMain.handle("magiesTerminal:update:getStatus", () => {
     return { ..._lastStatus };
   });
 
   // ---- Install (quit & install) ------------------------------------------
-  ipcMain.handle("netcatty:update:install", async () => {
+  ipcMain.handle("magiesTerminal:update:install", async () => {
     const updater = getAutoUpdater();
     if (!updater) return;
 
@@ -548,13 +548,13 @@ function registerHandlers(ipcMain) {
   });
 
   // ---- Get auto-update preference -----------------------------------------
-  ipcMain.handle("netcatty:update:getAutoUpdate", () => {
+  ipcMain.handle("magiesTerminal:update:getAutoUpdate", () => {
     return { enabled: readAutoUpdatePreference() };
   });
 
   // ---- Enable/disable auto-update ----------------------------------------
   let _prevAutoDownloadEnabled = readAutoUpdatePreference();
-  ipcMain.handle("netcatty:update:setAutoUpdate", (_event, { enabled }) => {
+  ipcMain.handle("magiesTerminal:update:setAutoUpdate", (_event, { enabled }) => {
     const wasEnabled = _prevAutoDownloadEnabled;
     _prevAutoDownloadEnabled = !!enabled;
     const updater = getAutoUpdater();

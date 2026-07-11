@@ -53,7 +53,7 @@ function makeApi(overrides = {}) {
       // Default: treat any non-empty string as a parseable key.
       parseKey: (key) => (key && key.length > 0 ? { ok: true } : new Error("bad key")),
     },
-    NetcattyAgent: overrides.NetcattyAgent || class {},
+    MagiesTerminalAgent: overrides.MagiesTerminalAgent || class {},
     buildAlgorithms: overrides.buildAlgorithms || (() => ({ algos: true })),
     getSshAgentSocket: overrides.getSshAgentSocket || (() => null),
     readFileNoFollow: overrides.readFileNoFollow || (async () => null),
@@ -66,7 +66,7 @@ function makeApi(overrides = {}) {
       classifyHostKey: () => ({ status: "trusted" }),
     },
     // Default: the system known_hosts vouches for nothing, so trust comes
-    // solely from the Netcatty classifier above. Individual tests override this
+    // solely from the MagiesTerminal classifier above. Individual tests override this
     // to exercise the system-known_hosts fallback.
     isHostKeyTrustedBySystem:
       "isHostKeyTrustedBySystem" in overrides
@@ -720,8 +720,8 @@ test("accepts a trusted host key and adopts the connection", async () => {
   assert.equal(await pending, client);
 });
 
-test("trusts a host vouched for ONLY by the system known_hosts (Netcatty snapshot empty)", async () => {
-  // Netcatty's in-app vault has no record (classify -> unknown), but the user's
+test("trusts a host vouched for ONLY by the system known_hosts (MagiesTerminal snapshot empty)", async () => {
+  // MagiesTerminal's in-app vault has no record (classify -> unknown), but the user's
   // system OpenSSH known_hosts already trusts the exact live key — which is
   // what the Mosh handshake's system ssh actually used. The companion must
   // accept it so Mosh stats appear.
@@ -762,7 +762,7 @@ test("trusts a host vouched for ONLY by the system known_hosts (Netcatty snapsho
   assert.equal(await pending, client);
 });
 
-test("rejects (permanently) when NEITHER Netcatty nor the system known_hosts trust the key", async () => {
+test("rejects (permanently) when NEITHER MagiesTerminal nor the system known_hosts trust the key", async () => {
   const { api, sessions } = makeApi({
     hostKeyVerifier: {
       describeHostKey: () => ({ keyType: "ssh-ed25519", fingerprint: "live-fp" }),
@@ -795,8 +795,8 @@ test("rejects (permanently) when NEITHER Netcatty nor the system known_hosts tru
   assert.equal(session.moshStatsConnFailed, true);
 });
 
-test("the system fallback is NOT consulted when Netcatty already trusts the key", async () => {
-  // Netcatty says trusted -> accept without even touching the system files.
+test("the system fallback is NOT consulted when MagiesTerminal already trusts the key", async () => {
+  // MagiesTerminal says trusted -> accept without even touching the system files.
   let consulted = false;
   const { api, sessions } = makeApi({
     hostKeyVerifier: {
@@ -819,8 +819,8 @@ test("the system fallback is NOT consulted when Netcatty already trusts the key"
   assert.equal(consulted, false);
 });
 
-test("a Netcatty 'changed' key is NOT rescued by a non-matching system check (key rotation stays rejected)", async () => {
-  // Netcatty flags a key rotation (changed). The system check is consulted with
+test("a MagiesTerminal 'changed' key is NOT rescued by a non-matching system check (key rotation stays rejected)", async () => {
+  // MagiesTerminal flags a key rotation (changed). The system check is consulted with
   // the LIVE fingerprint; since the system does not record this exact new key,
   // it returns false and the connection is refused — the mismatch is never
   // silently accepted.
@@ -843,7 +843,7 @@ test("a Netcatty 'changed' key is NOT rescued by a non-matching system check (ke
 
 test("works when isHostKeyTrustedBySystem is not wired in (optional dependency)", async () => {
   // Backward-compat: an api built without the system-known_hosts dependency
-  // must not throw; it simply falls back to the Netcatty-only decision.
+  // must not throw; it simply falls back to the MagiesTerminal-only decision.
   const { api, sessions } = makeApi({
     hostKeyVerifier: {
       describeHostKey: () => ({ keyType: "ssh-ed25519", fingerprint: "fp" }),

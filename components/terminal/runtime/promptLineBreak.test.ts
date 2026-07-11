@@ -358,7 +358,7 @@ test("caches a standard prompt when short command echo lags by one character", (
     { lineText: "prod.web> l", command: "ls", promptText: "prod.web> " },
     { lineText: "user@host:~$ l", command: "ls", promptText: "user@host:~$ " },
     { lineText: "[user@host ~]$ l", command: "ls", promptText: "[user@host ~]$ " },
-    { lineText: "➜  netcatty $ l", command: "ls", promptText: "➜  netcatty $ " },
+    { lineText: "➜  magiesTerminal $ l", command: "ls", promptText: "➜  magiesTerminal $ " },
     { lineText: "➜  git l", command: "ls", promptText: "➜  git " },
     { lineText: "➜  git np", command: "npm", promptText: "➜  git " },
   ];
@@ -620,17 +620,17 @@ test("caches themed prompt decorations from typed command alignment", () => {
   const cases = [
     { lineText: "➜ ~/repo do", command: "do", promptText: "➜ ~/repo " },
     {
-      lineText: "➜  netcatty git:(main) ✗ ls",
+      lineText: "➜  magiesTerminal git:(main) ✗ ls",
       command: "ls",
-      promptText: "➜  netcatty git:(main) ✗ ",
+      promptText: "➜  magiesTerminal git:(main) ✗ ",
     },
     {
-      lineText: "➜  netcatty git:(main) ✗ + ls",
+      lineText: "➜  magiesTerminal git:(main) ✗ + ls",
       command: "ls",
-      promptText: "➜  netcatty git:(main) ✗ + ",
+      promptText: "➜  magiesTerminal git:(main) ✗ + ",
     },
-    { lineText: "➜  netcatty ✗ $ ls", command: "ls", promptText: "➜  netcatty ✗ $ " },
-    { lineText: "➜  netcatty $ ls", command: "ls", promptText: "➜  netcatty $ " },
+    { lineText: "➜  magiesTerminal ✗ $ ls", command: "ls", promptText: "➜  magiesTerminal ✗ $ " },
+    { lineText: "➜  magiesTerminal $ ls", command: "ls", promptText: "➜  magiesTerminal $ " },
   ];
 
   for (const { lineText, command, promptText } of cases) {
@@ -652,14 +652,14 @@ test("caches themed prompt decorations when command echo lags", () => {
     { lineText: "➜  ~ git ", command: "git status", promptText: "➜  ~ " },
     { lineText: "➜  ~ git st", command: "git status", promptText: "➜  ~ " },
     {
-      lineText: "➜  netcatty git:(main) ✗ git ",
+      lineText: "➜  magiesTerminal git:(main) ✗ git ",
       command: "git status",
-      promptText: "➜  netcatty git:(main) ✗ ",
+      promptText: "➜  magiesTerminal git:(main) ✗ ",
     },
     {
-      lineText: "➜  netcatty git:(main) ✗ git st",
+      lineText: "➜  magiesTerminal git:(main) ✗ git st",
       command: "git status",
-      promptText: "➜  netcatty git:(main) ✗ ",
+      promptText: "➜  magiesTerminal git:(main) ✗ ",
     },
   ];
 
@@ -679,7 +679,7 @@ test("caches themed prompt decorations when command echo lags", () => {
 
 test("caches themed bare directory prompts for direct sends before command echo", () => {
   const cases = [
-    { lineText: "➜  netcatty ", command: "ls", promptText: "➜  netcatty " },
+    { lineText: "➜  magiesTerminal ", command: "ls", promptText: "➜  magiesTerminal " },
     { lineText: "➜  git ", command: "npm", promptText: "➜  git " },
     { lineText: "➜  git ", command: "git status", promptText: "➜  git " },
     { lineText: "➜  make ", command: "sudo", promptText: "➜  make " },

@@ -60,7 +60,7 @@ test("catty AI exec proxies to the terminal worker when the real session lives i
     },
   });
 
-  const result = await ipcMain.handlers.get("netcatty:ai:exec")(
+  const result = await ipcMain.handlers.get("magiesTerminal:ai:exec")(
     { sender: { id: 7 } },
     { sessionId: "ssh-1", command: "pwd", chatSessionId: "chat-1" },
   );
@@ -68,7 +68,7 @@ test("catty AI exec proxies to the terminal worker when the real session lives i
   assert.deepEqual(result, { ok: true, stdout: "ok\n" });
   assert.deepEqual(requests, [
     {
-      channel: "netcatty:ai:exec",
+      channel: "magiesTerminal:ai:exec",
       payload: {
         sessionId: "ssh-1",
         command: "pwd",

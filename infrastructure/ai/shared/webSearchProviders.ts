@@ -9,7 +9,7 @@
  * renderer process.
  */
 
-import type { NetcattyBridge } from '../cattyAgent/executor';
+import type { MagiesTerminalBridge } from '../cattyAgent/executor';
 import type { WebSearchConfig } from '../types';
 import { WEB_SEARCH_PROVIDER_PRESETS } from '../types';
 
@@ -35,7 +35,7 @@ function resolveApiHost(config: WebSearchConfig): string {
 }
 
 async function fetchJson(
-  bridge: NetcattyBridge,
+  bridge: MagiesTerminalBridge,
   url: string,
   method: string,
   headers: Record<string, string>,
@@ -54,7 +54,7 @@ async function fetchJson(
 // ---------------------------------------------------------------------------
 
 async function searchTavily(
-  bridge: NetcattyBridge,
+  bridge: MagiesTerminalBridge,
   config: WebSearchConfig,
   query: string,
   maxResults: number,
@@ -81,7 +81,7 @@ async function searchTavily(
 // ---------------------------------------------------------------------------
 
 async function searchExa(
-  bridge: NetcattyBridge,
+  bridge: MagiesTerminalBridge,
   config: WebSearchConfig,
   query: string,
   maxResults: number,
@@ -108,7 +108,7 @@ async function searchExa(
 // ---------------------------------------------------------------------------
 
 async function searchBocha(
-  bridge: NetcattyBridge,
+  bridge: MagiesTerminalBridge,
   config: WebSearchConfig,
   query: string,
   maxResults: number,
@@ -135,7 +135,7 @@ async function searchBocha(
 // ---------------------------------------------------------------------------
 
 async function searchZhipu(
-  bridge: NetcattyBridge,
+  bridge: MagiesTerminalBridge,
   config: WebSearchConfig,
   query: string,
   _maxResults: number,
@@ -161,7 +161,7 @@ async function searchZhipu(
 // ---------------------------------------------------------------------------
 
 async function searchSearxng(
-  bridge: NetcattyBridge,
+  bridge: MagiesTerminalBridge,
   config: WebSearchConfig,
   query: string,
   _maxResults: number,
@@ -201,7 +201,7 @@ const PROVIDER_SEARCH_FNS: Record<string, typeof searchTavily> = {
 const WEB_SEARCH_KEY_PLACEHOLDER = '__WEB_SEARCH_KEY__';
 
 export async function executeWebSearchProvider(
-  bridge: NetcattyBridge,
+  bridge: MagiesTerminalBridge,
   config: WebSearchConfig,
   query: string,
   maxResults: number,

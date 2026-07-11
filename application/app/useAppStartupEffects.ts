@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { usePortForwardingAutoStart } from '../state/usePortForwardingAutoStart';
 import { editorTabStore } from '../state/editorTabStore';
-import { netcattyBridge } from '../../infrastructure/services/netcattyBridge';
+import { magiesTerminalBridge } from '../../infrastructure/services/magiesTerminalBridge';
 import { localStorageAdapter } from '../../infrastructure/persistence/localStorageAdapter';
 import { toast } from '../../components/ui/toast';
 
@@ -40,7 +40,7 @@ export function useAppStartupEffects(ctx: StartupEffectsContext) {
     // Skip "update available" toast if auto-download has already started or completed
     if (updateState.autoDownloadStatus !== 'idle') return;
     // Don't show automatic notification when auto-update is disabled
-    if (localStorageAdapter.readString('netcatty_auto_update_enabled_v1') === 'false') return;
+    if (localStorageAdapter.readString('magiesTerminal_auto_update_enabled_v1') === 'false') return;
     if (updateState.hasUpdate && updateState.latestRelease) {
       const version = updateState.latestRelease.version;
       toast.info(
@@ -112,7 +112,7 @@ export function useAppStartupEffects(ctx: StartupEffectsContext) {
   // Sync tray menu data + handle tray actions
   useEffect(() => {
     if (!enabled) return;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.updateTrayMenuData) return;
 
     let cancelled = false;
@@ -159,7 +159,7 @@ export function useAppStartupEffects(ctx: StartupEffectsContext) {
   // Quit guard: block app exit while any editor tab has unsaved changes.
   // Main process sends "app:query-dirty-editors"; we respond with the result.
   useEffect(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onCheckDirtyEditors) return;
     const unsub = bridge.onCheckDirtyEditors(() => {
       // Always report SOMETHING so the main process doesn't time out for
@@ -188,7 +188,7 @@ export function useAppStartupEffects(ctx: StartupEffectsContext) {
 
   // Keyboard-interactive authentication (2FA/MFA) event listener
   useEffect(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onKeyboardInteractive) return;
 
     const unsubscribe = bridge.onKeyboardInteractive((request) => {

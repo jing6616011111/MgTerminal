@@ -6,7 +6,7 @@
  * first line immediately and queues the remaining lines in
  * session.pendingAutomatedWriteTimers.
  *
- * Root cause: terminal-originated automatic replies used the same netcatty:write
+ * Root cause: terminal-originated automatic replies used the same magiesTerminal:write
  * path without the automated flag. Treating those replies as user input cleared
  * queued lines, so only the first line was sent.
  */

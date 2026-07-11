@@ -51,7 +51,7 @@ import {
   ensureVersionChangeBackup,
 } from './application/localVaultBackups';
 import { getCredentialProtectionAvailability } from './infrastructure/services/credentialProtection';
-import { netcattyBridge } from './infrastructure/services/netcattyBridge';
+import { magiesTerminalBridge } from './infrastructure/services/magiesTerminalBridge';
 import { localStorageAdapter } from './infrastructure/persistence/localStorageAdapter';
 import { syncExternalMcpStartupState } from './application/state/useExternalMcpToggleState';
 import { useExternalMcpSessionSync } from './application/state/useExternalMcpSessionSync';
@@ -190,7 +190,7 @@ function App({ settings }: { settings: SettingsState }) {
   // temporary-mode runtime that the main window already started.
   useEffect(() => {
     if (isPeerSessionWindow) return;
-    syncExternalMcpStartupState(netcattyBridge.get());
+    syncExternalMcpStartupState(magiesTerminalBridge.get());
   }, [isPeerSessionWindow]);
 
   const {
@@ -385,7 +385,7 @@ function App({ settings }: { settings: SettingsState }) {
   // <AppActiveTabChrome/> so switching tabs does not re-render App.
 
   useEffect(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onOpenSessionInNewWindow) return undefined;
     return bridge.onOpenSessionInNewWindow((payload) => {
       if (!payload?.sourceSession) return;
@@ -507,7 +507,7 @@ function App({ settings }: { settings: SettingsState }) {
     let cancelled = false;
     void (async () => {
       try {
-        const info = await netcattyBridge.get()?.getAppInfo?.();
+        const info = await magiesTerminalBridge.get()?.getAppInfo?.();
         await ensureVersionChangeBackup(payload, info?.version ?? null);
       } catch (error) {
         if (!cancelled) {
@@ -602,7 +602,7 @@ function App({ settings }: { settings: SettingsState }) {
 
   useEffect(() => {
     if (isPeerSessionWindow) return;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onTrayFocusSession || !bridge?.onTrayTogglePortForward) return;
 
     const unsubscribeFocus = bridge.onTrayFocusSession((sessionId) => {
@@ -620,7 +620,7 @@ function App({ settings }: { settings: SettingsState }) {
 
   useEffect(() => {
     if (isPeerSessionWindow) return;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onTrayPanelJumpToSession || !bridge?.onTrayPanelConnectToHost) return;
 
     const unsubscribeJump = bridge.onTrayPanelJumpToSession((sessionId) => {
@@ -645,14 +645,14 @@ function App({ settings }: { settings: SettingsState }) {
   }, [isVaultInitialized, pendingTrayPanelConnectHostIds]);
 
   // Handle keyboard-interactive submit
-  const handleKeyboardInteractiveSubmit = useCallback((requestId: string, responses: string[], savePassword?: string) => { return handleKeyboardInteractiveSubmitImpl(() => ({ hosts, keyboardInteractiveQueue, netcattyBridge, requestId, responses, savePassword, sessions, setKeyboardInteractiveQueue, updateHosts }), requestId, responses, savePassword); }, [keyboardInteractiveQueue, sessions, hosts, updateHosts]);
+  const handleKeyboardInteractiveSubmit = useCallback((requestId: string, responses: string[], savePassword?: string) => { return handleKeyboardInteractiveSubmitImpl(() => ({ hosts, keyboardInteractiveQueue, magiesTerminalBridge, requestId, responses, savePassword, sessions, setKeyboardInteractiveQueue, updateHosts }), requestId, responses, savePassword); }, [keyboardInteractiveQueue, sessions, hosts, updateHosts]);
 
   // Handle keyboard-interactive cancel
-  const handleKeyboardInteractiveCancel = useCallback((requestId: string) => { return handleKeyboardInteractiveCancelImpl(() => ({ netcattyBridge, requestId, setKeyboardInteractiveQueue }), requestId); }, []);
+  const handleKeyboardInteractiveCancel = useCallback((requestId: string) => { return handleKeyboardInteractiveCancelImpl(() => ({ magiesTerminalBridge, requestId, setKeyboardInteractiveQueue }), requestId); }, []);
 
   // Passphrase request event listener for encrypted SSH keys
   useEffect(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onPassphraseRequest) return;
 
     const unsubscribe = bridge.onPassphraseRequest(async (request) => {
@@ -709,17 +709,17 @@ function App({ settings }: { settings: SettingsState }) {
   }, [updateKeys]);
 
   // Handle passphrase submit
-  const handlePassphraseSubmit = useCallback(async (requestId: string, passphrase: string, remember: boolean) => { return handlePassphraseSubmitImpl(() => ({ keysRef, netcattyBridge, passphrase, passphraseQueue, remember, rememberKeyPassphrase, requestId, setPassphraseQueue, updateKeys }), requestId, passphrase, remember); }, [passphraseQueue, updateKeys]);
+  const handlePassphraseSubmit = useCallback(async (requestId: string, passphrase: string, remember: boolean) => { return handlePassphraseSubmitImpl(() => ({ keysRef, magiesTerminalBridge, passphrase, passphraseQueue, remember, rememberKeyPassphrase, requestId, setPassphraseQueue, updateKeys }), requestId, passphrase, remember); }, [passphraseQueue, updateKeys]);
 
   // Handle passphrase cancel
-  const handlePassphraseCancel = useCallback((requestId: string) => { return handlePassphraseCancelImpl(() => ({ netcattyBridge, requestId, setPassphraseQueue }), requestId); }, []);
+  const handlePassphraseCancel = useCallback((requestId: string) => { return handlePassphraseCancelImpl(() => ({ magiesTerminalBridge, requestId, setPassphraseQueue }), requestId); }, []);
 
   // Handle passphrase skip (skip this key, continue with others)
-  const handlePassphraseSkip = useCallback((requestId: string) => { return handlePassphraseSkipImpl(() => ({ netcattyBridge, requestId, setPassphraseQueue }), requestId); }, []);
+  const handlePassphraseSkip = useCallback((requestId: string) => { return handlePassphraseSkipImpl(() => ({ magiesTerminalBridge, requestId, setPassphraseQueue }), requestId); }, []);
 
   // Handle passphrase timeout (request expired on backend)
   useEffect(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onPassphraseTimeout) return;
 
     const unsubscribe = bridge.onPassphraseTimeout((event) => {
@@ -737,7 +737,7 @@ function App({ settings }: { settings: SettingsState }) {
 
   // Handle passphrase cancellation (owning connection was stopped)
   useEffect(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onPassphraseCancelled) return;
 
     const unsubscribe = bridge.onPassphraseCancelled((event) => {
@@ -752,7 +752,7 @@ function App({ settings }: { settings: SettingsState }) {
 
   // Handle passphrase auth failure (saved passphrase was wrong, clear it)
   useEffect(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onPassphraseAuthFailed) return;
 
     const unsubscribe = bridge.onPassphraseAuthFailed((event) => {
@@ -814,7 +814,7 @@ function App({ settings }: { settings: SettingsState }) {
 
   const copySessionWithCurrentShell = useCallback((sessionId: string) => { return copySessionWithCurrentShellImpl(() => ({ classifyLocalShellType, copySession, discoveredShells, resolveShellSetting, sessionId, terminalSettings }), sessionId); }, [copySession, terminalSettings, discoveredShells]);
 
-  const copySessionToNewWindowWithCurrentShell = useCallback((sessionId: string) => { return copySessionToNewWindowWithCurrentShellImpl(() => ({ classifyLocalShellType, discoveredShells, netcattyBridge, resolveShellSetting, sessions, terminalSettings, t, toast }), sessionId); }, [sessions, terminalSettings, discoveredShells, t]);
+  const copySessionToNewWindowWithCurrentShell = useCallback((sessionId: string) => { return copySessionToNewWindowWithCurrentShellImpl(() => ({ classifyLocalShellType, discoveredShells, magiesTerminalBridge, resolveShellSetting, sessions, terminalSettings, t, toast }), sessionId); }, [sessions, terminalSettings, discoveredShells, t]);
 
   const closeTabKeyStr = useMemo(() => {
     if (hotkeyScheme === 'disabled') return null;
@@ -824,7 +824,7 @@ function App({ settings }: { settings: SettingsState }) {
   }, [hotkeyScheme, keyBindings]);
 
   const confirmIfBusyLocalTerminal = useCallback(
-    async (sessionIds: string[]): Promise<boolean> => { return confirmIfBusyLocalTerminalImpl(() => ({ netcattyBridge, sessionIds, sessions, t }), sessionIds); },
+    async (sessionIds: string[]): Promise<boolean> => { return confirmIfBusyLocalTerminalImpl(() => ({ magiesTerminalBridge, sessionIds, sessions, t }), sessionIds); },
     [sessions, t],
   );
 
@@ -887,11 +887,11 @@ function App({ settings }: { settings: SettingsState }) {
       return;
     }
 
-    await netcattyBridge.get()?.windowClose?.();
+    await magiesTerminalBridge.get()?.windowClose?.();
   }, [closeLogView, editorTabs, executeHotkeyAction, logViews, sessions, workspaces]);
 
   useEffect(() => {
-    const unsubscribe = netcattyBridge.get()?.onWindowCommandCloseRequested?.(() => {
+    const unsubscribe = magiesTerminalBridge.get()?.onWindowCommandCloseRequested?.(() => {
       void handleWindowCommandCloseRequest();
     });
     return () => unsubscribe?.();
@@ -968,7 +968,7 @@ function App({ settings }: { settings: SettingsState }) {
   useEffect(() => {
     void (async () => {
       try {
-        const bridge = netcattyBridge.get();
+        const bridge = magiesTerminalBridge.get();
         const info = await bridge?.getSystemInfo?.();
         if (info) {
           systemInfoRef.current = info;
@@ -1020,7 +1020,7 @@ function App({ settings }: { settings: SettingsState }) {
       return { ok: false as const, error: `Failed to open host "${hostId}".` };
     }
     // Surface the main window for external MCP / CLI open requests.
-    void netcattyBridge.get()?.openMainWindow?.();
+    void magiesTerminalBridge.get()?.openMainWindow?.();
     return { ok: true as const, sessionId, host };
   }, [handleConnectToHost, hosts]);
 
@@ -1093,7 +1093,7 @@ function App({ settings }: { settings: SettingsState }) {
 
   useEffect(() => {
     if (isPeerSessionWindow) return;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onSshDeepLink) return;
     return bridge.onSshDeepLink((payload) => {
       _handleSshDeepLink(payload);
@@ -1139,7 +1139,7 @@ function App({ settings }: { settings: SettingsState }) {
 
   useEffect(() => {
     if (isPeerSessionWindow) return;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onTelnetDeepLink) return;
     return bridge.onTelnetDeepLink((payload) => {
       _handleTelnetDeepLink(payload);
@@ -1167,7 +1167,7 @@ function App({ settings }: { settings: SettingsState }) {
 
   useEffect(() => {
     if (isPeerSessionWindow) return;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onJmsDeepLink) return;
     return bridge.onJmsDeepLink((payload) => {
       _handleJmsDeepLink(payload);
@@ -1193,7 +1193,7 @@ function App({ settings }: { settings: SettingsState }) {
 
   useEffect(() => {
     if (isPeerSessionWindow) return;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onOpenTerminalPath) return;
     return bridge.onOpenTerminalPath((payload) => {
       _handleOpenTerminalPath(payload);
@@ -1360,7 +1360,7 @@ function App({ settings }: { settings: SettingsState }) {
   }, [handleOpenSettings, t]);
 
   // Delete-from-sidepanel plumbing: ScriptsSidePanel's right-click menu
-  // dispatches `netcatty:snippets:delete` with the snippet id. Handled here
+  // dispatches `magiesTerminal:snippets:delete` with the snippet id. Handled here
   // (rather than in QuickAddSnippetDialog) because delete needs no UI.
   useEffect(() => {
     const handler = (e: Event) => {
@@ -1368,8 +1368,8 @@ function App({ settings }: { settings: SettingsState }) {
       if (!id) return;
       updateSnippets(snippets.filter((s) => s.id !== id));
     };
-    window.addEventListener('netcatty:snippets:delete', handler);
-    return () => window.removeEventListener('netcatty:snippets:delete', handler);
+    window.addEventListener('magiesTerminal:snippets:delete', handler);
+    return () => window.removeEventListener('magiesTerminal:snippets:delete', handler);
   }, [snippets, updateSnippets]);
 
   const handleEndSessionDrag = useCallback(() => {
@@ -1430,7 +1430,7 @@ function AppWithProviders() {
         setTimeout(() => splash.remove(), 200);
       }
       // Notify main process that renderer is ready
-      netcattyBridge.get()?.rendererReady?.();
+      magiesTerminalBridge.get()?.rendererReady?.();
     } catch {
       // ignore
     }

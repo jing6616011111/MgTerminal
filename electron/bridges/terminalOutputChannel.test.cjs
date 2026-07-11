@@ -41,7 +41,7 @@ test("openSession posts a dedicated output port to the target webContents", () =
   channel.openSession("session-1", webContents);
 
   assert.equal(posted.length, 1);
-  assert.equal(posted[0].channelName, "netcatty:terminal-output-port");
+  assert.equal(posted[0].channelName, "magiesTerminal:terminal-output-port");
   assert.deepEqual(posted[0].payload, { sessionId: "session-1" });
   assert.equal(posted[0].ports.length, 1);
   assert.equal(posted[0].ports[0].label, "port2");

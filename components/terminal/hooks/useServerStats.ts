@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { netcattyBridge } from '../../../infrastructure/services/netcattyBridge';
+import { magiesTerminalBridge } from '../../../infrastructure/services/magiesTerminalBridge';
 
 export interface DiskInfo {
   mountPoint: string;
@@ -255,7 +255,7 @@ async function fetchSharedServerStats(session: SharedServerStatsSession, force =
   if (getActiveServerStatsClients(session).length === 0) return;
   if (!force && getVisibleServerStatsClients(session).length === 0) return;
 
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (!bridge?.getServerStats) return;
 
   if (force) {

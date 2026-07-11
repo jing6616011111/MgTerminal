@@ -20,7 +20,7 @@ import {
   type PKCEChallenge,
 } from '../../../domain/sync';
 import { arrayBufferToBase64, generateRandomBytes } from '../EncryptionService';
-import { netcattyBridge } from '../netcattyBridge';
+import { magiesTerminalBridge } from '../magiesTerminalBridge';
 
 // ============================================================================
 // Types
@@ -126,11 +126,11 @@ export const exchangeCodeForTokens = async (
   codeVerifier: string,
   redirectUri: string
 ): Promise<OAuthTokens> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   const exchangeViaMain = bridge?.googleExchangeCodeForTokens;
   if (!exchangeViaMain) {
     throw new Error(
-      'Google OAuth bridge unavailable (token exchange is blocked by CORS in renderer). Please restart Netcatty.'
+      'Google OAuth bridge unavailable (token exchange is blocked by CORS in renderer). Please restart MagiesTerminal.'
     );
   }
 
@@ -147,11 +147,11 @@ export const exchangeCodeForTokens = async (
  * Refresh access token
  */
 export const refreshAccessToken = async (refreshToken: string): Promise<OAuthTokens> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   const refreshViaMain = bridge?.googleRefreshAccessToken;
   if (!refreshViaMain) {
     throw new Error(
-      'Google OAuth bridge unavailable (token refresh is blocked by CORS in renderer). Please restart Netcatty.'
+      'Google OAuth bridge unavailable (token refresh is blocked by CORS in renderer). Please restart MagiesTerminal.'
     );
   }
 
@@ -170,7 +170,7 @@ export const refreshAccessToken = async (refreshToken: string): Promise<OAuthTok
  * Get authenticated user info
  */
 export const getUserInfo = async (accessToken: string): Promise<ProviderAccount> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   const userInfoViaMain = bridge?.googleGetUserInfo;
   if (userInfoViaMain) {
     const user = await userInfoViaMain({ accessToken });
@@ -207,7 +207,7 @@ export const getUserInfo = async (accessToken: string): Promise<ProviderAccount>
  */
 export const validateToken = async (accessToken: string): Promise<boolean> => {
   try {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     const userInfoViaMain = bridge?.googleGetUserInfo;
     if (userInfoViaMain) {
       await userInfoViaMain({ accessToken });
@@ -231,7 +231,7 @@ export const validateToken = async (accessToken: string): Promise<boolean> => {
  * Find sync file in appDataFolder
  */
 export const findSyncFile = async (accessToken: string): Promise<string | null> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   const findViaMain = bridge?.googleDriveFindSyncFile;
   if (findViaMain) {
     const { fileId } = await findViaMain({
@@ -288,7 +288,7 @@ export const createSyncFile = async (
   accessToken: string,
   syncedFile: SyncedFile
 ): Promise<string> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   const createViaMain = bridge?.googleDriveCreateSyncFile;
   if (createViaMain) {
     const { fileId } = await createViaMain({
@@ -354,7 +354,7 @@ export const updateSyncFile = async (
   fileId: string,
   syncedFile: SyncedFile
 ): Promise<void> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   const updateViaMain = bridge?.googleDriveUpdateSyncFile;
   if (updateViaMain) {
     await updateViaMain({ accessToken, fileId, syncedFile });
@@ -398,7 +398,7 @@ export const downloadSyncFile = async (
   accessToken: string,
   fileId: string
 ): Promise<SyncedFile | null> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   const downloadViaMain = bridge?.googleDriveDownloadSyncFile;
   if (downloadViaMain) {
     const { syncedFile } = await downloadViaMain({ accessToken, fileId });
@@ -444,7 +444,7 @@ export const deleteSyncFile = async (
   accessToken: string,
   fileId: string
 ): Promise<void> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   const deleteViaMain = bridge?.googleDriveDeleteSyncFile;
   if (deleteViaMain) {
     await deleteViaMain({ accessToken, fileId });

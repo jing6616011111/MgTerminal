@@ -1,6 +1,6 @@
 # Session Restore
 
-Session restore brings Netcatty back to the user's previous workspace shape on startup without reviving terminal processes or replaying terminal content.
+Session restore brings MagiesTerminal back to the user's previous workspace shape on startup without reviving terminal processes or replaying terminal content.
 
 ## Current Scope
 
@@ -24,7 +24,7 @@ Out of scope:
 
 ### Startup Restore
 
-When "Restore previous terminal tabs and workspace layout" is enabled, Netcatty restores the prior terminal workspace on launch. Restored terminals are marked with `restoreState: "restored-disconnected"` and stay disconnected until the user explicitly reconnects them.
+When "Restore previous terminal tabs and workspace layout" is enabled, MagiesTerminal restores the prior terminal workspace on launch. Restored terminals are marked with `restoreState: "restored-disconnected"` and stay disconnected until the user explicitly reconnects them.
 
 Startup restore must not start terminal backends, SSH connections, local shells, SFTP sessions, mosh, ET, telnet, serial sessions, cwd probes, or startup commands.
 
@@ -32,9 +32,9 @@ Startup restore must not start terminal backends, SSH connections, local shells,
 
 When the user reconnects a restored placeholder, the normal connection flow starts. The reconnect action is the boundary where side effects are allowed.
 
-If "Restore terminal working directory on reconnect" is enabled and the restored session has an eligible `lastCwd`, Netcatty sends an automated `cd -- ...` after backend attach. The command is shell-quoted, is not added to application command history, and is attempted at most once for that reconnect.
+If "Restore terminal working directory on reconnect" is enabled and the restored session has an eligible `lastCwd`, MagiesTerminal sends an automated `cd -- ...` after backend attach. The command is shell-quoted, is not added to application command history, and is attempted at most once for that reconnect.
 
-If the directory is missing, inaccessible, or rejected by the shell, the connection remains open. Netcatty does not clear `lastCwd`, does not retry in a loop, and only shows a non-blocking progress note.
+If the directory is missing, inaccessible, or rejected by the shell, the connection remains open. MagiesTerminal does not clear `lastCwd`, does not retry in a loop, and only shows a non-blocking progress note.
 
 ## Settings
 

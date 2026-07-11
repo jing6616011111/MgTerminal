@@ -4,8 +4,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const DEBUG_ENV_KEYS = [
-  "NETCATTY_TERMINAL_PERF_DEBUG",
-  "NETCATTY_TERMINAL_DEBUG",
+  "MAGIES_TERMINAL_TERMINAL_PERF_DEBUG",
+  "MAGIES_TERMINAL_TERMINAL_DEBUG",
 ];
 
 let nextPerfId = 0;
@@ -48,7 +48,7 @@ function getUserDataPathFromArgv() {
 function getPerfLogDir() {
   if (perfLogDir) return perfLogDir;
   try {
-    const explicitLogDir = process.env.NETCATTY_TERMINAL_PERF_LOG_DIR;
+    const explicitLogDir = process.env.MAGIES_TERMINAL_TERMINAL_PERF_LOG_DIR;
     if (explicitLogDir) {
       perfLogDir = explicitLogDir;
       fs.mkdirSync(perfLogDir, { recursive: true });
@@ -120,7 +120,7 @@ function logTerminalOutputPerf(event, details = {}) {
     ...details,
   };
   try {
-    const message = `[Netcatty Terminal Perf] ${safeJson(payload)}`;
+    const message = `[MagiesTerminal Terminal Perf] ${safeJson(payload)}`;
     console.info(message);
     appendTerminalPerfLogLine(message);
   } catch {

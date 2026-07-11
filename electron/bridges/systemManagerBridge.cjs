@@ -341,43 +341,43 @@ function createSystemManagerBridge(deps) {
     const terminalWorkerManager = options.terminalWorkerManager || null;
     if (terminalWorkerManager) {
       [
-        "netcatty:system:probeCapabilities",
-        "netcatty:system:listProcesses",
-        "netcatty:system:signalProcess",
-        "netcatty:system:setupOsc7Tracking",
-        "netcatty:system:listTmuxSessions",
-        "netcatty:system:createTmuxSession",
-        "netcatty:system:listTmuxWindows",
-        "netcatty:system:listTmuxPanes",
-        "netcatty:system:listTmuxClients",
-        "netcatty:system:tmuxAction",
-        "netcatty:system:listDockerContainers",
-        "netcatty:system:listDockerImages",
-        "netcatty:system:dockerStats",
-        "netcatty:system:dockerInspect",
-        "netcatty:system:dockerImageInspect",
-        "netcatty:system:dockerAction",
-        "netcatty:system:dockerImageAction",
+        "magiesTerminal:system:probeCapabilities",
+        "magiesTerminal:system:listProcesses",
+        "magiesTerminal:system:signalProcess",
+        "magiesTerminal:system:setupOsc7Tracking",
+        "magiesTerminal:system:listTmuxSessions",
+        "magiesTerminal:system:createTmuxSession",
+        "magiesTerminal:system:listTmuxWindows",
+        "magiesTerminal:system:listTmuxPanes",
+        "magiesTerminal:system:listTmuxClients",
+        "magiesTerminal:system:tmuxAction",
+        "magiesTerminal:system:listDockerContainers",
+        "magiesTerminal:system:listDockerImages",
+        "magiesTerminal:system:dockerStats",
+        "magiesTerminal:system:dockerInspect",
+        "magiesTerminal:system:dockerImageInspect",
+        "magiesTerminal:system:dockerAction",
+        "magiesTerminal:system:dockerImageAction",
       ].forEach((channel) => registerWorkerHandle(ipcMain, terminalWorkerManager, channel));
       return;
     }
-    ipcMain.handle("netcatty:system:probeCapabilities", probeCapabilities);
-    ipcMain.handle("netcatty:system:listProcesses", listProcesses);
-    ipcMain.handle("netcatty:system:signalProcess", signalProcess);
-    ipcMain.handle("netcatty:system:setupOsc7Tracking", setupOsc7Tracking);
-    ipcMain.handle("netcatty:system:listTmuxSessions", listTmuxSessions);
-    ipcMain.handle("netcatty:system:createTmuxSession", createTmuxSession);
-    ipcMain.handle("netcatty:system:listTmuxWindows", listTmuxWindows);
-    ipcMain.handle("netcatty:system:listTmuxPanes", listTmuxPanes);
-    ipcMain.handle("netcatty:system:listTmuxClients", listTmuxClients);
-    ipcMain.handle("netcatty:system:tmuxAction", tmuxAction);
-    ipcMain.handle("netcatty:system:listDockerContainers", listDockerContainers);
-    ipcMain.handle("netcatty:system:listDockerImages", listDockerImages);
-    ipcMain.handle("netcatty:system:dockerStats", dockerStats);
-    ipcMain.handle("netcatty:system:dockerInspect", dockerInspect);
-    ipcMain.handle("netcatty:system:dockerImageInspect", dockerImageInspect);
-    ipcMain.handle("netcatty:system:dockerAction", dockerAction);
-    ipcMain.handle("netcatty:system:dockerImageAction", dockerImageAction);
+    ipcMain.handle("magiesTerminal:system:probeCapabilities", probeCapabilities);
+    ipcMain.handle("magiesTerminal:system:listProcesses", listProcesses);
+    ipcMain.handle("magiesTerminal:system:signalProcess", signalProcess);
+    ipcMain.handle("magiesTerminal:system:setupOsc7Tracking", setupOsc7Tracking);
+    ipcMain.handle("magiesTerminal:system:listTmuxSessions", listTmuxSessions);
+    ipcMain.handle("magiesTerminal:system:createTmuxSession", createTmuxSession);
+    ipcMain.handle("magiesTerminal:system:listTmuxWindows", listTmuxWindows);
+    ipcMain.handle("magiesTerminal:system:listTmuxPanes", listTmuxPanes);
+    ipcMain.handle("magiesTerminal:system:listTmuxClients", listTmuxClients);
+    ipcMain.handle("magiesTerminal:system:tmuxAction", tmuxAction);
+    ipcMain.handle("magiesTerminal:system:listDockerContainers", listDockerContainers);
+    ipcMain.handle("magiesTerminal:system:listDockerImages", listDockerImages);
+    ipcMain.handle("magiesTerminal:system:dockerStats", dockerStats);
+    ipcMain.handle("magiesTerminal:system:dockerInspect", dockerInspect);
+    ipcMain.handle("magiesTerminal:system:dockerImageInspect", dockerImageInspect);
+    ipcMain.handle("magiesTerminal:system:dockerAction", dockerAction);
+    ipcMain.handle("magiesTerminal:system:dockerImageAction", dockerImageAction);
   }
 
   return { registerHandlers, probeCapabilities, listProcesses, setupOsc7Tracking };

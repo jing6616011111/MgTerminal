@@ -57,7 +57,7 @@ function createSftpHandlerApi(ctx) {
       const closeSftpHandle = () => {
         if (!sftpId) return Promise.resolve();
         if (!closePromise) {
-          closePromise = requestWorkerSftp("netcatty:sftp:close", { sftpId, encodingStateKey });
+          closePromise = requestWorkerSftp("magiesTerminal:sftp:close", { sftpId, encodingStateKey });
         }
         return closePromise;
       };
@@ -71,7 +71,7 @@ function createSftpHandlerApi(ctx) {
       });
 
       try {
-        const opened = await requestWorkerSftp("netcatty:sftp:openForSession", {
+        const opened = await requestWorkerSftp("magiesTerminal:sftp:openForSession", {
           sessionId: params.sessionId,
           encodingStateKey,
           timeoutMs,
@@ -217,7 +217,7 @@ function createSftpHandlerApi(ctx) {
       const entries = await withSessionBackedSftp(
         params,
         (payload) => sftpBridge.listSftp(null, payload),
-        { timeoutMs: commandTimeoutMs, operationName: "SFTP list", workerChannel: "netcatty:sftp:list" },
+        { timeoutMs: commandTimeoutMs, operationName: "SFTP list", workerChannel: "magiesTerminal:sftp:list" },
       );
       return { ok: true, entries };
     }
@@ -227,7 +227,7 @@ function createSftpHandlerApi(ctx) {
       const content = await withSessionBackedSftp(
         params,
         (payload) => sftpBridge.readSftp(null, payload),
-        { timeoutMs: commandTimeoutMs, operationName: "SFTP read", workerChannel: "netcatty:sftp:read" },
+        { timeoutMs: commandTimeoutMs, operationName: "SFTP read", workerChannel: "magiesTerminal:sftp:read" },
       );
       return { ok: true, path: params.path, content };
     }
@@ -238,7 +238,7 @@ function createSftpHandlerApi(ctx) {
       await withSessionBackedSftp(
         params,
         (payload) => sftpBridge.writeSftp(null, payload),
-        { timeoutMs: commandTimeoutMs, operationName: "SFTP write", workerChannel: "netcatty:sftp:write" },
+        { timeoutMs: commandTimeoutMs, operationName: "SFTP write", workerChannel: "magiesTerminal:sftp:write" },
       );
       return { ok: true, path: params.path };
     }
@@ -250,7 +250,7 @@ function createSftpHandlerApi(ctx) {
       const result = await withSessionBackedSftp(
         params,
         (payload) => sftpBridge.downloadSftpToLocal(null, payload),
-        { timeoutMs: commandTimeoutMs, operationName: "SFTP download", workerChannel: "netcatty:sftp:downloadToLocal" },
+        { timeoutMs: commandTimeoutMs, operationName: "SFTP download", workerChannel: "magiesTerminal:sftp:downloadToLocal" },
       );
       return { ok: true, ...result };
     }
@@ -262,7 +262,7 @@ function createSftpHandlerApi(ctx) {
       const result = await withSessionBackedSftp(
         params,
         (payload) => sftpBridge.uploadLocalToSftp(null, payload),
-        { timeoutMs: commandTimeoutMs, operationName: "SFTP upload", workerChannel: "netcatty:sftp:uploadLocal" },
+        { timeoutMs: commandTimeoutMs, operationName: "SFTP upload", workerChannel: "magiesTerminal:sftp:uploadLocal" },
       );
       return { ok: true, ...result };
     }
@@ -272,7 +272,7 @@ function createSftpHandlerApi(ctx) {
       await withSessionBackedSftp(
         params,
         (payload) => sftpBridge.mkdirSftp(null, payload),
-        { timeoutMs: commandTimeoutMs, operationName: "SFTP mkdir", workerChannel: "netcatty:sftp:mkdir" },
+        { timeoutMs: commandTimeoutMs, operationName: "SFTP mkdir", workerChannel: "magiesTerminal:sftp:mkdir" },
       );
       return { ok: true, path: params.path };
     }
@@ -282,7 +282,7 @@ function createSftpHandlerApi(ctx) {
       await withSessionBackedSftp(
         params,
         (payload) => sftpBridge.deleteSftp(null, payload),
-        { timeoutMs: commandTimeoutMs, operationName: "SFTP delete", workerChannel: "netcatty:sftp:delete" },
+        { timeoutMs: commandTimeoutMs, operationName: "SFTP delete", workerChannel: "magiesTerminal:sftp:delete" },
       );
       return { ok: true, path: params.path };
     }
@@ -294,7 +294,7 @@ function createSftpHandlerApi(ctx) {
       await withSessionBackedSftp(
         params,
         (payload) => sftpBridge.renameSftp(null, payload),
-        { timeoutMs: commandTimeoutMs, operationName: "SFTP rename", workerChannel: "netcatty:sftp:rename" },
+        { timeoutMs: commandTimeoutMs, operationName: "SFTP rename", workerChannel: "magiesTerminal:sftp:rename" },
       );
       return { ok: true, oldPath: params.oldPath, newPath: params.newPath };
     }
@@ -304,7 +304,7 @@ function createSftpHandlerApi(ctx) {
       const stat = await withSessionBackedSftp(
         params,
         (payload) => sftpBridge.statSftp(null, payload),
-        { timeoutMs: commandTimeoutMs, operationName: "SFTP stat", workerChannel: "netcatty:sftp:stat" },
+        { timeoutMs: commandTimeoutMs, operationName: "SFTP stat", workerChannel: "magiesTerminal:sftp:stat" },
       );
       return { ok: true, stat };
     }
@@ -314,7 +314,7 @@ function createSftpHandlerApi(ctx) {
       await withSessionBackedSftp(
         params,
         (payload) => sftpBridge.chmodSftp(null, payload),
-        { timeoutMs: commandTimeoutMs, operationName: "SFTP chmod", workerChannel: "netcatty:sftp:chmod" },
+        { timeoutMs: commandTimeoutMs, operationName: "SFTP chmod", workerChannel: "magiesTerminal:sftp:chmod" },
       );
       return { ok: true, path: params.path, mode: params.mode };
     }
@@ -323,7 +323,7 @@ function createSftpHandlerApi(ctx) {
       const result = await withSessionBackedSftp(
         params,
         (payload) => sftpBridge.getSftpHomeDir(null, payload),
-        { timeoutMs: commandTimeoutMs, operationName: "SFTP home", workerChannel: "netcatty:sftp:homeDir" },
+        { timeoutMs: commandTimeoutMs, operationName: "SFTP home", workerChannel: "magiesTerminal:sftp:homeDir" },
       );
       if (!result?.success) {
         throw new Error(result?.error || "Could not determine home directory");

@@ -1,7 +1,7 @@
 import { CustomKeyBindings } from './models';
 
-const SYNC_VERSION_FIELD = '__netcattySyncVersion';
-const SYNC_ORIGIN_FIELD = '__netcattySyncOrigin';
+const SYNC_VERSION_FIELD = '__magiesTerminalSyncVersion';
+const SYNC_ORIGIN_FIELD = '__magiesTerminalSyncOrigin';
 
 export interface CustomKeyBindingsStorageRecord {
   bindings: CustomKeyBindings;

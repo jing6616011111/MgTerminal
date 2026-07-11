@@ -261,7 +261,7 @@ test("showAndFocusMainWindow restores minimized windows before focusing", () => 
     "show",
     "focus",
     "webContents.focus",
-    "send:netcatty:window:focus-requested",
+    "send:magiesTerminal:window:focus-requested",
   ]);
 });
 
@@ -283,7 +283,7 @@ test("notifyWindowFocusRequested sends only the explicit focus IPC", () => {
 
   notifyWindowFocusRequested(win);
 
-  assert.deepEqual(sent, ["netcatty:window:focus-requested"]);
+  assert.deepEqual(sent, ["magiesTerminal:window:focus-requested"]);
 });
 
 test("notifyWindowWillHide sends will-hide IPC before native hide", () => {
@@ -304,7 +304,7 @@ test("notifyWindowWillHide sends will-hide IPC before native hide", () => {
 
   notifyWindowWillHide(win);
 
-  assert.deepEqual(sent, ["netcatty:window:will-hide"]);
+  assert.deepEqual(sent, ["magiesTerminal:window:will-hide"]);
 });
 
 test("buildAppMenu closes a non-app window directly when Cmd+W is invoked", () => {
@@ -316,7 +316,7 @@ test("buildAppMenu closes a non-app window directly when Cmd+W is invoked", () =
     },
   };
 
-  buildAppMenu(Menu, { name: "Netcatty" }, true);
+  buildAppMenu(Menu, { name: "MagiesTerminal" }, true);
 
   const windowMenu = capturedTemplate.find((item) => item.label === "Window");
   assert.ok(windowMenu);
@@ -375,13 +375,13 @@ test("buildAppMenu sends Cmd+W to any registered main window renderer", () => {
   registerMainWindow(firstMainWindow);
   registerMainWindow(secondMainWindow);
   try {
-    buildAppMenu(Menu, { name: "Netcatty" }, true);
+    buildAppMenu(Menu, { name: "MagiesTerminal" }, true);
     const windowMenu = capturedTemplate.find((item) => item.label === "Window");
     const closeItem = windowMenu.submenu.find((item) => item.accelerator === "CommandOrControl+W");
 
     closeItem.click(null, firstMainWindow);
 
-    assert.deepEqual(calls, ["first:netcatty:window:command-close"]);
+    assert.deepEqual(calls, ["first:magiesTerminal:window:command-close"]);
   } finally {
     unregisterMainWindow(firstMainWindow);
     unregisterMainWindow(secondMainWindow);
@@ -397,7 +397,7 @@ test("buildAppMenu keeps app reload click-only so custom reload-like shortcuts r
     },
   };
 
-  buildAppMenu(Menu, { name: "Netcatty" }, false);
+  buildAppMenu(Menu, { name: "MagiesTerminal" }, false);
 
   const viewMenu = capturedTemplate.find((item) => item.label === "View");
   assert.ok(viewMenu);
@@ -434,7 +434,7 @@ test("requestWindowCommandClose sends command-close to renderer-capable windows"
   };
 
   assert.equal(requestWindowCommandClose(win), true);
-  assert.deepEqual(sentChannels, ["netcatty:window:command-close"]);
+  assert.deepEqual(sentChannels, ["magiesTerminal:window:command-close"]);
 });
 
 test("shouldCloseWindowFromInput only matches macOS Command+W keydown", () => {
@@ -1152,11 +1152,11 @@ test("main window clears renderer readiness when the main frame starts navigatin
   assert.equal(typeof webContentsHandlers["did-start-navigation"], "function");
   assert.equal(typeof webContentsHandlers["will-navigate"], "function");
 
-  webContentsHandlers["did-start-navigation"]({}, "app://netcatty/index.html", false, false);
+  webContentsHandlers["did-start-navigation"]({}, "app://magiesTerminal/index.html", false, false);
   assert.equal(rendererReadyIds.has(7), true);
   assert.deepEqual(clearedReadyIds, []);
 
-  webContentsHandlers["did-start-navigation"]({}, "app://netcatty/index.html#/vault", true, true);
+  webContentsHandlers["did-start-navigation"]({}, "app://magiesTerminal/index.html#/vault", true, true);
   assert.equal(rendererReadyIds.has(7), true);
   assert.deepEqual(clearedReadyIds, []);
 
@@ -1174,15 +1174,15 @@ test("main window clears renderer readiness when the main frame starts navigatin
   let blockedAppPortNavigation = false;
   webContentsHandlers["will-navigate"](
     { preventDefault() { blockedAppPortNavigation = true; } },
-    "app://netcatty:123/index.html",
+    "app://magiesTerminal:123/index.html",
   );
   assert.equal(blockedAppPortNavigation, true);
 
-  webContentsHandlers["did-start-navigation"]({}, "app://netcatty:123/index.html", false, true);
+  webContentsHandlers["did-start-navigation"]({}, "app://magiesTerminal:123/index.html", false, true);
   assert.equal(rendererReadyIds.has(7), true);
   assert.deepEqual(clearedReadyIds, []);
 
-  webContentsHandlers["did-start-navigation"]({}, "app://netcatty/index.html", false, true);
+  webContentsHandlers["did-start-navigation"]({}, "app://magiesTerminal/index.html", false, true);
   assert.equal(rendererReadyIds.has(7), false);
   assert.deepEqual(clearedReadyIds, [7]);
 });
@@ -1940,7 +1940,7 @@ test("window IPC handlers target the sender owner window", async () => {
 
   registerWindowHandlers(ipcMain, { themeSource: "light" });
 
-  const result = await handlers.get("netcatty:window:focus")({
+  const result = await handlers.get("magiesTerminal:window:focus")({
     sender: {
       id: 202,
       getOwnerBrowserWindow() {
@@ -1951,7 +1951,7 @@ test("window IPC handlers target the sender owner window", async () => {
 
   assert.equal(result, true);
   assert.deepEqual(calls, ["focus", "webContents.focus"]);
-  const titleResult = await handlers.get("netcatty:window:setTitle")({
+  const titleResult = await handlers.get("magiesTerminal:window:setTitle")({
     sender: {
       id: 202,
       getOwnerBrowserWindow() {
@@ -1979,7 +1979,7 @@ test("window IPC handlers target the sender owner window", async () => {
     },
   });
 
-  const opacityResult = await handlers.get("netcatty:setWindowOpacity")(null, 0.7);
+  const opacityResult = await handlers.get("magiesTerminal:setWindowOpacity")(null, 0.7);
   assert.equal(opacityResult, true);
   assert.deepEqual(opacityCalls, [0.7]);
 });
@@ -2039,7 +2039,7 @@ test("sendWhenRendererReady delivers the payload once the renderer reports ready
 
   const result = await sendWhenRendererReady(
     win,
-    "netcatty:window:openSession",
+    "magiesTerminal:window:openSession",
     { title: "Prod" },
     {
       timeoutMs: 8000,
@@ -2054,7 +2054,7 @@ test("sendWhenRendererReady delivers the payload once the renderer reports ready
   assert.equal(waited[0].target, win);
   assert.deepEqual(waited[0].opts, { timeoutMs: 8000 });
   assert.deepEqual(sent, [
-    { channel: "netcatty:window:openSession", payload: { title: "Prod" } },
+    { channel: "magiesTerminal:window:openSession", payload: { title: "Prod" } },
   ]);
 });
 
@@ -2063,7 +2063,7 @@ test("sendWhenRendererReady reports failure without sending when readiness times
 
   const result = await sendWhenRendererReady(
     win,
-    "netcatty:window:openSession",
+    "magiesTerminal:window:openSession",
     { title: "Prod" },
     {
       timeoutMs: 5,
@@ -2082,7 +2082,7 @@ test("sendWhenRendererReady reports failure without sending when the window is g
 
   const result = await sendWhenRendererReady(
     win,
-    "netcatty:window:openSession",
+    "magiesTerminal:window:openSession",
     { title: "Prod" },
     {
       timeoutMs: 8000,
@@ -2099,7 +2099,7 @@ test("sendWhenRendererReady can cancel after readiness before sending", async ()
 
   const result = await sendWhenRendererReady(
     win,
-    "netcatty:window:openSession",
+    "magiesTerminal:window:openSession",
     { title: "Prod" },
     {
       timeoutMs: 8000,
@@ -2118,7 +2118,7 @@ test("sendWhenRendererReady reports cancellation instead of timeout after cancel
 
   const result = await sendWhenRendererReady(
     win,
-    "netcatty:window:openSession",
+    "magiesTerminal:window:openSession",
     { title: "Prod" },
     {
       timeoutMs: 5,

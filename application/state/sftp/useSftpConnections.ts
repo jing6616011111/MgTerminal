@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { MutableRefObject } from "react";
-import { netcattyBridge } from "../../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../../infrastructure/services/magiesTerminalBridge";
 import type { Host, Identity, KnownHost, SftpConnection, SftpFileEntry, SftpFilenameEncoding, SSHKey } from "../../../domain/models";
 import type { SftpHostKeyInfo, SftpHostKeyVerificationState, SftpPane } from "./types";
 import { useSftpDirectoryListing } from "./useSftpDirectoryListing";
@@ -131,7 +131,7 @@ export const useSftpConnections = ({
   }, []);
 
   useEffect(() => {
-    const dispose = netcattyBridge.get()?.onHostKeyVerification?.((request: HostKeyVerificationRequest) => {
+    const dispose = magiesTerminalBridge.get()?.onHostKeyVerification?.((request: HostKeyVerificationRequest) => {
       const sessionId = request.sessionId;
       if (!sessionId) return;
       const activeSession = activeHostKeySessionsRef.current.get(sessionId);
@@ -165,7 +165,7 @@ export const useSftpConnections = ({
     if (accept && addToKnownHosts) {
       onAddKnownHost?.(createKnownHostFromSftpHostKeyInfo(pending.hostKeyInfo));
     }
-    void netcattyBridge.get()?.respondHostKeyVerification?.(
+    void magiesTerminalBridge.get()?.respondHostKeyVerification?.(
       pending.requestId,
       accept,
       addToKnownHosts,
@@ -238,7 +238,7 @@ export const useSftpConnections = ({
         clearCacheForConnection(connectionId);
         if (!sftpId) return;
         try {
-          await netcattyBridge.get()?.closeSftp(sftpId);
+          await magiesTerminalBridge.get()?.closeSftp(sftpId);
         } catch {
           // Ignore errors when closing stale SFTP sessions
         }
@@ -274,7 +274,7 @@ export const useSftpConnections = ({
             // have already removed during the await.
             sftpSessionsRef.current.delete(currentPane.connection.id);
             try {
-              await netcattyBridge.get()?.closeSftp(oldSftpId);
+              await magiesTerminalBridge.get()?.closeSftp(oldSftpId);
             } catch {
               // Ignore errors when closing stale SFTP sessions
             }
@@ -283,7 +283,7 @@ export const useSftpConnections = ({
       }
 
       if (host === "local") {
-        let homeDir = await netcattyBridge.get()?.getHomeDir?.();
+        let homeDir = await magiesTerminalBridge.get()?.getHomeDir?.();
         if (!homeDir) {
           const isWindows = navigator.platform.toLowerCase().includes("win");
           homeDir = isWindows ? "C:\\Users\\damao" : "/Users/damao";
@@ -379,7 +379,7 @@ export const useSftpConnections = ({
         const sftpSessionId = `sftp-${connectionId}`;
         activeHostKeySessionsRef.current.set(sftpSessionId, { side, tabId: activeTabId });
         let unsubSftpProgress: (() => void) | undefined;
-        const bridge = netcattyBridge.get();
+        const bridge = magiesTerminalBridge.get();
         if (bridge?.onSftpConnectionProgress) {
           unsubSftpProgress = bridge.onSftpConnectionProgress((sid, label, status, detail) => {
             if (sid !== sftpSessionId) return;
@@ -435,7 +435,7 @@ export const useSftpConnections = ({
             );
           };
 
-          let credentials: NetcattySSHOptions | null = null;
+          let credentials: MagiesTerminalSSHOptions | null = null;
           let sftpId: string | undefined;
 
           // Live Connected rows: try reuse with endpoint-only options first so
@@ -510,7 +510,7 @@ export const useSftpConnections = ({
 
           if (!sharedHostCache) {
             // Detect home directory: SSH exec `echo ~` → SFTP realpath('.') → hardcoded fallback
-            const bridge = netcattyBridge.get();
+            const bridge = magiesTerminalBridge.get();
             let detected = false;
 
             if (bridge?.getSftpHomeDir) {
@@ -757,7 +757,7 @@ export const useSftpConnections = ({
         const sftpId = sftpSessionsRef.current.get(pane.connection.id);
         if (sftpId) {
           try {
-            await netcattyBridge.get()?.closeSftp(sftpId);
+            await magiesTerminalBridge.get()?.closeSftp(sftpId);
           } catch {
             // Ignore errors when closing SFTP session during disconnect
           }

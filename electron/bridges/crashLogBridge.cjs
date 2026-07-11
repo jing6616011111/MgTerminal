@@ -25,10 +25,10 @@ let sessionsMap = null;
 
 const LOG_RETENTION_DAYS = 30;
 const TERMINAL_PERF_DEBUG_ENV_KEYS = [
-  "NETCATTY_TERMINAL_PERF_DEBUG",
-  "NETCATTY_TERMINAL_DEBUG",
+  "MAGIES_TERMINAL_TERMINAL_PERF_DEBUG",
+  "MAGIES_TERMINAL_TERMINAL_DEBUG",
 ];
-const TERMINAL_PERF_LOG_PREFIX = "[Netcatty Terminal Perf]";
+const TERMINAL_PERF_LOG_PREFIX = "[MagiesTerminal Terminal Perf]";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -336,11 +336,11 @@ function init(deps) {
 }
 
 function registerHandlers(ipcMain) {
-  ipcMain.handle("netcatty:crashLogs:list", async () => listLogs());
-  ipcMain.handle("netcatty:crashLogs:read", async (_event, { fileName }) => readLog(fileName));
-  ipcMain.handle("netcatty:crashLogs:clear", async () => clearLogs());
-  ipcMain.handle("netcatty:crashLogs:openDir", async () => openDir());
-  ipcMain.handle("netcatty:diagnostics:log", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:crashLogs:list", async () => listLogs());
+  ipcMain.handle("magiesTerminal:crashLogs:read", async (_event, { fileName }) => readLog(fileName));
+  ipcMain.handle("magiesTerminal:crashLogs:clear", async () => clearLogs());
+  ipcMain.handle("magiesTerminal:crashLogs:openDir", async () => openDir());
+  ipcMain.handle("magiesTerminal:diagnostics:log", async (_event, payload) => {
     const source = typeof payload?.source === "string" && payload.source.trim()
       ? payload.source.trim()
       : "renderer-diagnostic";

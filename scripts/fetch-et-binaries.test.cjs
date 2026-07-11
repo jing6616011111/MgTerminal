@@ -18,7 +18,7 @@ const {
 } = require("./fetch-et-binaries.cjs");
 
 function makeTmp(t) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-fetch-et-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-fetch-et-"));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   return dir;
 }
@@ -58,10 +58,10 @@ async function serveAssets(t, assets) {
 }
 
 test("fetch-et-binaries defaults to the dedicated et binary repository", () => {
-  assert.deepEqual(parseEtBinRepository({}), { owner: "binaricat", repo: "Netcatty-et-bin" });
+  assert.deepEqual(parseEtBinRepository({}), { owner: "JasonZhangDad", repo: "MagiesTerminal-et-bin" });
   assert.deepEqual(parseEtBinRepository({ GITHUB_REPOSITORY: "owner/project" }), {
     owner: "owner",
-    repo: "Netcatty-et-bin",
+    repo: "MagiesTerminal-et-bin",
   });
   assert.deepEqual(
     parseEtBinRepository({ GITHUB_REPOSITORY: "owner/project", ET_BIN_OWNER: "bin", ET_BIN_REPO: "binaries" }),
@@ -81,11 +81,11 @@ test("resolveHostTarget maps the local platform to the bundled target", () => {
 test("tar archive invocation uses a relative archive name for Windows paths", () => {
   assert.deepEqual(
     resolveTarArchiveInvocation(
-      "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\netcatty-et-abc\\bundle.tar.gz",
+      "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\magiesTerminal-et-abc\\bundle.tar.gz",
       "win32",
     ),
     {
-      cwd: "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\netcatty-et-abc",
+      cwd: "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\magiesTerminal-et-abc",
       archive: "bundle.tar.gz",
     },
   );

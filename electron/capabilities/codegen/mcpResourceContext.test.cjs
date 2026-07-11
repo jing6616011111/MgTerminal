@@ -18,7 +18,7 @@ function envPairsToObject(envPairs) {
   return env;
 }
 
-test("MCP environment resource serializes terminal tool hints from Netcatty context", async (t) => {
+test("MCP environment resource serializes terminal tool hints from MagiesTerminal context", async (t) => {
   const { Client } = await import("@modelcontextprotocol/sdk/client/index.js");
   const { StdioClientTransport } = await import("@modelcontextprotocol/sdk/client/stdio.js");
 
@@ -64,10 +64,10 @@ test("MCP environment resource serializes terminal tool hints from Netcatty cont
     args: config.args,
     env: envPairsToObject(config.env),
   });
-  client = new Client({ name: "netcatty-resource-test", version: "1.0.0" });
+  client = new Client({ name: "magiesTerminal-resource-test", version: "1.0.0" });
   await client.connect(transport);
 
-  const resource = await client.readResource({ uri: "netcatty://context" });
+  const resource = await client.readResource({ uri: "magies-terminal://context" });
   const text = resource.contents?.[0]?.text || "";
   const context = JSON.parse(text);
 

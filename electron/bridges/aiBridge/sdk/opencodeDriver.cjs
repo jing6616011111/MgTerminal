@@ -8,7 +8,7 @@ const { mcpEnvPairsToObject } = require("./injectMcp.cjs");
 const {
   buildOpenCodeNativeSkillsPermissionRules,
   buildOpenCodeSkillsPermissionRules,
-} = require("./netcattySkillsOpenCodePermissions.cjs");
+} = require("./magiesTerminalSkillsOpenCodePermissions.cjs");
 
 const OPENCODE_IMAGE_MEDIA_TYPES = new Set(["image/jpeg", "image/png", "image/gif", "image/webp"]);
 const DEFAULT_OPENCODE_PORT = 4096;
@@ -549,7 +549,7 @@ async function runOpenCodeTurn({
 
     if (!sessionId) {
       const created = await client.session.create({
-        body: { title: "Netcatty OpenCode" },
+        body: { title: "MagiesTerminal OpenCode" },
         query: directoryQuery,
       });
       sessionId = created?.data?.id || created?.id || null;

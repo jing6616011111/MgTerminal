@@ -128,7 +128,7 @@ test("prepareCommandForSpawn wraps Windows cmd shims as a single shell command",
 });
 
 test("resolveClaudeCodeExecutableForSdk maps Windows npm cmd shim to Claude Code cli.js", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-claude-shim-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-claude-shim-"));
   try {
     const shimPath = path.join(tmp, "claude.cmd");
     const scriptPath = path.join(tmp, "node_modules", "@anthropic-ai", "claude-code", "cli.js");
@@ -154,7 +154,7 @@ test("resolveClaudeCodeExecutableForSdk leaves non-Windows Claude paths unchange
 });
 
 test("resolveClaudeCodeExecutableForSdk keeps Windows cmd shim when Claude Code cli.js is missing", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-claude-missing-cli-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-claude-missing-cli-"));
   try {
     const shimPath = path.join(tmp, "claude.cmd");
     fs.writeFileSync(
@@ -170,7 +170,7 @@ test("resolveClaudeCodeExecutableForSdk keeps Windows cmd shim when Claude Code 
 });
 
 test("resolveClaudeCodeExecutableForSdk maps Windows npm cmd shim to native claude.exe when cli.js is absent", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-claude-native-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-claude-native-"));
   try {
     const shimPath = path.join(tmp, "claude.cmd");
     const nativeExe = path.join(tmp, "node_modules", "@anthropic-ai", "claude-code", "bin", "claude.exe");
@@ -189,7 +189,7 @@ test("resolveClaudeCodeExecutableForSdk maps Windows npm cmd shim to native clau
 });
 
 test("resolveWindowsShimToNativeExe resolves npm .cmd shim to native exe", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-shim-native-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-shim-native-"));
   try {
     const shimPath = path.join(tmp, "claude.cmd");
     const nativeExe = path.join(tmp, "node_modules", "@anthropic-ai", "claude-code", "bin", "claude.exe");
@@ -210,7 +210,7 @@ test("resolveWindowsShimToNativeExe resolves npm .cmd shim to native exe", () =>
 });
 
 test("prepareCommandForSpawn resolves Windows cmd shim to native exe with shell:false", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-spawn-native-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-spawn-native-"));
   try {
     const shimPath = path.join(tmp, "claude.cmd");
     const nativeExe = path.join(tmp, "node_modules", "@anthropic-ai", "claude-code", "bin", "claude.exe");
@@ -256,7 +256,7 @@ function writeCodexWin32NativeLayout(globalPrefix, arch = process.arch === "arm6
 }
 
 test("resolveCodexExecutableForSdk maps Windows npm cmd shim to native codex.exe", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codex-shim-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codex-shim-"));
   try {
     const shimPath = path.join(tmp, "codex.cmd");
     const nativeExe = writeCodexWin32NativeLayout(tmp);
@@ -273,7 +273,7 @@ test("resolveCodexExecutableForSdk maps Windows npm cmd shim to native codex.exe
 });
 
 test("resolveCodexExecutableForSdk maps Windows local npm bin shim to native codex.exe", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codex-local-shim-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codex-local-shim-"));
   try {
     const shimPath = path.join(tmp, "node_modules", ".bin", "codex.cmd");
     const nativeExe = writeCodexWin32NativeLayout(tmp);
@@ -298,7 +298,7 @@ test("resolveCodexExecutableForSdk leaves non-Windows Codex paths unchanged", ()
 });
 
 test("resolveCodexExecutableForSdk returns null for Windows cmd shim when native codex.exe is missing", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codex-missing-native-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codex-missing-native-"));
   try {
     const shimPath = path.join(tmp, "codex.cmd");
     fs.writeFileSync(
@@ -314,7 +314,7 @@ test("resolveCodexExecutableForSdk returns null for Windows cmd shim when native
 });
 
 test("resolveCodexExecutableForSdk maps Windows nvmd bin shim to native codex.exe", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codex-nvmd-shim-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codex-nvmd-shim-"));
   try {
     const nvmdHome = path.join(tmp, ".nvmd");
     const binDir = path.join(nvmdHome, "bin");
@@ -343,7 +343,7 @@ test("resolveCodexExecutableForSdk maps Windows nvmd bin shim to native codex.ex
 });
 
 test("resolveCodexExecutableForSdk maps Windows nvmd.exe package shim to native codex.exe", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codex-nvmd-exe-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codex-nvmd-exe-"));
   try {
     const nvmdHome = path.join(tmp, ".nvmd");
     const binDir = path.join(nvmdHome, "bin");
@@ -363,7 +363,7 @@ test("resolveCodexExecutableForSdk maps Windows nvmd.exe package shim to native 
 });
 
 test("resolveCodexExecutableForSdk maps Windows PowerShell shim to native codex.exe", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codex-ps1-shim-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codex-ps1-shim-"));
   try {
     const shimPath = path.join(tmp, "codex.ps1");
     const nativeExe = writeCodexWin32NativeLayout(tmp);
@@ -380,7 +380,7 @@ test("resolveCodexExecutableForSdk maps Windows PowerShell shim to native codex.
 });
 
 test("resolveCodexExecutableForSdk maps codex.js entry to native codex.exe", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codex-js-entry-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codex-js-entry-"));
   try {
     const codexJs = path.join(tmp, "node_modules", "@openai", "codex", "bin", "codex.js");
     const nativeExe = writeCodexWin32NativeLayout(tmp);
@@ -394,7 +394,7 @@ test("resolveCodexExecutableForSdk maps codex.js entry to native codex.exe", () 
 });
 
 test("addCodexExecutableEnvForSdk prepends bundled Codex path dir on Windows", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codex-env-path-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codex-env-path-"));
   try {
     const nativeExe = writeCodexWin32NativeLayout(tmp);
     const pathDir = path.join(path.dirname(path.dirname(nativeExe)), "codex-path");
@@ -423,7 +423,7 @@ test("resolveCodebuddyExecutableForSdk leaves non-Windows CodeBuddy paths unchan
 });
 
 test("resolveCodebuddyExecutableForSdk maps Windows npm cmd shim to package bin/codebuddy", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codebuddy-shim-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codebuddy-shim-"));
   try {
     const shimPath = path.join(tmp, "codebuddy.cmd");
     const binJs = writeCodebuddyWin32BinLayout(tmp);
@@ -440,7 +440,7 @@ test("resolveCodebuddyExecutableForSdk maps Windows npm cmd shim to package bin/
 });
 
 test("resolveCodebuddyExecutableForSdk maps extensionless Windows shim to package bin/codebuddy", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codebuddy-noext-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codebuddy-noext-"));
   try {
     const shimPath = path.join(tmp, "codebuddy");
     const binJs = writeCodebuddyWin32BinLayout(tmp);
@@ -453,7 +453,7 @@ test("resolveCodebuddyExecutableForSdk maps extensionless Windows shim to packag
 });
 
 test("resolveCodebuddyExecutableForSdk returns null for Windows cmd shim when package JS is missing", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-codebuddy-missing-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-codebuddy-missing-"));
   try {
     const shimPath = path.join(tmp, "codebuddy.cmd");
     fs.writeFileSync(shimPath, "@ECHO off\r\nnode foo %*\r\n", "utf8");

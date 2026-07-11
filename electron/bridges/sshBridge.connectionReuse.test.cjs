@@ -60,7 +60,7 @@ function makeSender() {
 }
 
 function getConnectionReuseFallbackEvents(sender) {
-  return sender.sent.filter((m) => m.channel === "netcatty:connection-reuse:fallback");
+  return sender.sent.filter((m) => m.channel === "magiesTerminal:connection-reuse:fallback");
 }
 
 // A fake ssh2 shell channel.
@@ -148,7 +148,7 @@ function registerStartHandler(bridge, sessions) {
     on() {},
   };
   bridge.registerHandlers(ipcMain);
-  return ipcMain.handlers.get("netcatty:start");
+  return ipcMain.handlers.get("magiesTerminal:start");
 }
 
 test("Copy Tab reuses the source connection instead of dialing fresh", async (t) => {
@@ -185,7 +185,7 @@ test("Copy Tab reuses the source connection instead of dialing fresh", async (t)
   assert.equal(copy.connRef.count, 2);
 
   // A 'connected' progress event was emitted for the renderer.
-  const progress = sender.sent.filter((m) => m.channel === "netcatty:chain:progress");
+  const progress = sender.sent.filter((m) => m.channel === "magiesTerminal:chain:progress");
   assert.ok(progress.some((m) => m.payload.status === "connected"));
   assert.equal(getConnectionReuseFallbackEvents(sender).length, 0, "successful reuse should not emit fallback");
 });

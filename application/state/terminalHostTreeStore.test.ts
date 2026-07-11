@@ -28,7 +28,7 @@ test('closing host tree state does not mutate layout width by itself', () => {
 });
 
 test('opening host tree state does not jump the layout width', () => {
-  storage.set('netcatty_terminal_host_tree_width_v1', '300');
+  storage.set('magiesTerminal_terminal_host_tree_width_v1', '300');
   terminalHostTreeStore.setLayoutWidth(0);
   terminalHostTreeStore.setIsOpen(false);
 

@@ -70,7 +70,7 @@ test("preparePrivateKeyForAuth decrypts and converts an encrypted PKCS#8 key", a
 });
 
 test("loadIdentityFileForAuth converts an unencrypted PKCS#8 identity file", async (t) => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-pkcs8-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-pkcs8-"));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   const keyPath = path.join(dir, "oracle.key");
   fs.writeFileSync(keyPath, genRsaPkcs8(), "utf8");
@@ -87,12 +87,12 @@ test("loadIdentityFileForAuth converts an unencrypted PKCS#8 identity file", asy
 });
 
 test("preparePrivateKeyForAuth recovers a mangled encrypted OpenSSH key via passphrase prompt", async (t) => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-mangled-openssh-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-mangled-openssh-"));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   const keyPath = path.join(dir, "id_ed25519");
   const gen = spawnSync(
     "ssh-keygen",
-    ["-q", "-t", "ed25519", "-N", "secret", "-f", keyPath, "-C", "netcatty-test"],
+    ["-q", "-t", "ed25519", "-N", "secret", "-f", keyPath, "-C", "magiesTerminal-test"],
     { encoding: "utf8" },
   );
   if (gen.status !== 0) {

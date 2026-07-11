@@ -14,14 +14,14 @@ const {
 // via `ctx`; `with (ctx)` exposes them as free identifiers.
 //
 // Unlike Mosh, the `et` client performs its own SSH bootstrap and ET protocol
-// handshake — Netcatty just spawns the bundled `et` binary as a PTY. Saved
+// handshake — MagiesTerminal just spawns the bundled `et` binary as a PTY. Saved
 // credentials (password / passphrase / jump host) are injected into et's
 // internal ssh via a private ~/.ssh home + SSH_ASKPASS helper, since et drives
 // ssh itself rather than exposing the prompts for us to type into.
 function createEtSessionApi(ctx) {
   with (ctx) {
     // Node script invoked by ssh as SSH_ASKPASS. It reads the prompt text from
-    // argv, matches it against the entries in NETCATTY_ET_ASKPASS_MAP, and
+    // argv, matches it against the entries in MAGIES_TERMINAL_ET_ASKPASS_MAP, and
     // prints the matching secret. Written to the session's private .ssh dir.
     const ET_ASKPASS_SCRIPT = String.raw`#!/usr/bin/env node
 const fs = require("node:fs");
@@ -32,7 +32,7 @@ function normalizePrompt(prompt) {
 }
 
 function loadEntries() {
-  const mapPath = process.env.NETCATTY_ET_ASKPASS_MAP;
+  const mapPath = process.env.MAGIES_TERMINAL_ET_ASKPASS_MAP;
   if (!mapPath) return [];
   try {
     const raw = fs.readFileSync(mapPath, "utf8");
@@ -87,7 +87,7 @@ main();
 `;
 
     /**
-     * Resolve Netcatty's bundled `et` client. System `et` installs are
+     * Resolve MagiesTerminal's bundled `et` client. System `et` installs are
      * intentionally ignored so dev, CI, and release builds exercise the same
      * binary (mirrors resolveBareMoshClient).
      */
@@ -169,24 +169,24 @@ main();
         return { env: {}, artifacts: [] };
       }
 
-      const askpassMapPath = path.join(sshDir, "netcatty-et-askpass-map.json");
-      const askpassScriptPath = path.join(sshDir, "netcatty-et-askpass.cjs");
+      const askpassMapPath = path.join(sshDir, "magiesTerminal-et-askpass-map.json");
+      const askpassScriptPath = path.join(sshDir, "magiesTerminal-et-askpass.cjs");
       writeSecureFile(askpassMapPath, `${JSON.stringify(askpassEntries, null, 2)}\n`, 0o600);
       writeSecureFile(askpassScriptPath, ET_ASKPASS_SCRIPT, 0o700);
 
       if (process.platform === "win32") {
-        const askpassCmdPath = path.join(sshDir, "netcatty-et-askpass.cmd");
+        const askpassCmdPath = path.join(sshDir, "magiesTerminal-et-askpass.cmd");
         writeSecureFile(
           askpassCmdPath,
-          `@echo off\r\nset ELECTRON_RUN_AS_NODE=1\r\n"${process.execPath.replace(/"/g, '""')}" "%~dp0netcatty-et-askpass.cjs" %*\r\n`,
+          `@echo off\r\nset ELECTRON_RUN_AS_NODE=1\r\n"${process.execPath.replace(/"/g, '""')}" "%~dp0magiesTerminal-et-askpass.cjs" %*\r\n`,
           0o700,
         );
         return {
           env: {
             SSH_ASKPASS: askpassCmdPath,
             SSH_ASKPASS_REQUIRE: "force",
-            DISPLAY: process.env.DISPLAY || "netcatty:0",
-            NETCATTY_ET_ASKPASS_MAP: askpassMapPath,
+            DISPLAY: process.env.DISPLAY || "magiesTerminal:0",
+            MAGIES_TERMINAL_ET_ASKPASS_MAP: askpassMapPath,
           },
           artifacts: [askpassMapPath, askpassScriptPath, askpassCmdPath],
         };
@@ -197,19 +197,19 @@ main();
       // node) breaks in packaged builds because Electron does not put a `node`
       // binary on the user's PATH. Mirror the Windows .cmd wrapper: run the
       // script through Electron's own executable with ELECTRON_RUN_AS_NODE=1.
-      const askpassWrapperPath = path.join(sshDir, "netcatty-et-askpass.sh");
+      const askpassWrapperPath = path.join(sshDir, "magiesTerminal-et-askpass.sh");
       const electronExec = shellSingleQuote(process.execPath);
       writeSecureFile(
         askpassWrapperPath,
-        `#!/bin/sh\nELECTRON_RUN_AS_NODE=1 exec ${electronExec} "$(dirname "$0")/netcatty-et-askpass.cjs" "$@"\n`,
+        `#!/bin/sh\nELECTRON_RUN_AS_NODE=1 exec ${electronExec} "$(dirname "$0")/magiesTerminal-et-askpass.cjs" "$@"\n`,
         0o700,
       );
       return {
         env: {
           SSH_ASKPASS: askpassWrapperPath,
           SSH_ASKPASS_REQUIRE: "force",
-          DISPLAY: process.env.DISPLAY || "netcatty:0",
-          NETCATTY_ET_ASKPASS_MAP: askpassMapPath,
+          DISPLAY: process.env.DISPLAY || "magiesTerminal:0",
+          MAGIES_TERMINAL_ET_ASKPASS_MAP: askpassMapPath,
         },
         artifacts: [askpassMapPath, askpassScriptPath, askpassWrapperPath],
       };
@@ -234,7 +234,7 @@ main();
     function prepareEtSshEnvironment(sessionId, options) {
       const jumpHosts = Array.isArray(options.jumpHosts) ? options.jumpHosts : [];
       if (jumpHosts.length > 1) {
-        throw new Error("EternalTerminal currently supports at most one jump host in Netcatty.");
+        throw new Error("EternalTerminal currently supports at most one jump host in MagiesTerminal.");
       }
 
       const tempDir = tempDirBridge.getTempFilePath(`et-ssh-home-${sessionId}`);
@@ -491,7 +491,7 @@ main();
      */
     function cleanupStaleEtTempDirs() {
       try {
-        const tempDir = tempDirBridge.getTempDir?.() || path.join(os.tmpdir(), "Netcatty");
+        const tempDir = tempDirBridge.getTempDir?.() || path.join(os.tmpdir(), "MagiesTerminal");
         if (!fs.existsSync(tempDir)) return;
         const entries = fs.readdirSync(tempDir);
         for (const entry of entries) {
@@ -564,7 +564,7 @@ main();
 
     /**
      * Build a known_hosts file for background ET exec (stats / distro probes).
-     * Merges the user's system known_hosts with any Netcatty-vault entries that
+     * Merges the user's system known_hosts with any MagiesTerminal-vault entries that
      * carry a full public key blob, then pins StrictHostKeyChecking=yes on exec
      * so accept-new cannot auto-trust a host in a non-interactive flow.
      */
@@ -613,7 +613,7 @@ main();
         ? session.externalAuthArtifacts[0]
         : null;
       const sshDir = artifact ? path.dirname(artifact) : tempDirBridge.getTempDir();
-      const strictKhPath = path.join(sshDir, "netcatty-et-strict-known_hosts");
+      const strictKhPath = path.join(sshDir, "magiesTerminal-et-strict-known_hosts");
       writeSecureFile(strictKhPath, chunks.filter(Boolean).join("\n") + (chunks.length ? "\n" : ""), 0o600);
       session.etStrictExecKnownHostsPath = strictKhPath;
       if (Array.isArray(session.externalAuthArtifacts)) {
@@ -631,7 +631,7 @@ main();
      * @param {boolean} [execOpts.requireTrustedHost] When true, refuse unknown
      *   host keys (StrictHostKeyChecking=yes) using system + vault known_hosts
      *   instead of accept-new. Used for background stats/distro probes.
-     * @param {Array} [execOpts.knownHosts] Netcatty vault known hosts to merge
+     * @param {Array} [execOpts.knownHosts] MagiesTerminal vault known hosts to merge
      *   into the strict known_hosts file (defaults to session.etStatsAuth).
      */
     function execOnEtSession(session, command, timeoutMs = 5000, execOpts = {}) {
@@ -691,7 +691,7 @@ main();
     }
 
     /**
-     * Start an EternalTerminal session using Netcatty's bundled `et` client.
+     * Start an EternalTerminal session using MagiesTerminal's bundled `et` client.
      */
     async function startEtSession(event, options) {
       const sessionId =
@@ -909,7 +909,7 @@ main();
             closeTerminalOutputSession?.(sessionId);
             sessions.delete(sessionId);
             const contents = electronModule.webContents.fromId(session.webContentsId);
-            contents?.send("netcatty:exit", { sessionId, ...evt, reason: evt.exitCode === 0 ? "exited" : "error" });
+            contents?.send("magiesTerminal:exit", { sessionId, ...evt, reason: evt.exitCode === 0 ? "exited" : "error" });
           });
         });
 

@@ -11,7 +11,7 @@ const {
 test("collectOpenTerminalPathArgs extracts explicit open terminal paths", () => {
   assert.deepEqual(
     collectOpenTerminalPathArgs([
-      "/Applications/Netcatty.app/Contents/MacOS/Netcatty",
+      "/Applications/MagiesTerminal.app/Contents/MacOS/MagiesTerminal",
       "--open-terminal-path",
       "/Users/alice/project",
       "--open-terminal-path=/tmp/demo",
@@ -69,7 +69,7 @@ test("resolveOpenTerminalPathsFromArgs resolves second-instance relative paths a
 
   assert.deepEqual(
     resolveOpenTerminalPathsFromArgs([
-      "/Applications/Netcatty.app/Contents/MacOS/Netcatty",
+      "/Applications/MagiesTerminal.app/Contents/MacOS/MagiesTerminal",
       "--open-terminal-path",
       ".",
     ], {

@@ -18,7 +18,7 @@ import {
 import { DEFAULT_MAX_OUTPUT_TOKENS } from '../contextBudget';
 import { clearChatSessionCancelled } from '../agentStop';
 import { isRequestTooLargeError } from '../../errorClassifier';
-import { getNetcattyBridge, generateId, resolveUserSkillsContext } from '../../../../components/ai/hooks/aiChatStreamingSupport';
+import { getMagiesTerminalBridge, generateId, resolveUserSkillsContext } from '../../../../components/ai/hooks/aiChatStreamingSupport';
 import {
   buildCattySdkMessages,
   collectOpenAIChatAssistantFieldsForMessages,
@@ -57,16 +57,16 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
     ui,
   } = input;
 
-  const netcattyBridge = bridge ?? getNetcattyBridge();
-  await clearChatSessionCancelled(sessionId, netcattyBridge);
-  if (netcattyBridge.aiMcpUpdateSessions) {
-    await netcattyBridge.aiMcpUpdateSessions(context.terminalSessions, sessionId);
+  const magiesTerminalBridge = bridge ?? getMagiesTerminalBridge();
+  await clearChatSessionCancelled(sessionId, magiesTerminalBridge);
+  if (magiesTerminalBridge.aiMcpUpdateSessions) {
+    await magiesTerminalBridge.aiMcpUpdateSessions(context.terminalSessions, sessionId);
   }
-  if (attachments?.length && netcattyBridge.aiMcpUpdateAttachments) {
-    await netcattyBridge.aiMcpUpdateAttachments(attachments, sessionId);
+  if (attachments?.length && magiesTerminalBridge.aiMcpUpdateAttachments) {
+    await magiesTerminalBridge.aiMcpUpdateAttachments(attachments, sessionId);
   }
   const userSkillsContext = await resolveUserSkillsContext(
-    netcattyBridge,
+    magiesTerminalBridge,
     trimmed,
     context.selectedUserSkillSlugs,
   );
@@ -76,7 +76,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
     workspaceName: context.scopeType === 'workspace' ? context.scopeLabel : undefined,
   }));
   const toolsBundle = createCattyToolsFromCatalog(
-    netcattyBridge,
+    magiesTerminalBridge,
     getExecutorContext,
     context.commandBlocklist,
     context.globalPermissionMode,

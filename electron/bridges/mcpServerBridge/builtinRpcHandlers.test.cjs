@@ -45,7 +45,7 @@ test("buildBuiltinRpcHandlerRegistry maps catalog builtin rpcMethod to handlers"
   }
 });
 
-test("every implemented netcatty/* builtin rpc has a bridge handler", () => {
+test("every implemented magiesTerminal/* builtin rpc has a bridge handler", () => {
   const handlersByCapabilityId = Object.fromEntries(
     MCP_BRIDGE_BUILTIN_CAPABILITY_IDS.map((id) => [id, async () => ({ ok: true })]),
   );
@@ -54,7 +54,7 @@ test("every implemented netcatty/* builtin rpc has a bridge handler", () => {
   const implementedBuiltinRpcMethods = ALL_CAPABILITIES
     .filter((capability) => capability.status === CAPABILITY_STATUS.IMPLEMENTED)
     .map((capability) => capability.surfaces?.builtin?.rpcMethod)
-    .filter((rpcMethod) => typeof rpcMethod === "string" && rpcMethod.startsWith("netcatty/"));
+    .filter((rpcMethod) => typeof rpcMethod === "string" && rpcMethod.startsWith("magiesTerminal/"));
 
   const uniqueRpcMethods = [...new Set(implementedBuiltinRpcMethods)];
   for (const rpcMethod of uniqueRpcMethods) {

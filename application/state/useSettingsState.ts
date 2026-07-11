@@ -79,7 +79,7 @@ import { getUiThemeById } from '../../infrastructure/config/uiThemes';
 import { DEFAULT_UI_FONT_ID, withWindowsEmojiFallback } from '../../infrastructure/config/uiFonts';
 import { uiFontStore, useUIFontsLoaded } from './uiFontStore';
 import { localStorageAdapter } from '../../infrastructure/persistence/localStorageAdapter';
-import { netcattyBridge } from '../../infrastructure/services/netcattyBridge';
+import { magiesTerminalBridge } from '../../infrastructure/services/magiesTerminalBridge';
 import { resolveSftpTransferConcurrency } from './sftp/transferConcurrency';
 import {
   DEFAULT_ACCENT_MODE,
@@ -566,7 +566,7 @@ export const useSettingsState = (options: { enableSettingsSync?: boolean; enable
   const notifySettingsChanged = useCallback((key: string, value: unknown) => {
     if (!enableSettingsSync) return;
     try {
-      netcattyBridge.get()?.notifySettingsChanged?.({ key, value });
+      magiesTerminalBridge.get()?.notifySettingsChanged?.({ key, value });
     } catch {
       // ignore - bridge may not be available
     }
@@ -822,7 +822,7 @@ export const useSettingsState = (options: { enableSettingsSync?: boolean; enable
   useLayoutEffect(() => {
     localStorageAdapter.writeString(STORAGE_KEY_UI_LANGUAGE, uiLanguage);
     document.documentElement.lang = uiLanguage;
-    netcattyBridge.get()?.setLanguage?.(uiLanguage);
+    magiesTerminalBridge.get()?.setLanguage?.(uiLanguage);
     // Fix 1: Skip IPC broadcast on initial mount
     if (persistMountedRef.current) {
       notifySettingsChanged(STORAGE_KEY_UI_LANGUAGE, uiLanguage);
@@ -885,7 +885,7 @@ export const useSettingsState = (options: { enableSettingsSync?: boolean; enable
 
   useEffect(() => {
     if (!enableSettingsSync) return;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onLanguageChanged) return;
     const unsubscribe = bridge.onLanguageChanged((language) => {
       if (typeof language !== 'string' || !language.length) return;
@@ -1173,7 +1173,7 @@ export const useSettingsState = (options: { enableSettingsSync?: boolean; enable
   useEffect(() => {
     let cancelled = false;
     const requestIdAtStart = sshDeepLinkSetRequestIdRef.current;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.getSshDeepLinkEnabled) return;
     void bridge.getSshDeepLinkEnabled().then((enabled) => {
       if (cancelled || typeof enabled !== 'boolean') return;
@@ -1196,7 +1196,7 @@ export const useSettingsState = (options: { enableSettingsSync?: boolean; enable
     sshDeepLinkMutationSourceRef.current = 'local';
     setSshDeepLinkEnabledState(enabled);
 
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.setSshDeepLinkEnabled) return;
     void bridge.setSshDeepLinkEnabled(enabled).then((result) => {
       if (sshDeepLinkSetRequestIdRef.current !== requestId) return;
@@ -1233,7 +1233,7 @@ export const useSettingsState = (options: { enableSettingsSync?: boolean; enable
   useEffect(() => {
     let cancelled = false;
     const requestIdAtStart = jmsDeepLinkSetRequestIdRef.current;
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.getJmsDeepLinkEnabled) return;
     void bridge.getJmsDeepLinkEnabled().then((enabled) => {
       if (cancelled || typeof enabled !== 'boolean') return;
@@ -1256,7 +1256,7 @@ export const useSettingsState = (options: { enableSettingsSync?: boolean; enable
     jmsDeepLinkMutationSourceRef.current = 'local';
     setJmsDeepLinkEnabledState(enabled);
 
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.setJmsDeepLinkEnabled) return;
     void bridge.setJmsDeepLinkEnabled(enabled).then((result) => {
       if (jmsDeepLinkSetRequestIdRef.current !== requestId) return;

@@ -68,7 +68,7 @@ const settingsTabLabelClassName = "min-w-0 truncate";
 
 const SettingsTabLoading = ({ value }: { value: string }) => (
     <SettingsTabContent value={value}>
-        <div className="netcatty-lazy-fade-in min-h-[320px]" aria-hidden="true" />
+        <div className="magiesTerminal-lazy-fade-in min-h-[320px]" aria-hidden="true" />
     </SettingsTabContent>
 );
 

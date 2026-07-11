@@ -10,7 +10,7 @@ const { createEtSessionApi } = require("./etSession.cjs");
 // Build an et session API wired to a hermetic temp HOME so prepareEtSshEnvironment
 // is deterministic regardless of the developer's real ~/.ssh contents.
 function makeApi(t, overrides = {}) {
-  const base = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-et-prep-"));
+  const base = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-et-prep-"));
   const fakeHome = path.join(base, "home");
   fs.mkdirSync(fakeHome, { recursive: true });
   t.after(() => fs.rmSync(base, { recursive: true, force: true }));
@@ -91,8 +91,8 @@ test("prepareEtSshEnvironment writes an askpass map + sets SSH_ASKPASS for passw
 
   assert.ok(env.env.SSH_ASKPASS, "SSH_ASKPASS should be set when a password is provided");
   assert.equal(env.env.SSH_ASKPASS_REQUIRE, "force");
-  assert.ok(env.env.NETCATTY_ET_ASKPASS_MAP, "askpass map path should be exported");
-  const map = JSON.parse(fs.readFileSync(env.env.NETCATTY_ET_ASKPASS_MAP, "utf8"));
+  assert.ok(env.env.MAGIES_TERMINAL_ET_ASKPASS_MAP, "askpass map path should be exported");
+  const map = JSON.parse(fs.readFileSync(env.env.MAGIES_TERMINAL_ET_ASKPASS_MAP, "utf8"));
   assert.equal(map.length, 1);
   assert.equal(map[0].type, "password");
   // The secret is written to its own file referenced by the map entry.
@@ -138,7 +138,7 @@ test(
       wrapper.includes(process.execPath),
       "wrapper should exec the current Electron/node executable verbatim",
     );
-    assert.match(wrapper, /netcatty-et-askpass\.cjs/);
+    assert.match(wrapper, /magiesTerminal-et-askpass\.cjs/);
     // The wrapper must be executable so ssh can exec it directly.
     const mode = fs.statSync(env.env.SSH_ASKPASS).mode;
     assert.ok(mode & 0o100, "wrapper should be owner-executable");
@@ -156,7 +156,7 @@ test("prepareEtSshEnvironment writes a private key + IdentityFile option and a p
 
   assert.ok(env.sshOptions.some((o) => o.startsWith("IdentityFile=")));
   assert.ok(env.sshOptions.includes("IdentitiesOnly=yes"));
-  const map = JSON.parse(fs.readFileSync(env.env.NETCATTY_ET_ASKPASS_MAP, "utf8"));
+  const map = JSON.parse(fs.readFileSync(env.env.MAGIES_TERMINAL_ET_ASKPASS_MAP, "utf8"));
   assert.ok(map.some((e) => e.type === "passphrase"));
 });
 
@@ -239,7 +239,7 @@ test("prepareEtSshEnvironment writes jump-host key + passphrase askpass into the
   assert.match(config, /Host jump\.example[\s\S]*\n {2}IdentityFile /);
   assert.match(config, /\n {2}IdentitiesOnly yes/);
   // The jump passphrase is answerable via the shared SSH_ASKPASS map.
-  const map = JSON.parse(fs.readFileSync(env.env.NETCATTY_ET_ASKPASS_MAP, "utf8"));
+  const map = JSON.parse(fs.readFileSync(env.env.MAGIES_TERMINAL_ET_ASKPASS_MAP, "utf8"));
   assert.ok(map.some((e) => e.type === "passphrase"));
 });
 
@@ -404,7 +404,7 @@ test("execOnEtSession keeps the default execFile maxBuffer when no override is p
   assert.equal(Object.hasOwn(capturedOptions, "maxBuffer"), false);
 });
 
-test("cleanupStaleEtTempDirs only removes Netcatty ET temp directories by prefix", (t) => {
+test("cleanupStaleEtTempDirs only removes MagiesTerminal ET temp directories by prefix", (t) => {
   const { api, base } = makeApi(t);
   const staleEtDir = path.join(base, "et-ssh-home-old-session");
   const unrelatedDir = path.join(base, "cache-et-ssh-home-keep");

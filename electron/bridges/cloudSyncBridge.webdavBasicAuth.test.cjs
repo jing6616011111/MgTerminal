@@ -53,7 +53,7 @@ function startUtf8BasicAuthServer({ username, password }) {
     <D:href>${req.url}</D:href>
     <D:propstat>
       <D:prop>
-        <D:displayname>netcatty-vault.json</D:displayname>
+        <D:displayname>magiesTerminal-vault.json</D:displayname>
         <D:getlastmodified>Sat, 10 May 2026 00:00:00 GMT</D:getlastmodified>
         <D:getcontentlength>0</D:getcontentlength>
         <D:resourcetype/>
@@ -85,7 +85,7 @@ test("handleWebdavInitialize sends UTF-8 Basic Auth (Hetzner umlaut password #89
       username: USERNAME,
       password: PASSWORD_WITH_UMLAUT,
     });
-    assert.equal(result.resourceId, "/netcatty-vault.json");
+    assert.equal(result.resourceId, "/magiesTerminal-vault.json");
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }

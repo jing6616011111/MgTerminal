@@ -12,7 +12,7 @@ const {
 const { createMoshSessionApi } = require("./terminalBridge/moshSession.cjs");
 
 function makeTmp() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-mosh-resolve-"));
+  return fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-mosh-resolve-"));
 }
 
 function writeExecutable(filePath) {
@@ -130,8 +130,8 @@ test("removed Mosh client detection APIs are not exposed to the renderer", () =>
   for (const source of [bridgeSource, preloadSource, globalTypes]) {
     assert.equal(source.includes("detectMoshClient"), false);
     assert.equal(source.includes("pickMoshClient"), false);
-    assert.equal(source.includes("netcatty:mosh:detectClient"), false);
-    assert.equal(source.includes("netcatty:mosh:pickClient"), false);
+    assert.equal(source.includes("magiesTerminal:mosh:detectClient"), false);
+    assert.equal(source.includes("magiesTerminal:mosh:pickClient"), false);
   }
 });
 

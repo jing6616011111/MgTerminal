@@ -20,7 +20,7 @@ test("registry contains implemented capabilities", () => {
 });
 
 test("registry resolves builtin rpc methods and mcp tools", () => {
-  const exec = getCapabilityByRpcMethod("netcatty/exec", CAPABILITY_SURFACES.BUILTIN);
+  const exec = getCapabilityByRpcMethod("magiesTerminal/exec", CAPABILITY_SURFACES.BUILTIN);
   assert.equal(exec?.id, "terminal.execute");
   const tool = getCapabilityByMcpTool("terminal_execute", CAPABILITY_SURFACES.BUILTIN);
   assert.equal(tool?.id, "terminal.execute");

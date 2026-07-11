@@ -6,7 +6,7 @@
  * - Spawns the user's system `codebuddy` binary (auto-discovered or via
  *   CODEBUDDY_CODE_PATH env var / pathToCodebuddyCode option).
  * - Bypasses the SDK's built-in permission system and routes all side effects
- *   through the injected netcatty MCP server (approval/scope/blocklist enforced
+ *   through the injected magiesTerminal MCP server (approval/scope/blocklist enforced
  *   there).
  * - Translates SDK messages into the canonical renderer event protocol.
  * - Supports streaming text via includePartialMessages, multi-turn session
@@ -14,7 +14,7 @@
  */
 const { mcpEnvPairsToObject } = require("./injectMcp.cjs");
 
-// Built-in tools that need interactive UI netcatty doesn't provide — they would
+// Built-in tools that need interactive UI magiesTerminal doesn't provide — they would
 // hang the turn waiting for a response, so they are blocked in BOTH modes.
 const UI_DISALLOWED_TOOLS = ["AskUserQuestion"];
 
@@ -60,12 +60,12 @@ function parseCodebuddyThinking(value) {
  */
 function buildCodebuddyThinkingEnv(thinking) {
   if (!thinking || typeof thinking !== "object") return {};
-  if (thinking.type === "adaptive") return { NETCATTY_CODEBUDDY_THINKING: "adaptive" };
+  if (thinking.type === "adaptive") return { MAGIES_TERMINAL_CODEBUDDY_THINKING: "adaptive" };
   if (thinking.type === "enabled") {
     const budget = thinking.budgetTokens || 16000;
-    return { NETCATTY_CODEBUDDY_THINKING: budget === 16000 ? "enabled" : `enabled:${budget}` };
+    return { MAGIES_TERMINAL_CODEBUDDY_THINKING: budget === 16000 ? "enabled" : `enabled:${budget}` };
   }
-  if (thinking.type === "disabled") return { NETCATTY_CODEBUDDY_THINKING: "disabled" };
+  if (thinking.type === "disabled") return { MAGIES_TERMINAL_CODEBUDDY_THINKING: "disabled" };
   return {};
 }
 
@@ -115,13 +115,13 @@ function buildCodebuddyQueryOptions({
     mcpServers: toSdkMcpServers(injectedMcpServers),
     tools: builtinTools,
     // `tools` is the built-in tool whitelist. In mcp mode it is [], so CodeBuddy
-    // built-ins stay disabled while injected Netcatty MCP tools remain visible.
+    // built-ins stay disabled while injected MagiesTerminal MCP tools remain visible.
     // Do not mirror that empty list into allowedTools: the SDK treats
     // allowedTools as an auto-approval list, and allowedTools: [] prevents MCP
     // tool calls from running under bypassPermissions.
     disallowedTools: [...UI_DISALLOWED_TOOLS],
     // Keep the SDK isolated from user/project settings so local hooks, plugins,
-    // or extra MCP servers cannot expand Netcatty's controlled tool boundary.
+    // or extra MCP servers cannot expand MagiesTerminal's controlled tool boundary.
     settingSources: [],
     env,
   };
@@ -132,7 +132,7 @@ function buildCodebuddyQueryOptions({
   // CLI executable path (auto-discovery if omitted).
   if (pathToCodebuddyCode) options.pathToCodebuddyCode = pathToCodebuddyCode;
   // Thinking mode from env marker or explicit param.
-  const thinkingConfig = thinking || parseCodebuddyThinking(env?.NETCATTY_CODEBUDDY_THINKING);
+  const thinkingConfig = thinking || parseCodebuddyThinking(env?.MAGIES_TERMINAL_CODEBUDDY_THINKING);
   if (thinkingConfig) {
     options.thinking = thinkingConfig;
     if (thinkingConfig.type === "enabled" && thinkingConfig.budgetTokens) {

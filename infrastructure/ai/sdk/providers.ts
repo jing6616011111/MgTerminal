@@ -46,8 +46,8 @@ interface BridgeAPI {
 }
 
 function getBridge(): BridgeAPI | null {
-  const w = window as unknown as { netcatty?: BridgeAPI };
-  return w.netcatty ?? null;
+  const w = window as unknown as { magiesTerminal?: BridgeAPI };
+  return w.magiesTerminal ?? null;
 }
 
 /**
@@ -218,7 +218,7 @@ function createOpenAIChatToolCallNormalizer(requestId: string): (data: string) =
 
         const toolCallId = typeof candidateToolCall.id === 'string' && candidateToolCall.id
           ? candidateToolCall.id
-          : `call_netcatty_${requestIdToken}_${choiceIndex}_${toolCallIndex}`;
+          : `call_magiesTerminal_${requestIdToken}_${choiceIndex}_${toolCallIndex}`;
         toolCallIdsByChoiceAndIndex.set(key, toolCallId);
         const candidateFunction = candidateToolCall.function;
         if (candidateFunction && typeof candidateFunction === 'object') {
@@ -388,8 +388,8 @@ function extractHeaders(headers?: HeadersInit): Record<string, string> {
  * Create a fetch function compatible with the Vercel AI SDK that routes
  * requests through the Electron IPC bridge to avoid CORS.
  *
- * - Non-streaming requests: uses `window.netcatty.aiFetch()` and returns a `Response`.
- * - Streaming requests: uses `window.netcatty.aiChatStream()` and returns a
+ * - Non-streaming requests: uses `window.magiesTerminal.aiFetch()` and returns a `Response`.
+ * - Streaming requests: uses `window.magiesTerminal.aiChatStream()` and returns a
  *   `Response` with a `ReadableStream` body.
  * - Falls back to `globalThis.fetch` if the bridge is unavailable.
  */

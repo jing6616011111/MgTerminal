@@ -14,7 +14,7 @@ const {
 } = require("./portForwardingBridge.cjs");
 
 function createEncryptedKey(t) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-port-forward-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-port-forward-"));
   t.after(() => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
@@ -29,7 +29,7 @@ function createEncryptedKey(t) {
     "-f",
     keyPath,
     "-C",
-    "netcatty-test",
+    "magiesTerminal-test",
   ], { encoding: "utf8" });
 
   if (result.status !== 0) {
@@ -67,7 +67,7 @@ test("port forwarding can be stopped while waiting for a key passphrase", async 
   const event = {
     sender: createCapturingSender((channel, payload) => {
       sent.push({ channel, payload });
-      if (channel === "netcatty:passphrase-request") {
+      if (channel === "magiesTerminal:passphrase-request") {
         passphraseRequest(payload);
       }
     }),
@@ -107,7 +107,7 @@ test("port forwarding can be stopped while waiting for a key passphrase", async 
     cancelled: true,
   });
   assert.ok(sent.some((event) =>
-    event.channel === "netcatty:passphrase-cancelled" &&
+    event.channel === "magiesTerminal:passphrase-cancelled" &&
     event.payload.requestId === request.requestId
   ));
   assert.deepEqual(await getPortForwardStatus(event, { tunnelId }), {
@@ -167,7 +167,7 @@ test("stop by rule id only cancels the matching passphrase prompt", async (t) =>
   const event = {
     sender: createCapturingSender((channel, payload) => {
       sent.push({ channel, payload });
-      if (channel === "netcatty:passphrase-request") {
+      if (channel === "magiesTerminal:passphrase-request") {
         requests.push(payload);
         if (requests.length === 2) {
           resolveBothPrompts();
@@ -218,11 +218,11 @@ test("stop by rule id only cancels the matching passphrase prompt", async (t) =>
     cancelled: true,
   });
   assert.ok(sent.some((event) =>
-    event.channel === "netcatty:passphrase-cancelled" &&
+    event.channel === "magiesTerminal:passphrase-cancelled" &&
     event.payload.requestId === firstRequest.requestId
   ));
   assert.equal(sent.some((event) =>
-    event.channel === "netcatty:passphrase-cancelled" &&
+    event.channel === "magiesTerminal:passphrase-cancelled" &&
     event.payload.requestId === secondRequest.requestId
   ), false);
   assert.deepEqual(await getPortForwardStatus(event, { tunnelId: secondTunnelId }), {

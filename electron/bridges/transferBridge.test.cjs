@@ -28,7 +28,7 @@ function createFastSftp(overrides) {
 }
 
 test("SFTP uploads use conservative per-file request concurrency", async (t) => {
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "netcatty-transfer-test-"));
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-transfer-test-"));
   t.after(async () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });
@@ -78,7 +78,7 @@ test("SFTP uploads use conservative per-file request concurrency", async (t) => 
 });
 
 test("SFTP uploads fail when remote size does not match local size", async (t) => {
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "netcatty-transfer-size-test-"));
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-transfer-size-test-"));
   t.after(async () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });
@@ -126,11 +126,11 @@ test("SFTP uploads fail when remote size does not match local size", async (t) =
 
   assert.match(result.error || "", /Upload size mismatch/);
   assert.equal(deletedRemotePath, "/tmp/archive.zip");
-  assert.ok(sender.sent.some((entry) => entry.channel === "netcatty:transfer:error"));
+  assert.ok(sender.sent.some((entry) => entry.channel === "magiesTerminal:transfer:error"));
 });
 
 test("SFTP stream-fallback uploads wait for close after finish", async (t) => {
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "netcatty-transfer-stream-test-"));
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-transfer-stream-test-"));
   t.after(async () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });
@@ -171,7 +171,7 @@ test("SFTP stream-fallback uploads wait for close after finish", async (t) => {
 
   const client = {
     // Force the sequential stream fallback (no isolated fastPut channel).
-    __netcattySudoMode: true,
+    __magiesTerminalSudoMode: true,
     sftp: streamSftp,
     stat() {
       return Promise.resolve({ size: remoteBytes });
@@ -209,11 +209,11 @@ test("SFTP stream-fallback uploads wait for close after finish", async (t) => {
   const result = await transferPromise;
   assert.equal(result.error, undefined);
   assert.equal(remoteBytes, payload.length);
-  assert.ok(sender.sent.some((entry) => entry.channel === "netcatty:transfer:complete"));
+  assert.ok(sender.sent.some((entry) => entry.channel === "magiesTerminal:transfer:complete"));
 });
 
 test("SFTP stream-fallback uploads accept ssh2 close without finish", async (t) => {
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "netcatty-transfer-ssh2-close-"));
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-transfer-ssh2-close-"));
   t.after(async () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });
@@ -255,7 +255,7 @@ test("SFTP stream-fallback uploads accept ssh2 close without finish", async (t) 
   });
 
   const client = {
-    __netcattySudoMode: true,
+    __magiesTerminalSudoMode: true,
     sftp: streamSftp,
     stat() {
       return Promise.resolve({ size: remoteBytes });
@@ -280,11 +280,11 @@ test("SFTP stream-fallback uploads accept ssh2 close without finish", async (t) 
   assert.equal(sawFinish, false);
   assert.equal(remoteBytes, payload.length);
   assert.equal(result.error, undefined);
-  assert.ok(sender.sent.some((entry) => entry.channel === "netcatty:transfer:complete"));
+  assert.ok(sender.sent.some((entry) => entry.channel === "magiesTerminal:transfer:complete"));
 });
 
 test("SFTP stream-fallback uploads fail on premature close", async (t) => {
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "netcatty-transfer-premature-close-"));
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-transfer-premature-close-"));
   t.after(async () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });
@@ -314,7 +314,7 @@ test("SFTP stream-fallback uploads fail on premature close", async (t) => {
   });
 
   const client = {
-    __netcattySudoMode: true,
+    __magiesTerminalSudoMode: true,
     sftp: streamSftp,
     stat() {
       return Promise.resolve({ size: 0 });
@@ -336,11 +336,11 @@ test("SFTP stream-fallback uploads fail on premature close", async (t) => {
   );
 
   assert.match(result.error || "", /closed before finish/);
-  assert.ok(sender.sent.some((entry) => entry.channel === "netcatty:transfer:error"));
+  assert.ok(sender.sent.some((entry) => entry.channel === "magiesTerminal:transfer:error"));
 });
 
 test("SFTP downloads use conservative per-file request concurrency", async (t) => {
-  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "netcatty-transfer-test-"));
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-transfer-test-"));
   t.after(async () => {
     await fs.promises.rm(tempDir, { recursive: true, force: true });
   });

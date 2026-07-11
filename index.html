@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' data: blob: ws: wss: https:; img-src 'self' data: https:;" />
-  <title>netcatty SSH</title>
+  <title>MagiesTerminal SSH</title>
   <style>
     /* Load extended Unicode ranges for terminal box drawing characters */
     @font-face {
@@ -156,10 +156,10 @@
   <script>
     (function () {
       try {
-        var theme = localStorage.getItem('netcatty_theme_v1');
-        var accentMode = localStorage.getItem('netcatty_accent_mode_v1');
-        var accentColor = localStorage.getItem('netcatty_color_v1');
-        var lang = localStorage.getItem('netcatty_ui_language_v1');
+        var theme = localStorage.getItem('magiesTerminal_theme_v1');
+        var accentMode = localStorage.getItem('magiesTerminal_accent_mode_v1');
+        var accentColor = localStorage.getItem('magiesTerminal_color_v1');
+        var lang = localStorage.getItem('magiesTerminal_ui_language_v1');
         var root = document.documentElement;
 
         // Resolve 'system' (or absent — default is 'system') via OS preference
@@ -204,7 +204,7 @@
     <!-- Splash screen: shown while React loads, hidden after first paint -->
     <div id="splash" class="splash-screen">
       <div class="splash-content">
-        <img class="splash-logo" src="/logo.svg" alt="netcatty" draggable="false" />
+        <img class="splash-logo" src="/logo.svg" alt="MagiesTerminal" draggable="false" />
 
         <div class="splash-spinner"></div>
       </div>

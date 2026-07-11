@@ -9,7 +9,7 @@ const { promisify } = require("node:util");
 
 const execFileAsync = promisify(execFile);
 const script = path.resolve(__dirname, "patch-xterm-webgl-atlas.cjs");
-const marker = "/*netcatty:#1063 atlas-isolation*/";
+const marker = "/*magiesTerminal:#1063 atlas-isolation*/";
 
 const webglBeta219MjsLoop =
   "for(let u=0;u<J.length;u++){let p=J[u];if(Ee(p.config,h))return p.ownedBy.push(i),p.atlas}";
@@ -17,7 +17,7 @@ const webglBeta219CjsLoop =
   "for(let e=0;e<a.length;e++){const i=a[e];if((0,r.configEquals)(i.config,c))return i.ownedBy.push(t),i.atlas}";
 
 function makeTmp(t) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-xterm-webgl-patch-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-xterm-webgl-patch-"));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   return dir;
 }

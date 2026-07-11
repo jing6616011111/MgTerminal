@@ -143,17 +143,17 @@ function createTerminalPopupWindowApi(ctx) {
             popupId,
             step: "load dev popup URL",
           });
-          await win.loadURL(`app://netcatty/index.html${popupPath}`);
+          await win.loadURL(`app://magiesTerminal/index.html${popupPath}`);
         }
       } else {
         crashLogBridge.captureDiagnostic("terminal-popup", "loading packaged popup URL", {
           popupId,
-          url: `app://netcatty/index.html${popupPath}`,
+          url: `app://magiesTerminal/index.html${popupPath}`,
         });
-        await win.loadURL(`app://netcatty/index.html${popupPath}`);
+        await win.loadURL(`app://magiesTerminal/index.html${popupPath}`);
       }
 
-      win.webContents.send("netcatty:window:terminalPopupConfig", { ...payload, popupId });
+      win.webContents.send("magiesTerminal:window:terminalPopupConfig", { ...payload, popupId });
       crashLogBridge.captureDiagnostic("terminal-popup", "popup config delivered", {
         popupId,
         title,

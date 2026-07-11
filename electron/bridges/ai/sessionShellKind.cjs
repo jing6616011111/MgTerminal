@@ -31,7 +31,7 @@ const CONFIRMED_SHELL_KINDS = new Set([
 ]);
 
 const DEFAULT_PROBE_TIMEOUT_MS = 3000;
-const PROBE_OUTPUT_MARKER = "__NETCATTY_SHELL_KIND__:";
+const PROBE_OUTPUT_MARKER = "__MAGIES_TERMINAL_SHELL_KIND__:";
 
 function isConfirmedShellKind(shellKind) {
   return CONFIRMED_SHELL_KINDS.has(shellKind);

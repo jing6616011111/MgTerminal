@@ -3,7 +3,7 @@
  * Helper functions for file type detection and extension handling
  */
 
-import { netcattyBridge } from "../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../infrastructure/services/magiesTerminalBridge";
 
 // Known binary file extensions - files that should never be opened as text
 const BINARY_EXTENSIONS = new Set([
@@ -369,7 +369,7 @@ async function processEntriesIteratively(
 export function getPathForFile(file: File): string | undefined {
   try {
     // Try Electron's webUtils API (exposed via preload)
-    const path = netcattyBridge.get()?.getPathForFile?.(file);
+    const path = magiesTerminalBridge.get()?.getPathForFile?.(file);
     if (path) return path;
     // Fallback: try legacy file.path property
     return (file as File & { path?: string }).path;

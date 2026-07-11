@@ -69,7 +69,7 @@ function init(deps) {
 function broadcastRuns() {
   const win = getMainWindow?.();
   if (!win?.webContents) return;
-  win.webContents.send("netcatty:script:runs-updated", {
+  win.webContents.send("magiesTerminal:script:runs-updated", {
     runs: Array.from(runs.values()).map(serializeRun),
   });
 }
@@ -158,7 +158,7 @@ function notifyScriptSessionInput(sessionId, data) {
   const webContents = session?.webContentsId
     ? electronModule.webContents.fromId(session.webContentsId)
     : getMainWindow?.()?.webContents;
-  webContents?.send("netcatty:script:session-input", { sessionId, data });
+  webContents?.send("magiesTerminal:script:session-input", { sessionId, data });
 }
 
 function writeToSession(sessionId, data, options = {}) {
@@ -170,10 +170,10 @@ function writeToSession(sessionId, data, options = {}) {
   const webContentsId = getMainWindow?.()?.webContents?.id;
   if (terminalWorkerManager) {
     // Mirror input-based log rewrites into the main-process stream manager
-    // (see the netcatty:write forwarder in terminalBridge.registerHandlers);
+    // (see the magiesTerminal:write forwarder in terminalBridge.registerHandlers);
     // the real write handler runs in the terminal worker process.
     sessionLogStreamManager.registerSudoAutofillInput(sessionId, data);
-    terminalWorkerManager.send("netcatty:write", payload, { webContentsId });
+    terminalWorkerManager.send("magiesTerminal:write", payload, { webContentsId });
   } else {
     terminalBridge?.writeToSession?.(
       { sender: getMainWindow?.()?.webContents },
@@ -303,7 +303,7 @@ async function requestScreenSnapshot(sessionId, runId) {
         reject(err);
       },
     });
-    webContents.send("netcatty:script:screen-snapshot-request", { requestId, sessionId });
+    webContents.send("magiesTerminal:script:screen-snapshot-request", { requestId, sessionId });
   });
 }
 
@@ -335,7 +335,7 @@ function showDialog(type, message, defaultValue, extras = {}, runId) {
         reject(err);
       },
     });
-    webContents.send("netcatty:script:dialog-request", {
+    webContents.send("magiesTerminal:script:dialog-request", {
       requestId,
       type,
       message,
@@ -451,7 +451,7 @@ async function runScriptOnSession({
     showWaitForTimeoutDialog: (pattern, timeoutMs) => showWaitForTimeoutDialog(pattern, timeoutMs, runId),
     disconnectSession: async (sid) => {
       if (terminalWorkerManager) {
-        terminalWorkerManager.send("netcatty:close", { sessionId: sid });
+        terminalWorkerManager.send("magiesTerminal:close", { sessionId: sid });
       } else {
         terminalBridge?.closeSession?.({ sender: {} }, { sessionId: sid });
       }
@@ -461,7 +461,7 @@ async function runScriptOnSession({
       const defaultDir = electronModule?.app?.getPath?.("documents") || process.cwd();
       const filePath = logPath
         ? path.resolve(String(logPath))
-        : path.join(defaultDir, `netcatty-script-${Date.now()}.log`);
+        : path.join(defaultDir, `magiesTerminal-script-${Date.now()}.log`);
       const result = sessionLogStreamManager.startStreamToFile(sid, {
         filePath,
         hostLabel: session?.hostname || session?.hostLabel || "script",
@@ -693,16 +693,16 @@ function handleRecordingAppendStep(_event, payload = {}) {
 }
 
 function registerHandlers(ipcMain) {
-  ipcMain.handle("netcatty:script:run", handleScriptRun);
-  ipcMain.handle("netcatty:script:stop", handleScriptStop);
-  ipcMain.handle("netcatty:script:pause", handleScriptPause);
-  ipcMain.handle("netcatty:script:resume", handleScriptResume);
-  ipcMain.handle("netcatty:script:get-runs", handleScriptGetRuns);
-  ipcMain.handle("netcatty:script:dialog-response", handleScriptDialogResponse);
-  ipcMain.handle("netcatty:script:screen-snapshot-response", handleScriptScreenSnapshotResponse);
-  ipcMain.handle("netcatty:script:recording:start", handleRecordingStart);
-  ipcMain.handle("netcatty:script:recording:stop", handleRecordingStop);
-  ipcMain.handle("netcatty:script:recording:append-step", handleRecordingAppendStep);
+  ipcMain.handle("magiesTerminal:script:run", handleScriptRun);
+  ipcMain.handle("magiesTerminal:script:stop", handleScriptStop);
+  ipcMain.handle("magiesTerminal:script:pause", handleScriptPause);
+  ipcMain.handle("magiesTerminal:script:resume", handleScriptResume);
+  ipcMain.handle("magiesTerminal:script:get-runs", handleScriptGetRuns);
+  ipcMain.handle("magiesTerminal:script:dialog-response", handleScriptDialogResponse);
+  ipcMain.handle("magiesTerminal:script:screen-snapshot-response", handleScriptScreenSnapshotResponse);
+  ipcMain.handle("magiesTerminal:script:recording:start", handleRecordingStart);
+  ipcMain.handle("magiesTerminal:script:recording:stop", handleRecordingStop);
+  ipcMain.handle("magiesTerminal:script:recording:append-step", handleRecordingAppendStep);
 }
 
 module.exports = {

@@ -54,9 +54,9 @@ class FakeMessageChannelMain {
   }
 }
 
-test("isTerminalWorkerEnabled defaults on and honors NETCATTY_TERMINAL_WORKER=0", () => {
+test("isTerminalWorkerEnabled defaults on and honors MAGIES_TERMINAL_TERMINAL_WORKER=0", () => {
   assert.equal(isTerminalWorkerEnabled({ env: {} }), true);
-  assert.equal(isTerminalWorkerEnabled({ env: { NETCATTY_TERMINAL_WORKER: "0" } }), false);
+  assert.equal(isTerminalWorkerEnabled({ env: { MAGIES_TERMINAL_TERMINAL_WORKER: "0" } }), false);
 });
 
 test("request sends a worker command and resolves matching response", async () => {
@@ -70,10 +70,10 @@ test("request sends a worker command and resolves matching response", async () =
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", { shell: "/bin/zsh" }, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", { shell: "/bin/zsh" }, { webContentsId: 7 });
   assert.equal(child.messages.length, 1);
   assert.equal(child.messages[0].kind, "request");
-  assert.equal(child.messages[0].channel, "netcatty:local:start");
+  assert.equal(child.messages[0].channel, "magiesTerminal:local:start");
   assert.deepEqual(child.messages[0].payload, { shell: "/bin/zsh" });
   assert.equal(child.messages[0].webContentsId, 7);
 
@@ -110,7 +110,7 @@ test("request opens a terminal output port when a session starts", async () => {
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   child.emit("message", {
     kind: "response",
     requestId: child.messages[0].requestId,
@@ -262,7 +262,7 @@ test("request transfers the output port to the worker when available", async () 
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   child.emit("message", {
     kind: "output",
     sessionId: "local-1",
@@ -308,7 +308,7 @@ test("request transfers a dedicated urgent input port to the worker and renderer
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   child.emit("message", {
     kind: "response",
     requestId: child.messages[0].requestId,
@@ -319,7 +319,7 @@ test("request transfers a dedicated urgent input port to the worker and renderer
   assert.equal(child.messages[1].kind, "urgent-input-port");
   assert.equal(child.messages[1].webContentsId, 7);
   assert.deepEqual(child.transferLists[1].map((port) => port.label), ["port1"]);
-  assert.equal(rendererMessages[0].channel, "netcatty:terminal-urgent-input-port");
+  assert.equal(rendererMessages[0].channel, "magiesTerminal:terminal-urgent-input-port");
   assert.deepEqual(rendererMessages[0].transferList.map((port) => port.label), ["port2"]);
 });
 
@@ -347,7 +347,7 @@ test("output-port-ready flushes output that arrived during port transfer", async
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   child.emit("message", {
     kind: "response",
     requestId: child.messages[0].requestId,
@@ -396,7 +396,7 @@ test("worker buffered output byte cap preserves split alternate-screen metadata"
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   child.emit("message", {
     kind: "response",
     requestId: child.messages[0].requestId,
@@ -451,7 +451,7 @@ test("worker buffered output chunk cap carries dropped metadata to retained outp
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   child.emit("message", {
     kind: "response",
     requestId: child.messages[0].requestId,
@@ -521,7 +521,7 @@ test("worker fallback output after a ready output port is delivered over legacy 
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   child.emit("message", {
     kind: "response",
     requestId: child.messages[0].requestId,
@@ -542,7 +542,7 @@ test("worker fallback output after a ready output port is delivered over legacy 
   assert.deepEqual(sent, [
     {
       id: 7,
-      channel: "netcatty:data",
+      channel: "magiesTerminal:data",
       payload: { sessionId: "local-1", data: "fallback" },
     },
   ]);
@@ -550,7 +550,7 @@ test("worker fallback output after a ready output port is delivered over legacy 
   assert.equal(child.messages.some((message) => message.kind === "output-flush" && message.chunks?.includes("fallback")), false);
 });
 
-test("falls back to netcatty:data when no output port is available", async () => {
+test("falls back to magiesTerminal:data when no output port is available", async () => {
   const child = new FakeChild();
   const sent = [];
   const manager = createTerminalWorkerManager({
@@ -582,7 +582,7 @@ test("falls back to netcatty:data when no output port is available", async () =>
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   child.emit("message", {
     kind: "output",
     sessionId: "local-1",
@@ -598,7 +598,7 @@ test("falls back to netcatty:data when no output port is available", async () =>
   assert.deepEqual(sent, [
     {
       id: 7,
-      channel: "netcatty:data",
+      channel: "magiesTerminal:data",
       payload: { sessionId: "local-1", data: "early" },
     },
   ]);
@@ -615,12 +615,12 @@ test("send posts fire-and-forget control commands to the worker", () => {
     workerScriptPath: "/worker.cjs",
   });
 
-  manager.send("netcatty:interrupt", { sessionId: "session-1" }, { webContentsId: 7 });
+  manager.send("magiesTerminal:interrupt", { sessionId: "session-1" }, { webContentsId: 7 });
 
   assert.deepEqual(child.messages, [
     {
       kind: "send",
-      channel: "netcatty:interrupt",
+      channel: "magiesTerminal:interrupt",
       payload: { sessionId: "session-1" },
       webContentsId: 7,
     },
@@ -787,7 +787,7 @@ test("worker buffers early output until the output port is opened", async () => 
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   child.emit("message", {
     kind: "output",
     sessionId: "session-1",
@@ -840,13 +840,13 @@ test("close immediately clears the output route and drops pending output", async
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   child.emit("message", {
     kind: "output",
     sessionId: "session-1",
     data: "old",
   });
-  manager.send("netcatty:close", { sessionId: "session-1" }, { webContentsId: 7 });
+  manager.send("magiesTerminal:close", { sessionId: "session-1" }, { webContentsId: 7 });
   child.emit("message", {
     kind: "response",
     requestId: child.messages[0].requestId,
@@ -890,12 +890,12 @@ test("worker renderer events are forwarded to their original webContents", () =>
   child.emit("message", {
     kind: "renderer-event",
     webContentsId: 7,
-    channel: "netcatty:exit",
+    channel: "magiesTerminal:exit",
     payload: { sessionId: "session-1" },
   });
 
   assert.deepEqual(forwarded, [
-    { id: 7, channel: "netcatty:exit", payload: { sessionId: "session-1" } },
+    { id: 7, channel: "magiesTerminal:exit", payload: { sessionId: "session-1" } },
   ]);
 });
 
@@ -927,7 +927,7 @@ test("worker renderer events wrapped in MessageEvent data are forwarded", () => 
     data: {
       kind: "renderer-event",
       webContentsId: 7,
-      channel: "netcatty:zmodem:progress",
+      channel: "magiesTerminal:zmodem:progress",
       payload: {
         sessionId: "session-1",
         filename: "large.bin",
@@ -941,7 +941,7 @@ test("worker renderer events wrapped in MessageEvent data are forwarded", () => 
   assert.deepEqual(forwarded, [
     {
       id: 7,
-      channel: "netcatty:zmodem:progress",
+      channel: "magiesTerminal:zmodem:progress",
       payload: {
         sessionId: "session-1",
         filename: "large.bin",
@@ -981,7 +981,7 @@ test("worker exit events close the session output route", () => {
   child.emit("message", {
     kind: "renderer-event",
     webContentsId: 7,
-    channel: "netcatty:exit",
+    channel: "magiesTerminal:exit",
     payload: { sessionId: "session-1" },
   });
 
@@ -1004,7 +1004,7 @@ test("worker exit rejects pending requests and closes output routes", async () =
     },
     workerScriptPath: "/worker.cjs",
   });
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
 
   child.emit("exit", 1);
 
@@ -1056,7 +1056,7 @@ test("worker stop clears buffered output byte accounting before session id reuse
   });
   manager.stop();
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   const secondChild = children[1];
   secondChild.emit("message", {
     kind: "output",
@@ -1101,7 +1101,7 @@ test("worker exit notifies renderers for active worker sessions", async () => {
     workerScriptPath: "/worker.cjs",
   });
 
-  const promise = manager.request("netcatty:local:start", {}, { webContentsId: 7 });
+  const promise = manager.request("magiesTerminal:local:start", {}, { webContentsId: 7 });
   child.emit("message", {
     kind: "response",
     requestId: child.messages[0].requestId,
@@ -1114,7 +1114,7 @@ test("worker exit notifies renderers for active worker sessions", async () => {
   assert.deepEqual(sent, [
     {
       id: 7,
-      channel: "netcatty:exit",
+      channel: "magiesTerminal:exit",
       payload: {
         sessionId: "local-1",
         exitCode: 1,

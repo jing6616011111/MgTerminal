@@ -1,18 +1,18 @@
 {
-  "name": "netcatty",
-  "description": "Netcatty is a modern SSH manager and terminal app with host grouping, SFTP, keychain, port forwarding, and a rich UI.",
-  "homepage": "https://github.com/binaricat/Netcatty",
+  "name": "magies-terminal",
+  "description": "MagiesTerminal is a modern SSH manager and terminal app with host grouping, SFTP, keychain, port forwarding, and a rich UI.",
+  "homepage": "https://github.com/JasonZhangDad/MagiesTerminal",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "author": "binaricat <support@netcatty.com>",
+  "author": "binaricat and MagiesTerminal contributors",
   "license": "GPL-3.0-or-later",
   "engines": {
     "node": ">=22"
   },
   "main": "electron/main.cjs",
   "bin": {
-    "netcatty-tool-cli": "./electron/cli/netcatty-tool-cli.cjs"
+    "magies-terminal-tool-cli": "./electron/cli/magies-terminal-tool-cli.cjs"
   },
   "scripts": {
     "dev": "npm run fetch:mosh:dev && npm run fetch:et:dev && npm run lint && concurrently -k \"vite --strictPort\" \"npm:dev:electron\"",
@@ -37,7 +37,7 @@
     "pack:linux-arm64": "npm run build && cross-env npm_config_arch=arm64 NODE_OPTIONS=--disable-warning=DEP0190 electron-builder --config electron-builder.config.cjs --linux --arm64 --publish=never",
     "postinstall": "electron-builder install-app-deps && patch-package && node scripts/patch-xterm-webgl-atlas.cjs",
     "rebuild": "electron-builder install-app-deps",
-    "tool:cli": "node electron/cli/netcatty-tool-cli.cjs",
+    "tool:cli": "node electron/cli/magies-terminal-tool-cli.cjs",
     "generate:capability-tools": "node scripts/generate-capability-tools.cjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

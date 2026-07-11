@@ -90,7 +90,7 @@ import {
 } from "@/application/state/scriptAutomationCoordinator.ts";
 import { resolveConnectScriptsForHost, hasUnresolvedConnectScriptBindings } from "@/domain/hostConnectScripts.ts";
 import { isVaultInitialized } from "@/application/state/vaultInitStore.ts";
-import { netcattyBridge } from "@/infrastructure/services/netcattyBridge.ts";
+import { magiesTerminalBridge } from "@/infrastructure/services/magiesTerminalBridge.ts";
 import { ScriptExecutionOverlay } from "./terminal/ScriptExecutionOverlay";
 import { isScriptSnippet } from "@/domain/snippetScript.ts";
 import { useOutputTriggers } from "@/application/state/useOutputTriggers.ts";
@@ -294,7 +294,7 @@ const TerminalComponent: React.FC<TerminalProps> = ({
   const recorderRef = useRef(recorder);
   recorderRef.current = recorder;
   const passwordPromptActiveRef = useRef(false);
-  const [activeScriptRun, setActiveScriptRun] = useState<import('@/types/global/netcatty-bridge-script.d.ts').ScriptRun | undefined>(undefined);
+  const [activeScriptRun, setActiveScriptRun] = useState<import('@/types/global/magies-terminal-bridge-script.d.ts').ScriptRun | undefined>(undefined);
   const dismissedScriptRunIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -1779,11 +1779,11 @@ const TerminalComponent: React.FC<TerminalProps> = ({
         setSaveRecordingOpen(true);
       });
     };
-    window.addEventListener('netcatty:script:recording:start', startHandler);
-    window.addEventListener('netcatty:script:recording:stop', stopHandler);
+    window.addEventListener('magiesTerminal:script:recording:start', startHandler);
+    window.addEventListener('magiesTerminal:script:recording:stop', stopHandler);
     return () => {
-      window.removeEventListener('netcatty:script:recording:start', startHandler);
-      window.removeEventListener('netcatty:script:recording:stop', stopHandler);
+      window.removeEventListener('magiesTerminal:script:recording:start', startHandler);
+      window.removeEventListener('magiesTerminal:script:recording:stop', stopHandler);
     };
   }, [sessionId]);
 
@@ -1927,7 +1927,7 @@ const TerminalComponent: React.FC<TerminalProps> = ({
   }, []);
 
   useEffect(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     const dispose = bridge?.onScriptSessionInput?.(({ sessionId: sid, data }) => {
       if (sid !== sessionId) return;
       scrollToBottomAfterProgrammaticInput(data);
@@ -2444,10 +2444,10 @@ const TerminalComponent: React.FC<TerminalProps> = ({
       return;
     }
     if (recording.sessionId === sessionId) {
-      window.dispatchEvent(new CustomEvent('netcatty:script:recording:stop', { detail: { sessionId } }));
+      window.dispatchEvent(new CustomEvent('magiesTerminal:script:recording:stop', { detail: { sessionId } }));
       return;
     }
-    window.dispatchEvent(new CustomEvent('netcatty:script:recording:start', { detail: { sessionId } }));
+    window.dispatchEvent(new CustomEvent('magiesTerminal:script:recording:start', { detail: { sessionId } }));
   }, [sessionId, t]);
 
   const renderControls = useCallback((opts?: { showClose?: boolean }) => (
@@ -2801,7 +2801,7 @@ const TerminalComponent: React.FC<TerminalProps> = ({
         defaultName={`recorded-${new Date().toISOString().slice(0, 10)}`}
         onClose={() => setSaveRecordingOpen(false)}
         onSave={({ name, packagePath, code, editAfterSave }) => {
-          window.dispatchEvent(new CustomEvent('netcatty:scripts:save-recorded', {
+          window.dispatchEvent(new CustomEvent('magiesTerminal:scripts:save-recorded', {
             detail: { name, packagePath, code, editAfterSave },
           }));
           setSaveRecordingOpen(false);

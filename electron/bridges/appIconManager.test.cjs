@@ -14,7 +14,7 @@ test("normalizeAppIconVariant falls back to original for invalid values", () => 
 });
 
 test("resolveVariantIconPath prefers public sources in dev when both exist", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-icon-dev-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-icon-dev-"));
   const publicPath = path.join(tmp, "public", "icons", "variants", "bright.png");
   const distPath = path.join(tmp, "dist", "icons", "variants", "bright.png");
   fs.mkdirSync(path.dirname(publicPath), { recursive: true });
@@ -27,7 +27,7 @@ test("resolveVariantIconPath prefers public sources in dev when both exist", () 
 });
 
 test("resolveVariantIconPath prefers dist sources when packaged", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-icon-packaged-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-icon-packaged-"));
   const publicPath = path.join(tmp, "public", "icons", "variants", "bright.png");
   const distPath = path.join(tmp, "dist", "icons", "variants", "bright.png");
   fs.mkdirSync(path.dirname(publicPath), { recursive: true });
@@ -40,7 +40,7 @@ test("resolveVariantIconPath prefers dist sources when packaged", () => {
 });
 
 test("original icon uses platform-specific sizing", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-icon-platform-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-icon-platform-"));
   const publicDir = path.join(tmp, "public");
   fs.mkdirSync(publicDir, { recursive: true });
   const macPath = path.join(publicDir, "icons", "variants", "macos", "original.png");
@@ -58,7 +58,7 @@ test("original icon uses platform-specific sizing", () => {
 });
 
 test("macOS variants use HIG-sized assets without changing other platforms", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-icon-variant-platform-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-icon-variant-platform-"));
   const variantsDir = path.join(tmp, "public", "icons", "variants");
   const macVariantsDir = path.join(variantsDir, "macos");
   fs.mkdirSync(macVariantsDir, { recursive: true });
@@ -75,7 +75,7 @@ test("macOS variants use HIG-sized assets without changing other platforms", () 
 });
 
 test("macOS leaves the Dock icon unchanged when its runtime original asset is missing", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-icon-mac-missing-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-icon-mac-missing-"));
   const publicDir = path.join(tmp, "public");
   fs.mkdirSync(publicDir, { recursive: true });
   fs.writeFileSync(path.join(publicDir, "icon.png"), "packaged-mac");
@@ -99,7 +99,7 @@ test("macOS leaves the Dock icon unchanged when its runtime original asset is mi
 });
 
 test("applyAppIconVariant updates current icon path", () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-icon-apply-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-icon-apply-"));
   const publicDir = path.join(tmp, "public");
   const variantsDir = path.join(publicDir, "icons", "variants");
   fs.mkdirSync(variantsDir, { recursive: true });

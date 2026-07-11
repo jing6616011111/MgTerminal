@@ -1,7 +1,7 @@
 import type { Snippet } from "./models";
 import { normalizeVaultOrder } from "./vaultOrder";
 
-export const SNIPPET_EXPORT_KIND = "netcatty.snippets" as const;
+export const SNIPPET_EXPORT_KIND = "magiesTerminal.snippets" as const;
 export const SNIPPET_EXPORT_VERSION = 2 as const;
 export const SNIPPET_EXPORT_VERSION_LEGACY = 1 as const;
 

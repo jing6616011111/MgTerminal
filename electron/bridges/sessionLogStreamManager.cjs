@@ -21,9 +21,9 @@ const activeStreams = new Map();
 const FLUSH_INTERVAL = 500;
 // Max buffer size before immediate flush (bytes)
 const MAX_BUFFER_SIZE = 64 * 1024;
-const SUDO_AUTOFILL_MARKER_PATTERN = /__NETCATTY_SUDO_[a-z0-9_]+__/gi;
+const SUDO_AUTOFILL_MARKER_PATTERN = /__MAGIES_TERMINAL_SUDO_[a-z0-9_]+__/gi;
 const SUDO_AUTOFILL_REWRITE_PATTERN =
-  /\x15?((?:builtin\s+|command\s+)?sudo)\s+-p\s+'\[sudo\] password for %p: (__NETCATTY_SUDO_[a-z0-9_]+__)'([^\r\n]*)(?:\r\n|\r|\n|$)/i;
+  /\x15?((?:builtin\s+|command\s+)?sudo)\s+-p\s+'\[sudo\] password for %p: (__MAGIES_TERMINAL_SUDO_[a-z0-9_]+__)'([^\r\n]*)(?:\r\n|\r|\n|$)/i;
 
 function formatLogTimestamp(timestamp = Date.now()) {
   const date = new Date(timestamp);

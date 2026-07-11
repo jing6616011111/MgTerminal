@@ -219,7 +219,7 @@ async function enableCloseToTray(bridge, electronModule = createElectronStub(), 
   bridge.init({ electronModule, ...extraDeps });
   const ipcMain = createIpcMainStub();
   bridge.registerHandlers(ipcMain);
-  await ipcMain.handlers.get("netcatty:tray:setCloseToTray")(null, { enabled: true });
+  await ipcMain.handlers.get("magiesTerminal:tray:setCloseToTray")(null, { enabled: true });
   return { ipcMain, electronModule };
 }
 
@@ -381,7 +381,7 @@ test("focusing a visible window cancels a pending fullscreen hide", async () => 
         getMainWindow: () => win,
       });
 
-      await ipcMain.handlers.get("netcatty:globalHotkey:register")(null, { hotkey: "Ctrl + `" });
+      await ipcMain.handlers.get("magiesTerminal:globalHotkey:register")(null, { hotkey: "Ctrl + `" });
       const result = bridge.handleWindowClose({ preventDefault() {} }, win);
       assert.equal(result, true);
       assert.equal(getPendingTimerCount(), 1);
@@ -415,7 +415,7 @@ test("openMainWindow cancels a pending fullscreen hide before showing the window
       assert.equal(result, true);
       assert.equal(getPendingTimerCount(), 1);
 
-      await ipcMain.handlers.get("netcatty:trayPanel:openMainWindow")();
+      await ipcMain.handlers.get("magiesTerminal:trayPanel:openMainWindow")();
 
       assert.equal(win.showCalls, 1);
       assert.equal(getPendingTimerCount(), 0);
@@ -468,7 +468,7 @@ test("disabling close-to-tray clears a pending fullscreen hide", async () => {
       assert.equal(result, true);
       assert.equal(getPendingTimerCount(), 1);
 
-      await ipcMain.handlers.get("netcatty:tray:setCloseToTray")(null, { enabled: false });
+      await ipcMain.handlers.get("magiesTerminal:tray:setCloseToTray")(null, { enabled: false });
 
       assert.equal(getPendingTimerCount(), 0);
       assert.equal(win.listenerCount("leave-full-screen"), 0);
@@ -541,7 +541,7 @@ test("tray icon event registration is platform-dependent", async () => {
     assert.ok(labels.includes("Open Main Window"), "linux context menu should include Open Main Window");
     assert.ok(labels.includes("Quit"), "linux context menu should include Quit");
 
-    await ipcMain.handlers.get("netcatty:tray:updateMenuData")(null, {
+    await ipcMain.handlers.get("magiesTerminal:tray:updateMenuData")(null, {
       sessions: [{ id: "s1", label: "dev", hostLabel: "dev.example", status: "connected" }],
     });
     const updatedLabels = trayInstance.contextMenu.template
@@ -587,7 +587,7 @@ test("mac dock menu lists saved hosts and forwards connect actions", async () =>
     const ipcMain = createIpcMainStub();
     bridge.registerHandlers(ipcMain);
 
-    await ipcMain.handlers.get("netcatty:tray:updateMenuData")(null, {
+    await ipcMain.handlers.get("magiesTerminal:tray:updateMenuData")(null, {
       hosts: [
         { id: "plain", label: "Plain Host", hostname: "plain.example" },
         { id: "pinned", label: "Pinned Host", hostname: "pinned.example", pinned: true },
@@ -606,7 +606,7 @@ test("mac dock menu lists saved hosts and forwards connect actions", async () =>
 
     await connectionMenu.submenu[0].click();
 
-    assert.deepEqual(sentMessages, [["netcatty:trayPanel:connectToHost", "pinned"]]);
+    assert.deepEqual(sentMessages, [["magiesTerminal:trayPanel:connectToHost", "pinned"]]);
   });
 });
 
@@ -634,7 +634,7 @@ test("mac dock host click creates a main window when none exists", async () => {
     const ipcMain = createIpcMainStub();
     bridge.registerHandlers(ipcMain);
 
-    await ipcMain.handlers.get("netcatty:tray:updateMenuData")(null, {
+    await ipcMain.handlers.get("magiesTerminal:tray:updateMenuData")(null, {
       hosts: [
         { id: "target", label: "Target Host", hostname: "target.example" },
       ],
@@ -646,7 +646,7 @@ test("mac dock host click creates a main window when none exists", async () => {
     await connectionMenu.submenu[0].click();
 
     assert.equal(createCalls, 1);
-    assert.deepEqual(sentMessages, [["netcatty:trayPanel:connectToHost", "target"]]);
+    assert.deepEqual(sentMessages, [["magiesTerminal:trayPanel:connectToHost", "target"]]);
   });
 });
 
@@ -679,7 +679,7 @@ test("mac dock host click waits for a newly created main window to be ready", as
     const ipcMain = createIpcMainStub();
     bridge.registerHandlers(ipcMain);
 
-    await ipcMain.handlers.get("netcatty:tray:updateMenuData")(null, {
+    await ipcMain.handlers.get("magiesTerminal:tray:updateMenuData")(null, {
       hosts: [
         { id: "target", label: "Target Host", hostname: "target.example" },
       ],
@@ -697,7 +697,7 @@ test("mac dock host click waits for a newly created main window to be ready", as
     releaseReady();
     await clickPromise;
 
-    assert.deepEqual(sentMessages, [["netcatty:trayPanel:connectToHost", "target"]]);
+    assert.deepEqual(sentMessages, [["magiesTerminal:trayPanel:connectToHost", "target"]]);
   });
 });
 
@@ -735,7 +735,7 @@ test("mac dock host click waits for a tracked main window to be ready", async ()
     const ipcMain = createIpcMainStub();
     bridge.registerHandlers(ipcMain);
 
-    await ipcMain.handlers.get("netcatty:tray:updateMenuData")(null, {
+    await ipcMain.handlers.get("magiesTerminal:tray:updateMenuData")(null, {
       hosts: [
         { id: "target", label: "Target Host", hostname: "target.example" },
       ],
@@ -754,7 +754,7 @@ test("mac dock host click waits for a tracked main window to be ready", async ()
     releaseReady();
     await clickPromise;
 
-    assert.deepEqual(sentMessages, [["netcatty:trayPanel:connectToHost", "target"]]);
+    assert.deepEqual(sentMessages, [["magiesTerminal:trayPanel:connectToHost", "target"]]);
   });
 });
 
@@ -802,7 +802,7 @@ test("tray panel open main window creates a main window when none exists", async
     const ipcMain = createIpcMainStub();
     bridge.registerHandlers(ipcMain);
 
-    await ipcMain.handlers.get("netcatty:trayPanel:openMainWindow")();
+    await ipcMain.handlers.get("magiesTerminal:trayPanel:openMainWindow")();
 
     assert.equal(createCalls, 1);
     assert.equal(createdWin.showCalls, 1);
@@ -838,7 +838,7 @@ test("tray panel session jump waits for a newly created main window to be ready"
     const ipcMain = createIpcMainStub();
     bridge.registerHandlers(ipcMain);
 
-    const jumpPromise = ipcMain.handlers.get("netcatty:trayPanel:jumpToSession")(null, "session-1");
+    const jumpPromise = ipcMain.handlers.get("magiesTerminal:trayPanel:jumpToSession")(null, "session-1");
 
     for (let i = 0; i < 5 && !releaseReady; i += 1) {
       await Promise.resolve();
@@ -848,7 +848,7 @@ test("tray panel session jump waits for a newly created main window to be ready"
     releaseReady();
     await jumpPromise;
 
-    assert.deepEqual(sentMessages, [["netcatty:trayPanel:jumpToSession", "session-1"]]);
+    assert.deepEqual(sentMessages, [["magiesTerminal:trayPanel:jumpToSession", "session-1"]]);
   });
 });
 
@@ -883,7 +883,7 @@ test("toggleWindowVisibility show path delegates to showAndFocusMainWindow on wi
         return true;
       };
       const { ipcMain } = await enableCloseToTray(bridge, electronModule);
-      await ipcMain.handlers.get("netcatty:globalHotkey:register")(null, { hotkey: "Ctrl + `" });
+      await ipcMain.handlers.get("magiesTerminal:globalHotkey:register")(null, { hotkey: "Ctrl + `" });
 
       assert.ok(toggleWindow, "expected global hotkey handler to register");
       toggleWindow();
@@ -924,7 +924,7 @@ test("openMainWindow delegates to showAndFocusMainWindow on win32", async () => 
         getMainWindow: () => win,
       });
 
-      await ipcMain.handlers.get("netcatty:trayPanel:openMainWindow")();
+      await ipcMain.handlers.get("magiesTerminal:trayPanel:openMainWindow")();
 
       assert.equal(showCalls.length, 1);
       assert.equal(showCalls[0], win);
@@ -964,7 +964,7 @@ test("toggleWindowVisibility focuses visible-but-unfocused windows via showAndFo
         return true;
       };
       const { ipcMain } = await enableCloseToTray(bridge, electronModule);
-      await ipcMain.handlers.get("netcatty:globalHotkey:register")(null, { hotkey: "Ctrl + `" });
+      await ipcMain.handlers.get("magiesTerminal:globalHotkey:register")(null, { hotkey: "Ctrl + `" });
 
       toggleWindow();
 

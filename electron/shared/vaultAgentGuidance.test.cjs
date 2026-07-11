@@ -23,8 +23,8 @@ test("VAULT_HOSTS_VS_NOTES_GUIDANCE routes unknown attached host files through A
 });
 
 test("appendVaultAgentGuidance appends guidance once", () => {
-  const once = appendVaultAgentGuidance("Netcatty terminal manager.");
-  assert.match(once, /Netcatty terminal manager/);
+  const once = appendVaultAgentGuidance("MagiesTerminal terminal manager.");
+  assert.match(once, /MagiesTerminal terminal manager/);
   assert.match(once, /Vault → Hosts vs Vault → Notes/);
 
   const twice = appendVaultAgentGuidance(once);

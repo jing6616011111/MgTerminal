@@ -12,7 +12,7 @@ const {
 
 function isTerminalWorkerEnabled(options = {}) {
   const env = options.env || process.env;
-  return env.NETCATTY_TERMINAL_WORKER !== "0";
+  return env.MAGIES_TERMINAL_TERMINAL_WORKER !== "0";
 }
 
 function defaultWorkerScriptPath() {
@@ -352,7 +352,7 @@ function createTerminalWorkerManager(options = {}) {
     if (!webContentsId) return false;
     const contents = electronModule?.webContents?.fromId?.(webContentsId);
     if (!contents?.send) return false;
-    contents.send("netcatty:data", meta ? { sessionId, data, meta } : { sessionId, data });
+    contents.send("magiesTerminal:data", meta ? { sessionId, data, meta } : { sessionId, data });
     return true;
   }
 
@@ -516,7 +516,7 @@ function createTerminalWorkerManager(options = {}) {
       return;
     }
     if (message.kind === "renderer-event") {
-      if (message.channel === "netcatty:exit" && message.payload?.sessionId) {
+      if (message.channel === "magiesTerminal:exit" && message.payload?.sessionId) {
         closeOutputSession(message.payload.sessionId);
       }
       if (onRendererEvent) {
@@ -590,7 +590,7 @@ function createTerminalWorkerManager(options = {}) {
     for (const [sessionId, webContentsId] of sessionWebContentsIds.entries()) {
       try {
         const contents = electronModule?.webContents?.fromId?.(webContentsId);
-        contents?.send?.("netcatty:exit", {
+        contents?.send?.("magiesTerminal:exit", {
           sessionId,
           exitCode,
           error: error.message,
@@ -643,10 +643,10 @@ function createTerminalWorkerManager(options = {}) {
   }
 
   function send(channel, payload, optionsForSend = {}) {
-    if (channel === "netcatty:close" && payload?.sessionId) {
+    if (channel === "magiesTerminal:close" && payload?.sessionId) {
       closeOutputSession(payload.sessionId);
     }
-    if (channel === "netcatty:interrupt") {
+    if (channel === "magiesTerminal:interrupt") {
       const trace = normalizeTrace(payload);
       logTerminalInterruptDebug("main-to-worker-send", {
         channel,

@@ -52,7 +52,7 @@ function resolveCapabilitySurface(rpcMethod) {
     CAPABILITY_SURFACES.GLOBAL,
     CAPABILITY_SURFACES.BUILTIN,
   ]) {
-    if (rpcMethod.startsWith("netcatty/") && surface !== CAPABILITY_SURFACES.BUILTIN) {
+    if (rpcMethod.startsWith("magiesTerminal/") && surface !== CAPABILITY_SURFACES.BUILTIN) {
       continue;
     }
     const capability = getCapabilityByRpcMethod(rpcMethod, surface);
@@ -80,7 +80,7 @@ function createCapabilityRpcDispatcher(deps) {
   };
 
   return async function dispatchCapabilityRpc(rpcMethod, params = {}) {
-    if (typeof rpcMethod !== "string" || rpcMethod.startsWith("netcatty/")) {
+    if (typeof rpcMethod !== "string" || rpcMethod.startsWith("magiesTerminal/")) {
       return UNROUTED;
     }
 

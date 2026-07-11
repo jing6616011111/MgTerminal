@@ -1,94 +1,94 @@
 import { useCallback, useMemo } from "react";
-import { netcattyBridge } from "../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../infrastructure/services/magiesTerminalBridge";
 
 export const useTerminalBackend = () => {
   const telnetAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.startTelnetSession;
   }, []);
 
   const moshAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.startMoshSession;
   }, []);
 
   const etAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.startEtSession;
   }, []);
 
   const localAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.startLocalSession;
   }, []);
 
   const serialAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.startSerialSession;
   }, []);
 
   const execAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.execCommand;
   }, []);
 
-  const startSSHSession = useCallback(async (options: NetcattySSHOptions) => {
-    const bridge = netcattyBridge.get();
+  const startSSHSession = useCallback(async (options: MagiesTerminalSSHOptions) => {
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.startSSHSession) throw new Error("startSSHSession unavailable");
     return bridge.startSSHSession(options);
   }, []);
 
-  const startTelnetSession = useCallback(async (options: Parameters<NonNullable<NetcattyBridge["startTelnetSession"]>>[0]) => {
-    const bridge = netcattyBridge.get();
+  const startTelnetSession = useCallback(async (options: Parameters<NonNullable<MagiesTerminalBridge["startTelnetSession"]>>[0]) => {
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.startTelnetSession) throw new Error("startTelnetSession unavailable");
     return bridge.startTelnetSession(options);
   }, []);
 
-  const startMoshSession = useCallback(async (options: Parameters<NonNullable<NetcattyBridge["startMoshSession"]>>[0]) => {
-    const bridge = netcattyBridge.get();
+  const startMoshSession = useCallback(async (options: Parameters<NonNullable<MagiesTerminalBridge["startMoshSession"]>>[0]) => {
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.startMoshSession) throw new Error("startMoshSession unavailable");
     return bridge.startMoshSession(options);
   }, []);
 
-  const startEtSession = useCallback(async (options: Parameters<NonNullable<NetcattyBridge["startEtSession"]>>[0]) => {
-    const bridge = netcattyBridge.get();
+  const startEtSession = useCallback(async (options: Parameters<NonNullable<MagiesTerminalBridge["startEtSession"]>>[0]) => {
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.startEtSession) throw new Error("startEtSession unavailable");
     return bridge.startEtSession(options);
   }, []);
 
-  const startLocalSession = useCallback(async (options: Parameters<NonNullable<NetcattyBridge["startLocalSession"]>>[0]) => {
-    const bridge = netcattyBridge.get();
+  const startLocalSession = useCallback(async (options: Parameters<NonNullable<MagiesTerminalBridge["startLocalSession"]>>[0]) => {
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.startLocalSession) throw new Error("startLocalSession unavailable");
     return bridge.startLocalSession(options);
   }, []);
 
-  const startSerialSession = useCallback(async (options: Parameters<NonNullable<NetcattyBridge["startSerialSession"]>>[0]) => {
-    const bridge = netcattyBridge.get();
+  const startSerialSession = useCallback(async (options: Parameters<NonNullable<MagiesTerminalBridge["startSerialSession"]>>[0]) => {
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.startSerialSession) throw new Error("startSerialSession unavailable");
     return bridge.startSerialSession(options);
   }, []);
 
-  const execCommand = useCallback(async (options: Parameters<NetcattyBridge["execCommand"]>[0]) => {
-    const bridge = netcattyBridge.get();
+  const execCommand = useCallback(async (options: Parameters<MagiesTerminalBridge["execCommand"]>[0]) => {
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.execCommand) throw new Error("execCommand unavailable");
     return bridge.execCommand(options);
   }, []);
 
   const setupOsc7Tracking = useCallback(async (sessionId: string, command: string) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.setupOsc7Tracking) {
       return { success: false, error: "setupOsc7Tracking unavailable" };
     }
     return bridge.setupOsc7Tracking(sessionId, command);
   }, []);
 
-  const writeToSession = useCallback((sessionId: string, data: string, options?: Parameters<NonNullable<NetcattyBridge["writeToSession"]>>[2]) => {
-    const bridge = netcattyBridge.get();
+  const writeToSession = useCallback((sessionId: string, data: string, options?: Parameters<NonNullable<MagiesTerminalBridge["writeToSession"]>>[2]) => {
+    const bridge = magiesTerminalBridge.get();
     bridge?.writeToSession?.(sessionId, data, options);
   }, []);
 
-  const interruptSession = useCallback((sessionId: string, trace?: NetcattyTerminalInterruptTrace) => {
-    const bridge = netcattyBridge.get();
+  const interruptSession = useCallback((sessionId: string, trace?: MagiesTerminalTerminalInterruptTrace) => {
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.interruptSession) {
       bridge.interruptSession(sessionId, trace);
       return;
@@ -97,84 +97,84 @@ export const useTerminalBackend = () => {
   }, []);
 
   const resizeSession = useCallback((sessionId: string, cols: number, rows: number) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     bridge?.resizeSession?.(sessionId, cols, rows);
   }, []);
 
   const setSessionFlowPaused = useCallback((sessionId: string, paused: boolean) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     bridge?.setSessionFlowPaused?.(sessionId, paused);
   }, []);
 
   const ackSessionFlow = useCallback((sessionId: string, bytes: number) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     bridge?.ackSessionFlow?.(sessionId, bytes);
   }, []);
 
   const closeSession = useCallback((sessionId: string) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     bridge?.closeSession?.(sessionId);
   }, []);
 
   const setSessionEncoding = useCallback(async (sessionId: string, encoding: string) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.setSessionEncoding) return { ok: false, encoding };
     return bridge.setSessionEncoding(sessionId, encoding);
   }, []);
 
   const onSessionData = useCallback((
     sessionId: string,
-    cb: Parameters<NetcattyBridge["onSessionData"]>[1],
-    options?: Parameters<NetcattyBridge["onSessionData"]>[2],
+    cb: Parameters<MagiesTerminalBridge["onSessionData"]>[1],
+    options?: Parameters<MagiesTerminalBridge["onSessionData"]>[2],
   ) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onSessionData) throw new Error("onSessionData unavailable");
     return bridge.onSessionData(sessionId, cb, options);
   }, []);
 
   const onSessionExit = useCallback((sessionId: string, cb: (evt: { exitCode?: number; signal?: number; error?: string; reason?: "exited" | "error" | "timeout" | "closed" }) => void) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.onSessionExit) throw new Error("onSessionExit unavailable");
     return bridge.onSessionExit(sessionId, cb);
   }, []);
 
   const onTelnetAutoLoginComplete = useCallback((sessionId: string, cb: (evt: { sessionId: string }) => void) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return bridge?.onTelnetAutoLoginComplete?.(sessionId, cb);
   }, []);
 
   const onTelnetAutoLoginCancelled = useCallback((sessionId: string, cb: (evt: { sessionId: string }) => void) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return bridge?.onTelnetAutoLoginCancelled?.(sessionId, cb);
   }, []);
 
   const onTelnetEchoMode = useCallback((sessionId: string, cb: (evt: { sessionId: string; remoteEcho: boolean; localEcho: boolean }) => void) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return bridge?.onTelnetEchoMode?.(sessionId, cb);
   }, []);
 
   const onChainProgress = useCallback((cb: (sessionId: string, hop: number, total: number, label: string, status: string, error?: string) => void) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return bridge?.onChainProgress?.(cb);
   }, []);
 
   const onConnectionReuseFallback = useCallback((cb: (sessionId: string, sourceSessionId?: string) => void) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return bridge?.onConnectionReuseFallback?.(cb);
   }, []);
 
   const onWindowFullScreenChanged = useCallback((cb: (isFullscreen: boolean) => void) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return bridge?.onWindowFullScreenChanged?.(cb);
   }, []);
 
   const onWindowShown = useCallback((cb: () => void) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return bridge?.onWindowShown?.(cb);
   }, []);
 
-  const onHostKeyVerification = useCallback((cb: Parameters<NonNullable<NetcattyBridge["onHostKeyVerification"]>>[0]) => {
-    const bridge = netcattyBridge.get();
+  const onHostKeyVerification = useCallback((cb: Parameters<NonNullable<MagiesTerminalBridge["onHostKeyVerification"]>>[0]) => {
+    const bridge = magiesTerminalBridge.get();
     return bridge?.onHostKeyVerification?.(cb);
   }, []);
 
@@ -183,7 +183,7 @@ export const useTerminalBackend = () => {
     accept: boolean,
     addToKnownHosts?: boolean,
   ) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.respondHostKeyVerification) {
       return { success: false, error: "respondHostKeyVerification unavailable" };
     }
@@ -191,54 +191,54 @@ export const useTerminalBackend = () => {
   }, []);
 
   const openExternal = useCallback(async (url: string) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     await bridge?.openExternal?.(url);
   }, []);
 
   const openExternalAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.openExternal;
   }, []);
 
   const backendAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.startSSHSession;
   }, []);
 
   const listSerialPorts = useCallback(async () => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.listSerialPorts) return [];
     return bridge.listSerialPorts();
   }, []);
 
   const serialYmodemAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.sendSerialYmodem;
   }, []);
 
   const serialYmodemReceiveAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.receiveSerialYmodem;
   }, []);
 
   const selectFileAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.selectFile;
   }, []);
 
   const selectDirectoryAvailable = useCallback(() => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return !!bridge?.selectDirectory;
   }, []);
 
   const sendSerialYmodem = useCallback(async (sessionId: string, filePath: string) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.sendSerialYmodem) return { success: false, error: 'sendSerialYmodem unavailable' };
     return bridge.sendSerialYmodem(sessionId, filePath);
   }, []);
 
   const receiveSerialYmodem = useCallback(async (sessionId: string, destinationDir: string) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.receiveSerialYmodem) return { success: false, error: 'receiveSerialYmodem unavailable' };
     return bridge.receiveSerialYmodem(sessionId, destinationDir);
   }, []);
@@ -248,13 +248,13 @@ export const useTerminalBackend = () => {
     defaultPath?: string,
     filters?: Array<{ name: string; extensions: string[] }>,
   ) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.selectFile) return null;
     return bridge.selectFile(title, defaultPath, filters);
   }, []);
 
   const selectDirectory = useCallback(async (title?: string, defaultPath?: string) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.selectDirectory) return null;
     return bridge.selectDirectory(title, defaultPath);
   }, []);
@@ -269,7 +269,7 @@ export const useTerminalBackend = () => {
     }>,
     uploadCommand?: string,
   ) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.startZmodemDragDropUpload) {
       return { success: false, error: "startZmodemDragDropUpload unavailable" };
     }
@@ -277,26 +277,26 @@ export const useTerminalBackend = () => {
   }, []);
 
   const cancelZmodem = useCallback((sessionId: string, options?: { interrupt?: boolean }) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     bridge?.cancelZmodem?.(sessionId, options);
   }, []);
 
   const onZmodemEvent = useCallback((
     sessionId: string,
-    cb: Parameters<NonNullable<NetcattyBridge["onZmodemEvent"]>>[1],
+    cb: Parameters<NonNullable<MagiesTerminalBridge["onZmodemEvent"]>>[1],
   ) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return bridge?.onZmodemEvent?.(sessionId, cb) ?? (() => {});
   }, []);
 
   const getSessionPwd = useCallback(async (sessionId: string, options?: { allowHomeFallback?: boolean }) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.getSessionPwd) return { success: false, error: 'getSessionPwd unavailable' };
     return bridge.getSessionPwd(sessionId, options);
   }, []);
 
   const getSessionRemoteInfo = useCallback(async (sessionId: string) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.getSessionRemoteInfo) {
       return { success: false, error: 'getSessionRemoteInfo unavailable' };
     }
@@ -304,7 +304,7 @@ export const useTerminalBackend = () => {
   }, []);
 
   const getSessionDistroInfo = useCallback(async (sessionId: string) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.getSessionDistroInfo) {
       return { success: false, error: 'getSessionDistroInfo unavailable' };
     }
@@ -312,7 +312,7 @@ export const useTerminalBackend = () => {
   }, []);
 
   const getServerStats = useCallback(async (sessionId: string) => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.getServerStats) return { success: false, error: 'getServerStats unavailable' };
     return bridge.getServerStats(sessionId);
   }, []);

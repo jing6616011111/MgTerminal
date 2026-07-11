@@ -58,8 +58,8 @@ async function downloadRemoteForSyncAllImpl(this: any,
   return result;
 }
 
-const SYNC_HISTORY_STORAGE_KEY = 'netcatty_sync_history_v1';
-const SYNC_SNAPSHOTS_STORAGE_KEY = 'netcatty_sync_snapshots_v1';
+const SYNC_HISTORY_STORAGE_KEY = 'magiesTerminal_sync_history_v1';
+const SYNC_SNAPSHOTS_STORAGE_KEY = 'magiesTerminal_sync_snapshots_v1';
 
 async function encryptForLocalStorage(payload: unknown, key: CryptoKey): Promise<string> {
   const data = new TextEncoder().encode(JSON.stringify(payload));
@@ -666,7 +666,7 @@ export function syncBaseKeyImpl(this: any,provider?: CloudProvider): string {
   }
 
 export function providerAccountIdKeyImpl(this: any,provider: CloudProvider): string {
-    return `netcatty.sync.accountId.${provider}`;
+    return `magiesTerminal.sync.accountId.${provider}`;
   }
 
 export function loadProviderAccountIdImpl(this: any,provider: CloudProvider): string | null {

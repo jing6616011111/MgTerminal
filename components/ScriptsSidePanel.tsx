@@ -15,7 +15,7 @@ import { reorderVaultItems, reorderVaultStrings, sortByVaultOrder } from '../dom
 import { isScriptSnippet } from '../domain/snippetScript.ts';
 import { cn } from '../lib/utils';
 import { Snippet } from '../types';
-import type { ScriptRun } from '../types/global/netcatty-bridge-script.d.ts';
+import type { ScriptRun } from '../types/global/magies-terminal-bridge-script.d.ts';
 import { ScriptRunList } from './scripts/ScriptRunList';
 import { ScriptRecordingHelpDialog } from './scripts/ScriptRecordingHelpDialog';
 import {
@@ -272,8 +272,8 @@ const ScriptsSidePanelInner: React.FC<ScriptsSidePanelProps> = ({
         });
       }
     };
-    window.addEventListener('netcatty:scripts:saved', handler);
-    return () => window.removeEventListener('netcatty:scripts:saved', handler);
+    window.addEventListener('magiesTerminal:scripts:saved', handler);
+    return () => window.removeEventListener('magiesTerminal:scripts:saved', handler);
   }, []);
 
   // Normalize the package list + derive ancestor packages implied by each path
@@ -581,22 +581,22 @@ const ScriptsSidePanelInner: React.FC<ScriptsSidePanelProps> = ({
   ]);
 
   const handleAddSnippet = useCallback(() => {
-    window.dispatchEvent(new CustomEvent('netcatty:snippets:add'));
+    window.dispatchEvent(new CustomEvent('magiesTerminal:snippets:add'));
   }, []);
 
   const handleAddScript = useCallback(() => {
-    window.dispatchEvent(new CustomEvent('netcatty:scripts:add'));
+    window.dispatchEvent(new CustomEvent('magiesTerminal:scripts:add'));
   }, []);
 
   const handleEditSnippet = useCallback((snippet: Snippet) => {
     window.dispatchEvent(
-      new CustomEvent('netcatty:snippets:edit', { detail: { snippet } }),
+      new CustomEvent('magiesTerminal:snippets:edit', { detail: { snippet } }),
     );
   }, []);
 
   const handleDeleteSnippet = useCallback((id: string) => {
     window.dispatchEvent(
-      new CustomEvent('netcatty:snippets:delete', { detail: { id } }),
+      new CustomEvent('magiesTerminal:snippets:delete', { detail: { id } }),
     );
   }, []);
 

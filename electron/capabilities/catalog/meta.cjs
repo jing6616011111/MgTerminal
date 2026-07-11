@@ -19,7 +19,7 @@ const META_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      builtin: { rpcMethod: "netcatty/getContext", mcpTool: "get_environment" },
+      builtin: { rpcMethod: "magiesTerminal/getContext", mcpTool: "get_environment" },
       public: { rpcMethod: "public/getEnvironment", mcpTool: "get_environment" },
       cli: { command: ["env"] },
     },
@@ -39,7 +39,7 @@ const META_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      builtin: { rpcMethod: "netcatty/getStatus" },
+      builtin: { rpcMethod: "magiesTerminal/getStatus" },
       public: { rpcMethod: "public/getStatus" },
       cli: { command: ["status"] },
     },
@@ -59,7 +59,7 @@ const META_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      builtin: { rpcMethod: "netcatty/listAttachments", mcpTool: "list_attachments" },
+      builtin: { rpcMethod: "magiesTerminal/listAttachments", mcpTool: "list_attachments" },
     },
   },
   {
@@ -77,7 +77,7 @@ const META_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      builtin: { rpcMethod: "netcatty/readAttachment", mcpTool: "read_attachment" },
+      builtin: { rpcMethod: "magiesTerminal/readAttachment", mcpTool: "read_attachment" },
     },
   },
   {
@@ -95,7 +95,7 @@ const META_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      builtin: { rpcMethod: "netcatty/setCancelled" },
+      builtin: { rpcMethod: "magiesTerminal/setCancelled" },
       cli: { command: ["cancel"] },
     },
   },
@@ -114,7 +114,7 @@ const META_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      builtin: { rpcMethod: "netcatty/setCancelled" },
+      builtin: { rpcMethod: "magiesTerminal/setCancelled" },
       cli: { command: ["resume"] },
     },
   },
@@ -133,7 +133,7 @@ const META_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      builtin: { rpcMethod: "netcatty/getContext" },
+      builtin: { rpcMethod: "magiesTerminal/getContext" },
       cli: { command: ["session"] },
     },
   },

@@ -47,23 +47,23 @@ test("terminal worker mode proxies all terminal starts and control commands", as
   terminalBridge.registerHandlers(ipcMain, { terminalWorkerManager });
 
   for (const channel of [
-    "netcatty:local:start",
-    "netcatty:telnet:start",
-    "netcatty:mosh:start",
-    "netcatty:et:start",
-    "netcatty:serial:start",
+    "magiesTerminal:local:start",
+    "magiesTerminal:telnet:start",
+    "magiesTerminal:mosh:start",
+    "magiesTerminal:et:start",
+    "magiesTerminal:serial:start",
   ]) {
     assert.equal(ipcMain.handlers.has(channel), true, `${channel} should be proxied as a request`);
     await ipcMain.handlers.get(channel)(fakeEvent, { sessionId: channel });
   }
 
   for (const channel of [
-    "netcatty:write",
-    "netcatty:interrupt",
-    "netcatty:resize",
-    "netcatty:flow",
-    "netcatty:flow:ack",
-    "netcatty:close",
+    "magiesTerminal:write",
+    "magiesTerminal:interrupt",
+    "magiesTerminal:resize",
+    "magiesTerminal:flow",
+    "magiesTerminal:flow:ack",
+    "magiesTerminal:close",
   ]) {
     assert.equal(ipcMain.listeners.has(channel), true, `${channel} should be proxied as a send`);
     ipcMain.listeners.get(channel)(fakeEvent, { sessionId: channel });
@@ -72,22 +72,22 @@ test("terminal worker mode proxies all terminal starts and control commands", as
   assert.deepEqual(
     terminalWorkerManager.requests.map((entry) => entry.channel),
     [
-      "netcatty:local:start",
-      "netcatty:telnet:start",
-      "netcatty:mosh:start",
-      "netcatty:et:start",
-      "netcatty:serial:start",
+      "magiesTerminal:local:start",
+      "magiesTerminal:telnet:start",
+      "magiesTerminal:mosh:start",
+      "magiesTerminal:et:start",
+      "magiesTerminal:serial:start",
     ],
   );
   assert.deepEqual(
     terminalWorkerManager.sends.map((entry) => entry.channel),
     [
-      "netcatty:write",
-      "netcatty:interrupt",
-      "netcatty:resize",
-      "netcatty:flow",
-      "netcatty:flow:ack",
-      "netcatty:close",
+      "magiesTerminal:write",
+      "magiesTerminal:interrupt",
+      "magiesTerminal:resize",
+      "magiesTerminal:flow",
+      "magiesTerminal:flow:ack",
+      "magiesTerminal:close",
     ],
   );
 });
@@ -99,15 +99,15 @@ test("terminal worker mode proxies SSH session and remote helper requests", asyn
   sshBridge.registerHandlers(ipcMain, { terminalWorkerManager });
 
   for (const channel of [
-    "netcatty:start",
-    "netcatty:ssh:exec",
-    "netcatty:ssh:pwd",
-    "netcatty:ssh:remoteInfo",
-    "netcatty:ssh:distroInfo",
-    "netcatty:ssh:readRemoteHistory",
-    "netcatty:ssh:listdir",
-    "netcatty:ssh:stats",
-    "netcatty:ssh:setEncoding",
+    "magiesTerminal:start",
+    "magiesTerminal:ssh:exec",
+    "magiesTerminal:ssh:pwd",
+    "magiesTerminal:ssh:remoteInfo",
+    "magiesTerminal:ssh:distroInfo",
+    "magiesTerminal:ssh:readRemoteHistory",
+    "magiesTerminal:ssh:listdir",
+    "magiesTerminal:ssh:stats",
+    "magiesTerminal:ssh:setEncoding",
   ]) {
     assert.equal(ipcMain.handlers.has(channel), true, `${channel} should be proxied`);
     await ipcMain.handlers.get(channel)(fakeEvent, { sessionId: "ssh-1" });
@@ -116,15 +116,15 @@ test("terminal worker mode proxies SSH session and remote helper requests", asyn
   assert.deepEqual(
     terminalWorkerManager.requests.map((entry) => entry.channel),
     [
-      "netcatty:start",
-      "netcatty:ssh:exec",
-      "netcatty:ssh:pwd",
-      "netcatty:ssh:remoteInfo",
-      "netcatty:ssh:distroInfo",
-      "netcatty:ssh:readRemoteHistory",
-      "netcatty:ssh:listdir",
-      "netcatty:ssh:stats",
-      "netcatty:ssh:setEncoding",
+      "magiesTerminal:start",
+      "magiesTerminal:ssh:exec",
+      "magiesTerminal:ssh:pwd",
+      "magiesTerminal:ssh:remoteInfo",
+      "magiesTerminal:ssh:distroInfo",
+      "magiesTerminal:ssh:readRemoteHistory",
+      "magiesTerminal:ssh:listdir",
+      "magiesTerminal:ssh:stats",
+      "magiesTerminal:ssh:setEncoding",
     ],
   );
 });
@@ -139,18 +139,18 @@ test("terminal worker mode proxies SFTP and surrounding file operations", async 
   fileWatcherBridge.registerHandlers(ipcMain, { terminalWorkerManager });
 
   for (const channel of [
-    "netcatty:sftp:openForSession",
-    "netcatty:sftp:list",
-    "netcatty:sftp:write",
-    "netcatty:sftp:downloadToLocal",
-    "netcatty:sftp:uploadLocal",
-    "netcatty:sftp:close",
-    "netcatty:transfer:start",
-    "netcatty:transfer:cancel",
-    "netcatty:compress:start",
-    "netcatty:compress:checkSupport",
-    "netcatty:filewatch:start",
-    "netcatty:filewatch:registerTempFile",
+    "magiesTerminal:sftp:openForSession",
+    "magiesTerminal:sftp:list",
+    "magiesTerminal:sftp:write",
+    "magiesTerminal:sftp:downloadToLocal",
+    "magiesTerminal:sftp:uploadLocal",
+    "magiesTerminal:sftp:close",
+    "magiesTerminal:transfer:start",
+    "magiesTerminal:transfer:cancel",
+    "magiesTerminal:compress:start",
+    "magiesTerminal:compress:checkSupport",
+    "magiesTerminal:filewatch:start",
+    "magiesTerminal:filewatch:registerTempFile",
   ]) {
     assert.equal(ipcMain.handlers.has(channel), true, `${channel} should be proxied`);
     await ipcMain.handlers.get(channel)(fakeEvent, { sessionId: "ssh-1", sftpId: "sftp-1" });
@@ -159,18 +159,18 @@ test("terminal worker mode proxies SFTP and surrounding file operations", async 
   assert.deepEqual(
     terminalWorkerManager.requests.map((entry) => entry.channel),
     [
-      "netcatty:sftp:openForSession",
-      "netcatty:sftp:list",
-      "netcatty:sftp:write",
-      "netcatty:sftp:downloadToLocal",
-      "netcatty:sftp:uploadLocal",
-      "netcatty:sftp:close",
-      "netcatty:transfer:start",
-      "netcatty:transfer:cancel",
-      "netcatty:compress:start",
-      "netcatty:compress:checkSupport",
-      "netcatty:filewatch:start",
-      "netcatty:filewatch:registerTempFile",
+      "magiesTerminal:sftp:openForSession",
+      "magiesTerminal:sftp:list",
+      "magiesTerminal:sftp:write",
+      "magiesTerminal:sftp:downloadToLocal",
+      "magiesTerminal:sftp:uploadLocal",
+      "magiesTerminal:sftp:close",
+      "magiesTerminal:transfer:start",
+      "magiesTerminal:transfer:cancel",
+      "magiesTerminal:compress:start",
+      "magiesTerminal:compress:checkSupport",
+      "magiesTerminal:filewatch:start",
+      "magiesTerminal:filewatch:registerTempFile",
     ],
   );
 });
@@ -188,11 +188,11 @@ test("terminal worker mode proxies system management requests", async () => {
   systemManagerBridge.registerHandlers(ipcMain, { terminalWorkerManager });
 
   for (const channel of [
-    "netcatty:system:probeCapabilities",
-    "netcatty:system:listProcesses",
-    "netcatty:system:setupOsc7Tracking",
-    "netcatty:system:listTmuxSessions",
-    "netcatty:system:listDockerContainers",
+    "magiesTerminal:system:probeCapabilities",
+    "magiesTerminal:system:listProcesses",
+    "magiesTerminal:system:setupOsc7Tracking",
+    "magiesTerminal:system:listTmuxSessions",
+    "magiesTerminal:system:listDockerContainers",
   ]) {
     assert.equal(ipcMain.handlers.has(channel), true, `${channel} should be proxied`);
     await ipcMain.handlers.get(channel)(fakeEvent, { sessionId: "ssh-1" });
@@ -201,11 +201,11 @@ test("terminal worker mode proxies system management requests", async () => {
   assert.deepEqual(
     terminalWorkerManager.requests.map((entry) => entry.channel),
     [
-      "netcatty:system:probeCapabilities",
-      "netcatty:system:listProcesses",
-      "netcatty:system:setupOsc7Tracking",
-      "netcatty:system:listTmuxSessions",
-      "netcatty:system:listDockerContainers",
+      "magiesTerminal:system:probeCapabilities",
+      "magiesTerminal:system:listProcesses",
+      "magiesTerminal:system:setupOsc7Tracking",
+      "magiesTerminal:system:listTmuxSessions",
+      "magiesTerminal:system:listDockerContainers",
     ],
   );
 });

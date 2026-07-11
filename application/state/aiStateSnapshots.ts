@@ -21,7 +21,7 @@ import {
 } from './aiScopeCleanup';
 import { emitAIStateChanged } from './aiStateEvents';
 
-/** Typed accessor for the Electron IPC bridge exposed on `window.netcatty`. */
+/** Typed accessor for the Electron IPC bridge exposed on `window.magiesTerminal`. */
 export interface AIBridge {
   aiSdkAgentCleanup?: (chatSessionId: string) => Promise<{ ok: boolean }>;
   aiMcpSetPermissionMode?: (mode: AIPermissionMode) => Promise<unknown> | unknown;
@@ -32,12 +32,12 @@ export interface AIBridge {
 }
 
 export function getAIBridge() {
-  return (window as unknown as { netcatty?: AIBridge }).netcatty;
+  return (window as unknown as { magiesTerminal?: AIBridge }).magiesTerminal;
 }
 
 
-export const AI_STATE_CHANGED_DRAFTS_BY_SCOPE = 'netcatty:ai-drafts-by-scope';
-export const AI_STATE_CHANGED_PANEL_VIEW_BY_SCOPE = 'netcatty:ai-panel-view-by-scope';
+export const AI_STATE_CHANGED_DRAFTS_BY_SCOPE = 'magiesTerminal:ai-drafts-by-scope';
+export const AI_STATE_CHANGED_PANEL_VIEW_BY_SCOPE = 'magiesTerminal:ai-panel-view-by-scope';
 
 export type DraftsByScope = Partial<Record<string, AIDraft>>;
 export type PanelViewByScope = Partial<Record<string, AIPanelView>>;

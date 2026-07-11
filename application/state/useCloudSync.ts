@@ -33,7 +33,7 @@ import {
   type SyncEventCallback,
 } from '../../infrastructure/services/CloudSyncManager';
 import type { ShrinkFinding } from '../../domain/syncGuards';
-import { netcattyBridge } from '../../infrastructure/services/netcattyBridge';
+import { magiesTerminalBridge } from '../../infrastructure/services/magiesTerminalBridge';
 import type { DeviceFlowState } from '../../infrastructure/services/adapters/GitHubAdapter';
 
 // ============================================================================
@@ -232,7 +232,7 @@ export const useCloudSync = (): CloudSyncHook => {
 
     void (async () => {
       try {
-        const bridge = netcattyBridge.get();
+        const bridge = magiesTerminalBridge.get();
         const password = await bridge?.cloudSyncGetSessionPassword?.();
         if (!password) return;
 
@@ -286,19 +286,19 @@ export const useCloudSync = (): CloudSyncHook => {
       throw new Error('Password must be at least 8 characters');
     }
     await manager.setupMasterKey(password);
-    void netcattyBridge.get()?.cloudSyncSetSessionPassword?.(password);
+    void magiesTerminalBridge.get()?.cloudSyncSetSessionPassword?.(password);
   }, []);
   
   const unlock = useCallback(async (password: string): Promise<boolean> => {
     const ok = await manager.unlock(password);
     if (ok) {
-      void netcattyBridge.get()?.cloudSyncSetSessionPassword?.(password);
+      void magiesTerminalBridge.get()?.cloudSyncSetSessionPassword?.(password);
     }
     return ok;
   }, []);
   
   const lock = useCallback(() => {
-    void netcattyBridge.get()?.cloudSyncClearSessionPassword?.();
+    void magiesTerminalBridge.get()?.cloudSyncClearSessionPassword?.();
     manager.lock();
   }, []);
   
@@ -308,7 +308,7 @@ export const useCloudSync = (): CloudSyncHook => {
   ): Promise<boolean> => {
     const ok = await manager.changeMasterKey(oldPassword, newPassword);
     if (ok) {
-      void netcattyBridge.get()?.cloudSyncSetSessionPassword?.(newPassword);
+      void magiesTerminalBridge.get()?.cloudSyncSetSessionPassword?.(newPassword);
     }
     return ok;
   }, []);
@@ -395,7 +395,7 @@ export const useCloudSync = (): CloudSyncHook => {
     );
 
     try {
-      await netcattyBridge.get()?.cancelOAuthCallback?.(sessionId);
+      await magiesTerminalBridge.get()?.cancelOAuthCallback?.(sessionId);
     } catch {
       // Best-effort cleanup
     }
@@ -403,7 +403,7 @@ export const useCloudSync = (): CloudSyncHook => {
   
   const runPKCEAuth = useCallback(
     async (provider: 'google' | 'onedrive'): Promise<string> => {
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       const prepare = bridge?.prepareOAuthCallback;
       const awaitCallback = bridge?.awaitOAuthCallback;
       const openExternal = bridge?.openExternal;
@@ -663,7 +663,7 @@ export const useCloudSync = (): CloudSyncHook => {
       throw new Error('No master key configured');
     }
 
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     const password = await bridge?.cloudSyncGetSessionPassword?.();
     if (password) {
       const ok = await manager.unlock(password);

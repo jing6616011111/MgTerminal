@@ -1,5 +1,5 @@
 /**
- * Netcatty Electron Main Process
+ * MagiesTerminal Electron Main Process
  * 
  * This is the main entry point for the Electron application.
  * All major functionality has been extracted into separate bridge modules:
@@ -160,8 +160,8 @@ const { queryDirtyEditors } = require("./bridges/dirtyEditorGuard.cjs");
 
 // GPU settings
 // NOTE: Do not disable Chromium sandbox by default.
-// If you need to debug with sandbox disabled, set NETCATTY_NO_SANDBOX=1.
-if (process.env.NETCATTY_NO_SANDBOX === "1") {
+// If you need to debug with sandbox disabled, set MAGIES_TERMINAL_NO_SANDBOX=1.
+if (process.env.MAGIES_TERMINAL_NO_SANDBOX === "1") {
   app.commandLine.appendSwitch("no-sandbox");
 }
 // Force hardware acceleration even on blocklisted GPUs (macs sometimes fall back to software)
@@ -205,7 +205,7 @@ const devServerUrl = process.env.VITE_DEV_SERVER_URL;
 const isDev = !app.isPackaged && !!devServerUrl;
 const effectiveDevServerUrl = isDev ? devServerUrl : undefined;
 if (isDev) {
-  app.setName("Netcatty Dev");
+  app.setName("MagiesTerminal Dev");
   app.setPath("userData", path.join(app.getPath("userData"), "dev"));
 }
 const preload = path.join(__dirname, "preload.cjs");
@@ -377,9 +377,9 @@ function focusMainWindow() {
 // Shared state
 const sessions = new Map();
 const sftpClients = new Map();
-const keyRoot = path.join(os.homedir(), ".netcatty", "keys");
+const keyRoot = path.join(os.homedir(), ".magiesTerminal", "keys");
 let cloudSyncSessionPassword = null;
-const CLOUD_SYNC_PASSWORD_FILE = "netcatty_cloud_sync_master_password_v1";
+const CLOUD_SYNC_PASSWORD_FILE = "magiesTerminal_cloud_sync_master_password_v1";
 
 // Key management helpers
 const ensureKeyDir = async () => {
@@ -592,7 +592,7 @@ function queueResolvedOpenTerminalPaths(paths) {
   }
 }
 
-ipcMain?.handle?.("netcatty:deepLink:ssh:setEnabled", async (_event, payload) => {
+ipcMain?.handle?.("magiesTerminal:deepLink:ssh:setEnabled", async (_event, payload) => {
   const enabled = payload?.enabled !== false;
   const result = updateSshDeepLinkEnabledPreference({
     currentEnabled: sshDeepLinkEnabled,
@@ -609,7 +609,7 @@ ipcMain?.handle?.("netcatty:deepLink:ssh:setEnabled", async (_event, payload) =>
   return result;
 });
 
-ipcMain?.handle?.("netcatty:deepLink:ssh:getEnabled", async () => sshDeepLinkEnabled);
+ipcMain?.handle?.("magiesTerminal:deepLink:ssh:getEnabled", async () => sshDeepLinkEnabled);
 
 function queueJmsDeepLink(rawUrl) {
   if (!jmsDeepLinkEnabled) return;
@@ -620,7 +620,7 @@ function queueJmsDeepLink(rawUrl) {
   }
 }
 
-ipcMain?.handle?.("netcatty:deepLink:jms:setEnabled", async (_event, payload) => {
+ipcMain?.handle?.("magiesTerminal:deepLink:jms:setEnabled", async (_event, payload) => {
   const enabled = payload?.enabled !== false;
   const result = updateJmsDeepLinkEnabledPreference({
     currentEnabled: jmsDeepLinkEnabled,
@@ -636,7 +636,7 @@ ipcMain?.handle?.("netcatty:deepLink:jms:setEnabled", async (_event, payload) =>
   return result;
 });
 
-ipcMain?.handle?.("netcatty:deepLink:jms:getEnabled", async () => jmsDeepLinkEnabled);
+ipcMain?.handle?.("magiesTerminal:deepLink:jms:getEnabled", async () => jmsDeepLinkEnabled);
 
 async function deliverJmsDeepLink(rawUrl, expectedGeneration = jmsDeepLinkDeliveryGeneration) {
   if (!shouldDeliverJmsDeepLink({
@@ -839,12 +839,12 @@ function hasUsableWindow() {
 }
 
 function showStartupError(err) {
-  const title = "Netcatty";
+  const title = "MagiesTerminal";
   const code = err && typeof err === "object" ? err.code : null;
   const message =
     code === "ENOENT"
-      ? "Renderer files are missing. Please reinstall or rebuild Netcatty."
-      : "Failed to load the UI. Please relaunch Netcatty.";
+      ? "Renderer files are missing. Please reinstall or rebuild MagiesTerminal."
+      : "Failed to load the UI. Please relaunch MagiesTerminal.";
 
   try {
     electronModule.dialog?.showErrorBox?.(title, message);
@@ -953,8 +953,8 @@ if (!gotLock) {
         // app:// is registered as a standard scheme in Chromium
         // (registerSchemesAsPrivileged above) but Node's WHATWG URL parser
         // doesn't include it in its special-scheme list, so
-        // `new URL('app://netcatty/...').origin` returns the string "null"
-        // — matching against an `app://netcatty` origin string would
+        // `new URL('app://magiesTerminal/...').origin` returns the string "null"
+        // — matching against an `app://magiesTerminal` origin string would
         // therefore fail in packaged builds. Match by protocol + host
         // instead, and only fall back to .origin for HTTP-family URLs
         // (the dev server).
@@ -971,7 +971,7 @@ if (!gotLock) {
           try {
             const parsed = new URL(String(rawUrl));
             if (parsed.protocol === "app:") {
-              return parsed.host === "netcatty";
+              return parsed.host === "magiesTerminal";
             }
             return allowedHttpOrigins.has(parsed.origin);
           } catch {

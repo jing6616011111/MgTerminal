@@ -7,7 +7,7 @@ const path = require("node:path");
 const { buildUserSkillsContext, scanUserSkills } = require("./userSkills.cjs");
 
 async function withUserSkills(skillDefinitions, run) {
-  const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "netcatty-user-skills-"));
+  const rootDir = await fs.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-user-skills-"));
   const userDataDir = path.join(rootDir, "userData");
   const skillsDir = path.join(userDataDir, "Skills");
   await fs.mkdir(skillsDir, { recursive: true });
@@ -53,7 +53,7 @@ test("does not auto-match a user skill from an absolute path segment", async () 
     async (electronApp) => {
       const result = await buildUserSkillsContext(
         electronApp,
-        "please inspect /tmp/netcatty.log",
+        "please inspect /tmp/magiesTerminal.log",
         [],
       );
 
@@ -101,7 +101,7 @@ test("keeps every explicitly selected skill in the built context", async () => {
 
 test("uses longer skill descriptions for routing matches without injecting the full index text", async () => {
   const longDescription = [
-    "Use when the user needs a detailed workflow for operating Netcatty through SDK skills and CLI.",
+    "Use when the user needs a detailed workflow for operating MagiesTerminal through SDK skills and CLI.",
     "Includes platform launcher guidance, scoped command execution, recovery behavior, and constraints.",
     "This intentionally exceeds the older short description budget so routing has enough signal.",
     "It also names edge cases such as unavailable optional shells, strict chat-session scoping, and fallback-only history replay so the agent can choose the skill without reading the whole body first.",

@@ -12,7 +12,7 @@
 > `scripts/fetch-mosh-binaries.cjs`、`scripts/resolve-mosh-bin-release.cjs`、
 > `scripts/mosh-extra-resources.cjs`、`electron/bridges/terminalBridge/moshSession.cjs`。
 > 客户端本体在独立仓库 [binaricat/MoshCatty](https://github.com/binaricat/MoshCatty)
-> （`moshcatty-*` releases）；Netcatty 内已无 Cygwin 构建流水线 / FluentTerminal 回退。
+> （`moshcatty-*` releases）；MagiesTerminal 内已无 Cygwin 构建流水线 / FluentTerminal 回退。
 
 ## 关键设计差异（ET vs Mosh）
 
@@ -26,7 +26,7 @@
 - **纯二进制**：MoshCatty 与理想 ET 打包都是「每平台一个客户端文件」。Mosh 侧已
   无 terminfo / Cygwin DLL 袋；`et` 同样本地不渲染终端。Windows 若动态链 CRT
   才考虑可选 DLL 目录，否则只放 `et[.exe]`。
-- **构建系统**：Mosh 客户端在 **MoshCatty** 仓库用 Rust 构建并发布；Netcatty 只
+- **构建系统**：Mosh 客户端在 **MoshCatty** 仓库用 Rust 构建并发布；MagiesTerminal 只
   `fetch`。**ET** 用 CMake + Ninja + vcpkg
   （`cmake -DDISABLE_TELEMETRY=ON -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo`），
   产物是单个 `et`（Windows `et.exe`），由 `scripts/build-et/` + `build-et-binaries.yml` 发布。
@@ -41,7 +41,7 @@
 | `scripts/fetch-mosh-binaries.cjs` | `scripts/fetch-et-binaries.cjs` |
 | `scripts/resolve-mosh-bin-release.cjs` | `scripts/resolve-et-bin-release.cjs` |
 | `scripts/mosh-extra-resources.cjs` | `scripts/et-extra-resources.cjs` |
-| env `MOSH_BIN_RELEASE` / 仓库 `MoshCatty` / tag `moshcatty-*` | env `ET_BIN_RELEASE` / 仓库 `Netcatty-et-bin` / tag `et-bin-*` |
+| env `MOSH_BIN_RELEASE` / 仓库 `MoshCatty` / tag `moshcatty-*` | env `ET_BIN_RELEASE` / 仓库 `MagiesTerminal-et-bin` / tag `et-bin-*` |
 | `npm run fetch:mosh[:dev]` | `npm run fetch:et[:dev]` |
 | `bundledMoshClient()` / `resolveBareMoshClient()` | `bundledEtClient()` / `resolveBareEtClient()` |
 
@@ -50,7 +50,7 @@
 ## Phase 1 — 打包基础设施（构建/下载/捆绑）
 
 - [x] **1.1** `resources/et/README.md` —— 镜像 `resources/mosh/README.md`：说明
-      二进制来源、`Netcatty-et-bin` 发布仓库、`et-bin-*` tag、许可证（ET 为
+      二进制来源、`MagiesTerminal-et-bin` 发布仓库、`et-bin-*` tag、许可证（ET 为
       Apache-2.0，与 GPL-3.0 兼容）、可复现构建命令。
 - [x] **1.2** `.gitignore` —— 追加 ET 段（镜像 mosh 段）：
       `/resources/et/*/et`、`/resources/et/*/et.exe`、`/resources/et/*/*.dll`、
@@ -67,7 +67,7 @@
       按平台/arch 仅当 `resources/et/<plat-arch>/et[.exe]` 存在时才产出 extraResources
       指令（`to: "et/"`）；Windows 额外处理可选 DLL 目录。纯客户端文件为主。
 - [x] **1.7** `scripts/resolve-et-bin-release.cjs` —— 镜像 `resolve-mosh-bin-release.cjs`：
-      `TAG_RE=/^et-bin-.../`，默认仓库 `Netcatty-et-bin`，env `ET_BIN_RELEASE` 优先。
+      `TAG_RE=/^et-bin-.../`，默认仓库 `MagiesTerminal-et-bin`，env `ET_BIN_RELEASE` 优先。
 - [x] **1.8** `scripts/fetch-et-binaries.cjs` —— 镜像 `fetch-mosh-binaries.cjs`：
       `TARGETS` 四项（linux-x64/arm64、darwin-universal、win32-x64），全部 tar.gz；
       SHA256SUMS 校验；解包到 `resources/et/<plat-arch>/`。**Windows 用自建产物**。
@@ -82,7 +82,7 @@
 - [x] **1.11** `electron-builder.config.cjs`：引入 `etExtraResources`，在 darwin/win32/
       linux 三处把 `etExtraResources(plat)` 合并进 `extraResources`（与 mosh 数组拼接）。
 - [x] **1.12** `.github/workflows/build-et-binaries.yml` —— 四个构建 job + 一个
-      `release` job（dispatch 且 `release_tag` 非空时发布到 `Netcatty-et-bin`，附
+      `release` job（dispatch 且 `release_tag` 非空时发布到 `MagiesTerminal-et-bin`，附
       `SHA256SUMS`）。`paths` 过滤指向 `scripts/build-et/**`、`scripts/fetch-et-binaries.cjs`、
       `scripts/et-extra-resources.cjs`。env 用 `ET_REF`（默认 ET release tag，如 `et-v6.2.x`）。
       > 注：实际二进制由用户手动 `workflow_dispatch` 触发产出；本地/CI 未设
@@ -109,7 +109,7 @@
       解构出 `startEtSession`、`execOnEtSession`、`cleanupStaleEtTempDirs`、
       `cleanupSessionExternalAuthArtifacts`、`resolveBareEtClient`。
 - [x] **3.3** `init()` 调 `cleanupStaleEtTempDirs()`；`registerHandlers` 加
-      `ipcMain.handle("netcatty:et:start", startEtSession)`；`closeSession` 与
+      `ipcMain.handle("magiesTerminal:et:start", startEtSession)`；`closeSession` 与
       `cleanupAllSessions` 调 `cleanupSessionExternalAuthArtifacts(session)`；
       `module.exports` 导出 `startEtSession`、`execOnEtSession`、`bundledEtClient`。
 - [x] **3.4** 测试：`terminalBridge.bundledEt.test.cjs`（路径解析）+
@@ -123,11 +123,11 @@
       `TerminalSession.etEnabled?`；`ConnectionLog.protocol` 加 `'et'`。
       （照搬 `git show 794eecdf -- domain/models.ts`）
 - [x] **4.2** `domain/groupConfig.ts`：加 `etEnabled` 默认项（照搬旧 diff）。
-- [x] **4.3** `global.d.ts`：`NetcattyBridge` 加 `startEtSession?(options): Promise<...>`
+- [x] **4.3** `global.d.ts`：`MagiesTerminalBridge` 加 `startEtSession?(options): Promise<...>`
       及相关 options 类型（照搬 `git show 794eecdf -- global.d.ts`，并补齐后续 ET 提交
       新增的 etPort/terminalPath/jumpHosts/legacyAlgorithms 字段）。
 - [x] **4.4** `electron/preload/api.cjs`：加 `startEtSession`（镜像第 26 行的
-      `startMoshSession`）→ `ipcRenderer.invoke("netcatty:et:start", options)`。
+      `startMoshSession`）→ `ipcRenderer.invoke("magiesTerminal:et:start", options)`。
       **注意**：上游已把 preload 重构成 `createPreloadApi`，落点在 `preload/api.cjs`，
       不是旧的 `preload.cjs` 内联对象。
 
@@ -187,10 +187,10 @@
 - **Phase 2**：`terminalBridge.cjs` 新增并导出 `bundledEtClient`。
 - **Phase 3**：`terminalBridge/etSession.cjs`（startEtSession + prepareEtSshEnvironment +
   SSH_ASKPASS 机制 + execOnEtSession + 清理），接线进 terminalBridge.cjs（ctx/IPC
-  `netcatty:et:start`/init 清理/close/quit 清理/导出），+2 测试（13 通过）。
+  `magiesTerminal:et:start`/init 清理/close/quit 清理/导出），+2 测试（13 通过）。
   **et 指向捆绑二进制**（resolveBareEtClient→bundledEtClient），找不到则报错。
 - **Phase 4**：domain `connection.ts`/`history.ts`/`terminal.ts`、`groupConfig.ts`、
-  `types/global/netcatty-bridge-session.d.ts`（startEtSession + NetcattyJumpHost[]）、
+  `types/global/magies-terminal-bridge-session.d.ts`（startEtSession + MagiesTerminalJumpHost[]）、
   `electron/preload/api.cjs`、`domain/vaultImport.ts`（排除 'et' 导入协议）。
 - **Phase 5**：
   - 启动派发：`useTerminalEffects.ts`、`Terminal.tsx`(×3) → `startEt`
@@ -210,7 +210,7 @@
 - [ ] **QuickConnectWizard.tsx**：把 ET 加为“快速连接”协议按钮（type/端口/建主机映射 +
       UI 按钮）。当前快速连接未列 ET；保存主机后开启 ET 再连即可，故仅为便利项。
 - [ ] **产出二进制**：手动 `workflow_dispatch` 跑 `build-et-binaries.yml`（带
-      `release_tag=et-bin-<ver>-1`）发布到 `Netcatty-et-bin`，并配 `ET_BIN_RELEASE_TOKEN`
+      `release_tag=et-bin-<ver>-1`）发布到 `MagiesTerminal-et-bin`，并配 `ET_BIN_RELEASE_TOKEN`
       secret。之后 `ET_BIN_RELEASE=... npm run fetch:et` 即可本地/打包捆绑 `et`。
       build-et 脚本本机无法编译 C++，需在 CI 验证。
 - [ ] **端到端冒烟**：有二进制后 `npm run dev`，对装有 etserver 的主机建 ET 会话验证。

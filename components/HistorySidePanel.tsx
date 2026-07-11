@@ -178,7 +178,7 @@ const HistorySidePanelInner: React.FC<HistorySidePanelProps> = ({
 
   const handleSaveAsSnippet = useCallback((entry: HistoryPanelEntry) => {
     window.dispatchEvent(
-      new CustomEvent('netcatty:snippets:add', {
+      new CustomEvent('magiesTerminal:snippets:add', {
         detail: { command: entry.command },
       }),
     );

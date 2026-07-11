@@ -75,10 +75,10 @@ async function runEchoNegotiationTest({ auth = {}, command }) {
         ...auth,
       },
     );
-    await waitFor(() => sentEvents.some((evt) => evt.channel === "netcatty:telnet:echo-mode"));
+    await waitFor(() => sentEvents.some((evt) => evt.channel === "magiesTerminal:telnet:echo-mode"));
     return {
       sessionId,
-      payload: sentEvents.find((evt) => evt.channel === "netcatty:telnet:echo-mode").payload,
+      payload: sentEvents.find((evt) => evt.channel === "magiesTerminal:telnet:echo-mode").payload,
     };
   } finally {
     terminalBridge.cleanupAllSessions();
@@ -186,12 +186,12 @@ test("replaced Telnet sockets close without affecting the replacement session", 
     await oldClosed;
 
     assert.equal(sessions.has(sessionId), true);
-    assert.equal(sentEvents.some((evt) => evt.channel === "netcatty:exit"), false);
-    assert.equal(sentEvents.some((evt) => evt.channel === "netcatty:telnet:echo-mode"), false);
+    assert.equal(sentEvents.some((evt) => evt.channel === "magiesTerminal:exit"), false);
+    assert.equal(sentEvents.some((evt) => evt.channel === "magiesTerminal:telnet:echo-mode"), false);
 
     newSocket.write(Buffer.from([IAC, WONT, OPT.ECHO]));
-    await waitFor(() => sentEvents.some((evt) => evt.channel === "netcatty:telnet:echo-mode"));
-    assert.deepEqual(sentEvents.find((evt) => evt.channel === "netcatty:telnet:echo-mode").payload, {
+    await waitFor(() => sentEvents.some((evt) => evt.channel === "magiesTerminal:telnet:echo-mode"));
+    assert.deepEqual(sentEvents.find((evt) => evt.channel === "magiesTerminal:telnet:echo-mode").payload, {
       sessionId,
       remoteEcho: false,
       localEcho: false,
@@ -272,7 +272,7 @@ test("replacing a Telnet session discards buffered output from the old session",
     assert.equal(destroyed, 1);
     assert.equal(cancelled, 1);
     assert.equal(released, 1);
-    assert.equal(sentEvents.some((evt) => evt.channel === "netcatty:data"), false);
+    assert.equal(sentEvents.some((evt) => evt.channel === "magiesTerminal:data"), false);
     assert.equal(sessions.get(sessionId)?.type, "telnet-native");
   } finally {
     terminalBridge.cleanupAllSessions();
@@ -329,14 +329,14 @@ test("Telnet paced backlog records buffered pressure while draining", async () =
     await waitFor(() => (sessions.get(sessionId)?.flowState?.bufferedBytes || 0) > 0);
     let flowState = sessions.get(sessionId)?.flowState;
     assert.equal(flowState?.appliedPause, true);
-    assert.deepEqual(sentEvents.filter((evt) => evt.channel === "netcatty:data"), []);
+    assert.deepEqual(sentEvents.filter((evt) => evt.channel === "magiesTerminal:data"), []);
 
     terminalBridge.setSessionFlowPaused(
       { sender: {} },
       { sessionId, paused: false },
     );
 
-    await waitFor(() => sentEvents.some((evt) => evt.channel === "netcatty:data"));
+    await waitFor(() => sentEvents.some((evt) => evt.channel === "magiesTerminal:data"));
     flowState = sessions.get(sessionId)?.flowState;
     assert.equal(flowState?.rendererPaused, false);
   } finally {

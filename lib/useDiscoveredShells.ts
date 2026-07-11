@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { netcattyBridge } from "../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../infrastructure/services/magiesTerminalBridge";
 
 let shellCache: DiscoveredShell[] | null = null;
 let shellPromise: Promise<DiscoveredShell[]> | null = null;
@@ -13,7 +13,7 @@ export function useDiscoveredShells(): DiscoveredShell[] {
       return;
     }
 
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (!bridge?.discoverShells) return;
 
     if (!shellPromise) {

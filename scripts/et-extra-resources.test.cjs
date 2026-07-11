@@ -7,7 +7,7 @@ const path = require("node:path");
 const { etExtraResources } = require("./et-extra-resources.cjs");
 
 function makeTmp(t) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-et-resources-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-et-resources-"));
   t.after(() => {
     if (process.cwd().startsWith(dir)) process.chdir(os.tmpdir());
     fs.rmSync(dir, { recursive: true, force: true });

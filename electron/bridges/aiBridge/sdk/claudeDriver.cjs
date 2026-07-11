@@ -7,14 +7,14 @@
  *   (SDK existsSync-checks it; PATH is not resolved — issue #205).
  * - Repairs ~/.claude.json before spawn (ensureClaudeConfig).
  * - Bypasses the SDK's built-in permission system and BLOCKS built-in
- *   side-effect tools so the agent can only act through the injected netcatty
+ *   side-effect tools so the agent can only act through the injected magiesTerminal
  *   MCP server (approval/scope/blocklist enforced there).
  * - Translates SDK messages into the canonical renderer event protocol.
  */
 const { mcpEnvPairsToObject } = require("./injectMcp.cjs");
 const { ensureClaudeConfig } = require("./claudeConfig.cjs");
 
-// Built-in tools that need interactive UI netcatty doesn't provide - they would
+// Built-in tools that need interactive UI magiesTerminal doesn't provide - they would
 // hang the turn waiting for a response, so they are blocked in BOTH modes.
 const UI_DISALLOWED_TOOLS = ["EnterPlanMode", "ExitPlanMode", "AskUserQuestion"];
 
@@ -35,9 +35,9 @@ function isClaudeImageAttachment(attachment) {
 
 /**
  * Resolve built-in tools for the active tool-integration mode.
- * - "skills": only Bash + Skill so the Netcatty CLI skill can run.
+ * - "skills": only Bash + Skill so the MagiesTerminal CLI skill can run.
  * - "mcp" (default): no Claude built-in local tools, forcing remote actions
- *   through netcatty MCP.
+ *   through magiesTerminal MCP.
  */
 function claudeBuiltinTools(toolIntegrationMode) {
   return toolIntegrationMode === "skills"
@@ -87,9 +87,9 @@ function buildClaudeQueryOptions({
     includePartialMessages: true,
     permissionMode: "bypassPermissions",
     // Required companion to permissionMode:'bypassPermissions' (the SDK rejects
-    // the bypass without it). Netcatty blocks Claude's direct local read/write
+    // the bypass without it). MagiesTerminal blocks Claude's direct local read/write
     // tools and routes remote-session actions through MCP or Skills+CLI, where
-    // Netcatty enforces approval/scope.
+    // MagiesTerminal enforces approval/scope.
     allowDangerouslySkipPermissions: true,
     tools: claudeBuiltinTools(toolIntegrationMode),
     disallowedTools: [...UI_DISALLOWED_TOOLS],

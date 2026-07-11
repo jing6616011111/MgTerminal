@@ -55,7 +55,7 @@ test("script run writes through terminal worker manager when enabled", async () 
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "script-1",
     scriptLabel: "Smoke",
     sessionId: "session-1",
@@ -66,7 +66,7 @@ test("script run writes through terminal worker manager when enabled", async () 
   assert.deepEqual(terminalWrites, []);
   // sendLine emits body then CR as separate keyboard-like writes (#1960).
   assert.equal(workerSends.length, 2);
-  assert.equal(workerSends[0].channel, "netcatty:write");
+  assert.equal(workerSends[0].channel, "magiesTerminal:write");
   assert.deepEqual(workerSends[0].payload, {
     sessionId: "session-1",
     data: "echo hi",
@@ -97,7 +97,7 @@ test("script run completion stores actual executed step count", async () => {
     getMainWindow: () => ({
       webContents: {
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
         },
@@ -110,7 +110,7 @@ test("script run completion stores actual executed step count", async () => {
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "script-loop",
     scriptLabel: "Loop",
     sessionId: "session-1",
@@ -152,7 +152,7 @@ test("same session script runs are serialized through the session mutex", async 
     },
   });
 
-  const runHandler = handlers.get("netcatty:script:run");
+  const runHandler = handlers.get("magiesTerminal:script:run");
   await Promise.all([
     runHandler({}, {
       scriptId: "slow",
@@ -199,15 +199,15 @@ test("stopping a script releases the session queue so it can run again", async (
     getMainWindow: () => ({
       webContents: {
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:dialog-request") {
+          if (channel === "magiesTerminal:script:dialog-request") {
             dialogRequestId = payload.requestId;
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:screen-snapshot-response")({}, {
+              handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                 requestId: payload.requestId,
                 snapshot: {
                   rows: 24,
@@ -228,7 +228,7 @@ test("stopping a script releases the session queue so it can run again", async (
     },
   });
 
-  const runHandler = handlers.get("netcatty:script:run");
+  const runHandler = handlers.get("magiesTerminal:script:run");
   const firstRunPromise = runHandler({}, {
     scriptId: "stopped",
     scriptLabel: "Stopped",
@@ -250,7 +250,7 @@ test("stopping a script releases the session queue so it can run again", async (
       ?.runId
   ));
 
-  assert.deepEqual(await handlers.get("netcatty:script:stop")({}, { runId: firstRunId }), { ok: true });
+  assert.deepEqual(await handlers.get("magiesTerminal:script:stop")({}, { runId: firstRunId }), { ok: true });
 
   await Promise.race([
     runHandler({}, {
@@ -269,7 +269,7 @@ test("stopping a script releases the session queue so it can run again", async (
   assert.ok(writes.some((data) => data.includes("second-run")));
   assert.ok(!writes.some((data) => data.includes("old-run")));
 
-  assert.deepEqual(await handlers.get("netcatty:script:dialog-response")({}, {
+  assert.deepEqual(await handlers.get("magiesTerminal:script:dialog-response")({}, {
     requestId: dialogRequestId,
     value: true,
   }), { ok: false });
@@ -307,18 +307,18 @@ test("late startup snapshots from a stopped script do not seed the next run", as
     getMainWindow: () => ({
       webContents: {
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:dialog-request") {
+          if (channel === "magiesTerminal:script:dialog-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:dialog-response")({}, {
+              handlers.get("magiesTerminal:script:dialog-response")({}, {
                 requestId: payload.requestId,
                 value: "abort",
               });
             });
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             snapshotRequestIds.push(payload.requestId);
           }
         },
@@ -331,7 +331,7 @@ test("late startup snapshots from a stopped script do not seed the next run", as
     },
   });
 
-  const runHandler = handlers.get("netcatty:script:run");
+  const runHandler = handlers.get("magiesTerminal:script:run");
   const firstRunPromise = runHandler({}, {
     scriptId: "stopped-before-snapshot",
     scriptLabel: "Stopped before snapshot",
@@ -347,7 +347,7 @@ test("late startup snapshots from a stopped script do not seed the next run", as
       .find((run) => run.scriptId === "stopped-before-snapshot" && run.status === "running")
       ?.runId
   ));
-  assert.deepEqual(await handlers.get("netcatty:script:stop")({}, { runId: firstRunId }), { ok: true });
+  assert.deepEqual(await handlers.get("magiesTerminal:script:stop")({}, { runId: firstRunId }), { ok: true });
   await firstRunPromise;
 
   const secondRunPromise = runHandler({}, {
@@ -366,7 +366,7 @@ test("late startup snapshots from a stopped script do not seed the next run", as
   });
 
   const secondSnapshotRequestId = await waitUntil(() => snapshotRequestIds[1]);
-  assert.deepEqual(await handlers.get("netcatty:script:screen-snapshot-response")({}, {
+  assert.deepEqual(await handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
     requestId: secondSnapshotRequestId,
     snapshot: {
       rows: 24,
@@ -377,7 +377,7 @@ test("late startup snapshots from a stopped script do not seed the next run", as
   }), { ok: true });
 
   await delay(30);
-  assert.deepEqual(await handlers.get("netcatty:script:screen-snapshot-response")({}, {
+  assert.deepEqual(await handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
     requestId: firstSnapshotRequestId,
     snapshot: {
       rows: 24,
@@ -418,15 +418,15 @@ test("completed scripts clear unawaited dialog requests without rejecting them a
     getMainWindow: () => ({
       webContents: {
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:dialog-request") {
+          if (channel === "magiesTerminal:script:dialog-request") {
             dialogRequestId = payload.requestId;
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:screen-snapshot-response")({}, {
+              handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                 requestId: payload.requestId,
                 snapshot: {
                   rows: 24,
@@ -447,7 +447,7 @@ test("completed scripts clear unawaited dialog requests without rejecting them a
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "unawaited-dialog",
     scriptLabel: "Unawaited dialog",
     sessionId: "session-unawaited-dialog",
@@ -463,7 +463,7 @@ test("completed scripts clear unawaited dialog requests without rejecting them a
   assert.deepEqual(closedSessions, []);
   const finalRun = sentRunUpdates.at(-1).find((run) => run.scriptId === "unawaited-dialog");
   assert.equal(finalRun.status, "completed");
-  assert.deepEqual(await handlers.get("netcatty:script:dialog-response")({}, {
+  assert.deepEqual(await handlers.get("magiesTerminal:script:dialog-response")({}, {
     requestId: dialogRequestId,
     value: true,
   }), { ok: false });
@@ -495,15 +495,15 @@ test("stopping scripts clears unawaited dialog requests without unhandled reject
       getMainWindow: () => ({
         webContents: {
           send(channel, payload) {
-            if (channel === "netcatty:script:runs-updated") {
+            if (channel === "magiesTerminal:script:runs-updated") {
               sentRunUpdates.push(payload.runs);
             }
-            if (channel === "netcatty:script:dialog-request") {
+            if (channel === "magiesTerminal:script:dialog-request") {
               dialogRequestId = payload.requestId;
             }
-            if (channel === "netcatty:script:screen-snapshot-request") {
+            if (channel === "magiesTerminal:script:screen-snapshot-request") {
               setImmediate(() => {
-                handlers.get("netcatty:script:screen-snapshot-response")({}, {
+                handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                   requestId: payload.requestId,
                   snapshot: {
                     rows: 24,
@@ -524,7 +524,7 @@ test("stopping scripts clears unawaited dialog requests without unhandled reject
       },
     });
 
-    const runPromise = handlers.get("netcatty:script:run")({}, {
+    const runPromise = handlers.get("magiesTerminal:script:run")({}, {
       scriptId: "stop-unawaited-dialog",
       scriptLabel: "Stop unawaited dialog",
       sessionId: "session-stop-unawaited-dialog",
@@ -543,12 +543,12 @@ test("stopping scripts clears unawaited dialog requests without unhandled reject
         ?.runId
     ));
 
-    assert.deepEqual(await handlers.get("netcatty:script:stop")({}, { runId }), { ok: true });
+    assert.deepEqual(await handlers.get("magiesTerminal:script:stop")({}, { runId }), { ok: true });
     await runPromise;
     await delay(100);
 
     assert.equal(unhandled.length, 0);
-    assert.deepEqual(await handlers.get("netcatty:script:dialog-response")({}, {
+    assert.deepEqual(await handlers.get("magiesTerminal:script:dialog-response")({}, {
       requestId: dialogRequestId,
       value: true,
     }), { ok: false });
@@ -583,14 +583,14 @@ test("stopping scripts clears unawaited screen reads without unhandled rejection
       getMainWindow: () => ({
         webContents: {
           send(channel, payload) {
-            if (channel === "netcatty:script:runs-updated") {
+            if (channel === "magiesTerminal:script:runs-updated") {
               sentRunUpdates.push(payload.runs);
             }
-            if (channel === "netcatty:script:screen-snapshot-request") {
+            if (channel === "magiesTerminal:script:screen-snapshot-request") {
               snapshotRequestIds.push(payload.requestId);
               if (snapshotRequestIds.length === 1) {
                 setImmediate(() => {
-                  handlers.get("netcatty:script:screen-snapshot-response")({}, {
+                  handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                     requestId: payload.requestId,
                     snapshot: {
                       rows: 24,
@@ -612,7 +612,7 @@ test("stopping scripts clears unawaited screen reads without unhandled rejection
       },
     });
 
-    const runPromise = handlers.get("netcatty:script:run")({}, {
+    const runPromise = handlers.get("magiesTerminal:script:run")({}, {
       scriptId: "stop-unawaited-screen-read",
       scriptLabel: "Stop unawaited screen read",
       sessionId: "session-stop-unawaited-screen-read",
@@ -631,12 +631,12 @@ test("stopping scripts clears unawaited screen reads without unhandled rejection
         ?.runId
     ));
 
-    assert.deepEqual(await handlers.get("netcatty:script:stop")({}, { runId }), { ok: true });
+    assert.deepEqual(await handlers.get("magiesTerminal:script:stop")({}, { runId }), { ok: true });
     await runPromise;
     await delay(100);
 
     assert.equal(unhandled.length, 0);
-    assert.deepEqual(await handlers.get("netcatty:script:screen-snapshot-response")({}, {
+    assert.deepEqual(await handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
       requestId: snapshotRequestIds[1],
       snapshot: {
         rows: 24,
@@ -654,7 +654,7 @@ test("stopping a script releases its session log so the next run can start one",
   const handlers = new Map();
   const sentRunUpdates = [];
   const sessionId = "session-stop-log-cleanup";
-  const logDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-script-log-test-"));
+  const logDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-script-log-test-"));
 
   try {
     scriptBridge.init({
@@ -672,12 +672,12 @@ test("stopping a script releases its session log so the next run can start one",
       getMainWindow: () => ({
         webContents: {
           send(channel, payload) {
-            if (channel === "netcatty:script:runs-updated") {
+            if (channel === "magiesTerminal:script:runs-updated") {
               sentRunUpdates.push(payload.runs);
             }
-            if (channel === "netcatty:script:screen-snapshot-request") {
+            if (channel === "magiesTerminal:script:screen-snapshot-request") {
               setImmediate(() => {
-                handlers.get("netcatty:script:screen-snapshot-response")({}, {
+                handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                   requestId: payload.requestId,
                   snapshot: {
                     rows: 24,
@@ -698,7 +698,7 @@ test("stopping a script releases its session log so the next run can start one",
       },
     });
 
-    const runHandler = handlers.get("netcatty:script:run");
+    const runHandler = handlers.get("magiesTerminal:script:run");
     const firstLogPath = path.join(logDir, "first.log");
     const firstRunPromise = runHandler({}, {
       scriptId: "stopped-log-run",
@@ -723,7 +723,7 @@ test("stopping a script releases its session log so the next run can start one",
         ?.runId
     ));
 
-    assert.deepEqual(await handlers.get("netcatty:script:stop")({}, { runId: firstRunId }), { ok: true });
+    assert.deepEqual(await handlers.get("magiesTerminal:script:stop")({}, { runId: firstRunId }), { ok: true });
     await firstRunPromise;
     await waitUntil(() => !sessionLogStreamManager.hasStream(sessionId));
 
@@ -752,7 +752,7 @@ test("late stopLog from a stopped script does not close the next run log", async
   const handlers = new Map();
   const sentRunUpdates = [];
   const sessionId = "session-stale-stop-log";
-  const logDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-script-stale-log-test-"));
+  const logDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-script-stale-log-test-"));
 
   try {
     scriptBridge.init({
@@ -770,12 +770,12 @@ test("late stopLog from a stopped script does not close the next run log", async
       getMainWindow: () => ({
         webContents: {
           send(channel, payload) {
-            if (channel === "netcatty:script:runs-updated") {
+            if (channel === "magiesTerminal:script:runs-updated") {
               sentRunUpdates.push(payload.runs);
             }
-            if (channel === "netcatty:script:screen-snapshot-request") {
+            if (channel === "magiesTerminal:script:screen-snapshot-request") {
               setImmediate(() => {
-                handlers.get("netcatty:script:screen-snapshot-response")({}, {
+                handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                   requestId: payload.requestId,
                   snapshot: {
                     rows: 24,
@@ -796,7 +796,7 @@ test("late stopLog from a stopped script does not close the next run log", async
       },
     });
 
-    const runHandler = handlers.get("netcatty:script:run");
+    const runHandler = handlers.get("magiesTerminal:script:run");
     const firstRunPromise = runHandler({}, {
       scriptId: "stale-stop-log-first",
       scriptLabel: "Stale stopLog first",
@@ -820,7 +820,7 @@ test("late stopLog from a stopped script does not close the next run log", async
         ?.runId
     ));
 
-    assert.deepEqual(await handlers.get("netcatty:script:stop")({}, { runId: firstRunId }), { ok: true });
+    assert.deepEqual(await handlers.get("magiesTerminal:script:stop")({}, { runId: firstRunId }), { ok: true });
     await firstRunPromise;
     await waitUntil(() => !sessionLogStreamManager.hasStream(sessionId));
 
@@ -877,7 +877,7 @@ test("script run treats worker-managed sessions as connected", async () => {
     getMainWindow: () => ({
       webContents: {
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
         },
@@ -890,7 +890,7 @@ test("script run treats worker-managed sessions as connected", async () => {
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "connected-check",
     scriptLabel: "Connected check",
     sessionId: "session-worker",
@@ -928,7 +928,7 @@ test("script run uses renderer sessionMeta when main-process session map is empt
     getMainWindow: () => ({
       webContents: {
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
         },
@@ -941,7 +941,7 @@ test("script run uses renderer sessionMeta when main-process session map is empt
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "renderer-meta",
     scriptLabel: "Renderer meta",
     sessionId: "session-renderer",
@@ -986,12 +986,12 @@ test("script run sends form dialog requests and resolves object responses", asyn
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:screen-snapshot-response")({}, {
+              handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                 requestId: payload.requestId,
                 snapshot: {
                   rows: 24,
@@ -1002,10 +1002,10 @@ test("script run sends form dialog requests and resolves object responses", asyn
               });
             });
           }
-          if (channel === "netcatty:script:dialog-request") {
+          if (channel === "magiesTerminal:script:dialog-request") {
             dialogRequest = payload;
             setImmediate(() => {
-              handlers.get("netcatty:script:dialog-response")({}, {
+              handlers.get("magiesTerminal:script:dialog-response")({}, {
                 requestId: payload.requestId,
                 value: { env: "prod", restart: true, mode: "safe" },
               });
@@ -1021,7 +1021,7 @@ test("script run sends form dialog requests and resolves object responses", asyn
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "form-dialog",
     scriptLabel: "Form dialog",
     sessionId,
@@ -1083,12 +1083,12 @@ test("script run treats cancelled form dialogs as script failures", async () => 
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:screen-snapshot-response")({}, {
+              handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                 requestId: payload.requestId,
                 snapshot: {
                   rows: 24,
@@ -1099,9 +1099,9 @@ test("script run treats cancelled form dialogs as script failures", async () => 
               });
             });
           }
-          if (channel === "netcatty:script:dialog-request") {
+          if (channel === "magiesTerminal:script:dialog-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:dialog-response")({}, {
+              handlers.get("magiesTerminal:script:dialog-response")({}, {
                 requestId: payload.requestId,
                 cancelled: true,
               });
@@ -1117,7 +1117,7 @@ test("script run treats cancelled form dialogs as script failures", async () => 
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "form-cancel",
     scriptLabel: "Form cancel",
     sessionId,
@@ -1163,12 +1163,12 @@ test("script waitFor matches text already visible on the startup screen", async 
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:screen-snapshot-response")({}, {
+              handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                 requestId: payload.requestId,
                 snapshot: {
                   rows: 24,
@@ -1192,7 +1192,7 @@ test("script waitFor matches text already visible on the startup screen", async 
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "visible-output",
     scriptLabel: "Visible output",
     sessionId,
@@ -1235,12 +1235,12 @@ test("script waitFor ignores keywords that have scrolled off the visible screen"
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:screen-snapshot-response")({}, {
+              handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                 requestId: payload.requestId,
                 snapshot: {
                   rows: 24,
@@ -1251,9 +1251,9 @@ test("script waitFor ignores keywords that have scrolled off the visible screen"
               });
             });
           }
-          if (channel === "netcatty:script:dialog-request") {
+          if (channel === "magiesTerminal:script:dialog-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:dialog-response")({}, {
+              handlers.get("magiesTerminal:script:dialog-response")({}, {
                 requestId: payload.requestId,
                 value: "abort",
               });
@@ -1269,7 +1269,7 @@ test("script waitFor ignores keywords that have scrolled off the visible screen"
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "scrolled-off-output",
     scriptLabel: "Scrolled off output",
     sessionId,
@@ -1315,7 +1315,7 @@ test("script waitFor seeds buffer-fallback so connection banners stay waitable (
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
         },
@@ -1328,7 +1328,7 @@ test("script waitFor seeds buffer-fallback so connection banners stay waitable (
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "buffer-fallback",
     scriptLabel: "Buffer fallback",
     sessionId,
@@ -1372,10 +1372,10 @@ test("script waitFor keeps output that arrives during empty/fallback snapshot sy
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             snapshotRequestId = payload.requestId;
           }
         },
@@ -1388,7 +1388,7 @@ test("script waitFor keeps output that arrives during empty/fallback snapshot sy
     },
   });
 
-  const runPromise = handlers.get("netcatty:script:run")({}, {
+  const runPromise = handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "empty-snapshot-race",
     scriptLabel: "Empty snapshot race",
     sessionId,
@@ -1404,7 +1404,7 @@ test("script waitFor keeps output that arrives during empty/fallback snapshot sy
   // Live output during the snapshot wait must stay matchable even when the
   // snapshot is empty / falls through to the consumed-baseline path.
   scriptBridge.appendSessionOutput(sessionId, "fresh READY\n");
-  handlers.get("netcatty:script:screen-snapshot-response")({}, {
+  handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
     requestId: snapshotRequestId,
     snapshot: {
       rows: 24,
@@ -1479,12 +1479,12 @@ test("script waitForRegex matches bastion menu already on screen at script start
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:screen-snapshot-response")({}, {
+              handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                 requestId: payload.requestId,
                 snapshot: {
                   rows: 40,
@@ -1505,7 +1505,7 @@ test("script waitForRegex matches bastion menu already on screen at script start
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "bastion-menu",
     scriptLabel: "Bastion menu",
     sessionId,
@@ -1561,10 +1561,10 @@ test("script waitForRegex keeps visible menu when BEL arrives during startup sna
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             snapshotRequestId = payload.requestId;
           }
         },
@@ -1577,7 +1577,7 @@ test("script waitForRegex keeps visible menu when BEL arrives during startup sna
     },
   });
 
-  const runPromise = handlers.get("netcatty:script:run")({}, {
+  const runPromise = handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "bastion-bel",
     scriptLabel: "Bastion BEL during sync",
     sessionId,
@@ -1593,7 +1593,7 @@ test("script waitForRegex keeps visible menu when BEL arrives during startup sna
   // Bastion keepalives / BEL can land while the snapshot IPC is in flight.
   scriptBridge.appendSessionOutput(sessionId, "\x07");
   scriptBridge.appendSessionOutput(sessionId, "\x07");
-  handlers.get("netcatty:script:screen-snapshot-response")({}, {
+  handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
     requestId: snapshotRequestId,
     snapshot: {
       rows: 40,
@@ -1637,15 +1637,15 @@ test("script waitFor sees output that arrives while startup snapshot sync is pen
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             snapshotRequestId = payload.requestId;
           }
-          if (channel === "netcatty:script:dialog-request") {
+          if (channel === "magiesTerminal:script:dialog-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:dialog-response")({}, {
+              handlers.get("magiesTerminal:script:dialog-response")({}, {
                 requestId: payload.requestId,
                 value: "abort",
               });
@@ -1661,7 +1661,7 @@ test("script waitFor sees output that arrives while startup snapshot sync is pen
     },
   });
 
-  const runPromise = handlers.get("netcatty:script:run")({}, {
+  const runPromise = handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "output-during-sync",
     scriptLabel: "Output during sync",
     sessionId,
@@ -1675,7 +1675,7 @@ test("script waitFor sees output that arrives while startup snapshot sync is pen
   await delay(20);
   assert.ok(snapshotRequestId);
   scriptBridge.appendSessionOutput(sessionId, "fresh READY\n");
-  handlers.get("netcatty:script:screen-snapshot-response")({}, {
+  handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
     requestId: snapshotRequestId,
     snapshot: {
       rows: 24,
@@ -1718,12 +1718,12 @@ test("script waitForPrompt can still use the current startup prompt", async () =
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:screen-snapshot-response")({}, {
+              handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                 requestId: payload.requestId,
                 snapshot: {
                   rows: 24,
@@ -1744,7 +1744,7 @@ test("script waitForPrompt can still use the current startup prompt", async () =
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "startup-prompt",
     scriptLabel: "Startup prompt",
     sessionId,
@@ -1789,12 +1789,12 @@ test("script sendLine invalidates startup seed before later waits", async () => 
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:screen-snapshot-response")({}, {
+              handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                 requestId: payload.requestId,
                 snapshot: {
                   rows: 24,
@@ -1805,9 +1805,9 @@ test("script sendLine invalidates startup seed before later waits", async () => 
               });
             });
           }
-          if (channel === "netcatty:script:dialog-request") {
+          if (channel === "magiesTerminal:script:dialog-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:dialog-response")({}, {
+              handlers.get("magiesTerminal:script:dialog-response")({}, {
                 requestId: payload.requestId,
                 value: "abort",
               });
@@ -1823,7 +1823,7 @@ test("script sendLine invalidates startup seed before later waits", async () => 
     },
   });
 
-  const runPromise = handlers.get("netcatty:script:run")({}, {
+  const runPromise = handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "send-invalidates-seed",
     scriptLabel: "Send invalidates seed",
     sessionId,
@@ -1890,12 +1890,12 @@ test("script sendLine keeps prompts that arrive between body and CR waitable", a
       webContents: {
         id: 1,
         send(channel, payload) {
-          if (channel === "netcatty:script:runs-updated") {
+          if (channel === "magiesTerminal:script:runs-updated") {
             sentRunUpdates.push(payload.runs);
           }
-          if (channel === "netcatty:script:screen-snapshot-request") {
+          if (channel === "magiesTerminal:script:screen-snapshot-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:screen-snapshot-response")({}, {
+              handlers.get("magiesTerminal:script:screen-snapshot-response")({}, {
                 requestId: payload.requestId,
                 snapshot: {
                   rows: 24,
@@ -1906,9 +1906,9 @@ test("script sendLine keeps prompts that arrive between body and CR waitable", a
               });
             });
           }
-          if (channel === "netcatty:script:dialog-request") {
+          if (channel === "magiesTerminal:script:dialog-request") {
             setImmediate(() => {
-              handlers.get("netcatty:script:dialog-response")({}, {
+              handlers.get("magiesTerminal:script:dialog-response")({}, {
                 requestId: payload.requestId,
                 value: "abort",
               });
@@ -1924,7 +1924,7 @@ test("script sendLine keeps prompts that arrive between body and CR waitable", a
     },
   });
 
-  await handlers.get("netcatty:script:run")({}, {
+  await handlers.get("magiesTerminal:script:run")({}, {
     scriptId: "sendline-gap",
     scriptLabel: "SendLine gap prompt",
     sessionId,

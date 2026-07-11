@@ -108,7 +108,7 @@ test("runOsc7SetupAction configures in the background and only sends a small rel
       setupArgs = { sessionId, command };
       return {
         success: true,
-        stdout: "__NETCATTY_OSC7_SETUP_SHELL__=bash\n__NETCATTY_OSC7_SETUP_CONFIG__=/home/me/.bashrc\n\u001b]7;file://host/home/me\u0007",
+        stdout: "__MAGIES_TERMINAL_OSC7_SETUP_SHELL__=bash\n__MAGIES_TERMINAL_OSC7_SETUP_CONFIG__=/home/me/.bashrc\n\u001b]7;file://host/home/me\u0007",
         stderr: "",
         code: 0,
       };
@@ -146,14 +146,14 @@ test("runOsc7SetupAction stages the script and types a short runner for user-swi
         return {
           success: false,
           stdout: `${OSC7_SETUP_OTHER_USER_MARKER}bash\n`,
-          stderr: "Netcatty OSC 7 setup: the active terminal shell belongs to another user\n",
+          stderr: "MagiesTerminal OSC 7 setup: the active terminal shell belongs to another user\n",
           code: 5,
-          error: "Netcatty OSC 7 setup: the active terminal shell belongs to another user",
+          error: "MagiesTerminal OSC 7 setup: the active terminal shell belongs to another user",
         };
       }
       return {
         success: true,
-        stdout: `${OSC7_SETUP_STAGED_MARKER}/tmp/.netcatty-osc7-setup.abc123\n`,
+        stdout: `${OSC7_SETUP_STAGED_MARKER}/tmp/.magiesTerminal-osc7-setup.abc123\n`,
         stderr: "",
         code: 0,
       };
@@ -173,8 +173,8 @@ test("runOsc7SetupAction stages the script and types a short runner for user-swi
   assert.equal(writes.length, 1);
   assert.equal(writes[0].sessionId, "session-1");
   assert.equal(writes[0].automated, true);
-  assert.match(writes[0].data, /NETCATTY_OSC7_FORCE_SHELL=bash/);
-  assert.match(writes[0].data, /'\/tmp\/\.netcatty-osc7-setup\.abc123'/);
+  assert.match(writes[0].data, /MAGIES_TERMINAL_OSC7_FORCE_SHELL=bash/);
+  assert.match(writes[0].data, /'\/tmp\/\.magiesTerminal-osc7-setup\.abc123'/);
   assert.match(writes[0].data, /\.bashrc/);
   // Single line: one history entry, so the appended bash cleanup deletes it.
   assert.doesNotMatch(writes[0].data.slice(0, -1), /[\r\n]/);
@@ -263,7 +263,7 @@ test("runOsc7SetupAction fails without reload metadata instead of reporting a pa
 });
 
 test("buildOsc7SetupCommand configures bash once and prompt loading stays idempotent", () => {
-  withTempHome("netcatty-osc7-bash-", (home) => {
+  withTempHome("magiesTerminal-osc7-bash-", (home) => {
     runSetup({ HOME: home, SHELL: "/bin/bash" });
     runSetup({ HOME: home, SHELL: "/bin/bash" });
 
@@ -286,7 +286,7 @@ test("buildOsc7SetupCommand configures bash once and prompt loading stays idempo
 });
 
 test("buildOsc7SetupCommand preserves setup failure status", () => {
-  withTempHome("netcatty-osc7-unsupported-shell-", (home) => {
+  withTempHome("magiesTerminal-osc7-unsupported-shell-", (home) => {
     const result = spawnSync("/bin/sh", ["-c", buildOsc7SetupCommand()], {
       env: {
         ...process.env,
@@ -304,14 +304,14 @@ test("buildOsc7SetupCommand preserves setup failure status", () => {
 });
 
 test("buildOsc7SetupExecCommand configures bash through a background exec shell", () => {
-  withTempHome("netcatty-osc7-exec-bash-", (home) => {
+  withTempHome("magiesTerminal-osc7-exec-bash-", (home) => {
     const output = execFileSync("/bin/sh", ["-c", buildOsc7SetupExecCommand()], {
       env: { ...process.env, HOME: home, SHELL: "/bin/bash" },
       stdio: "pipe",
     }).toString("utf8");
 
-    assert.match(output, /__NETCATTY_OSC7_SETUP_SHELL__=bash/);
-    assert.match(output, new RegExp(`__NETCATTY_OSC7_SETUP_CONFIG__=${home.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/\\.bashrc`));
+    assert.match(output, /__MAGIES_TERMINAL_OSC7_SETUP_SHELL__=bash/);
+    assert.match(output, new RegExp(`__MAGIES_TERMINAL_OSC7_SETUP_CONFIG__=${home.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/\\.bashrc`));
     const bashrc = readFileSync(join(home, ".bashrc"), "utf8");
     assert.equal(markerCount(bashrc), 2);
   });
@@ -333,7 +333,7 @@ const withStagedSetupScript = (fn: (scriptPath: string) => void) => {
 test("buildOsc7TypedSetupCommand stays a single line for reliable history cleanup", async () => {
   const sha256 = await getOsc7StagedScriptSha256();
   for (const shell of ["bash", "zsh", "fish"] as const) {
-    const command = buildOsc7TypedSetupCommand(shell, "/tmp/.netcatty-osc7-setup.abc123", sha256);
+    const command = buildOsc7TypedSetupCommand(shell, "/tmp/.magiesTerminal-osc7-setup.abc123", sha256);
     assert.ok(command.endsWith("\r"), shell);
     assert.doesNotMatch(command.slice(0, -1), /[\r\n]/, shell);
   }
@@ -341,7 +341,7 @@ test("buildOsc7TypedSetupCommand stays a single line for reliable history cleanu
 
 test("buildOsc7TypedSetupCommand configures bash and removes the staged script", async () => {
   const sha256 = await getOsc7StagedScriptSha256();
-  withTempHome("netcatty-osc7-typed-bash-", (home) => {
+  withTempHome("magiesTerminal-osc7-typed-bash-", (home) => {
     withStagedSetupScript((scriptPath) => {
       const command = buildOsc7TypedSetupCommand("bash", scriptPath, sha256).replace(/\r/g, "\n");
       const output = execFileSync("/bin/bash", ["-c", command], {
@@ -352,7 +352,7 @@ test("buildOsc7TypedSetupCommand configures bash and removes the staged script",
       const bashrc = readFileSync(join(home, ".bashrc"), "utf8");
       assert.equal(markerCount(bashrc), 2);
       assert.match(bashrc, /PROMPT_COMMAND/);
-      assert.doesNotMatch(output, /__NETCATTY_OSC7_SETUP_SHELL__|__NETCATTY_OSC7_SETUP_CONFIG__/);
+      assert.doesNotMatch(output, /__MAGIES_TERMINAL_OSC7_SETUP_SHELL__|__MAGIES_TERMINAL_OSC7_SETUP_CONFIG__/);
       assert.ok(output.includes("\u001b]7;file://"), "expected OSC 7 output");
       assert.equal(existsSync(scriptPath), false, "staged script should be removed");
     });
@@ -361,7 +361,7 @@ test("buildOsc7TypedSetupCommand configures bash and removes the staged script",
 
 test("buildOsc7TypedSetupCommand refuses to run a tampered staged script", async () => {
   const sha256 = await getOsc7StagedScriptSha256();
-  withTempHome("netcatty-osc7-typed-tampered-", (home) => {
+  withTempHome("magiesTerminal-osc7-typed-tampered-", (home) => {
     withStagedSetupScript((scriptPath) => {
       writeFileSync(scriptPath, `echo pwned > "$HOME/pwned"\n`);
       const command = buildOsc7TypedSetupCommand("bash", scriptPath, sha256).replace(/\r/g, "\n");
@@ -381,7 +381,7 @@ test("buildOsc7TypedSetupCommand refuses to run a tampered staged script", async
 
 test("buildOsc7TypedSetupCommand does not leave the typed runner in bash history", async () => {
   const sha256 = await getOsc7StagedScriptSha256();
-  withTempHome("netcatty-osc7-typed-history-bash-", (home) => {
+  withTempHome("magiesTerminal-osc7-typed-history-bash-", (home) => {
     withStagedSetupScript((scriptPath) => {
       const dumpPath = join(home, "bash-history-dump");
       const output = runInteractiveHistoryProbe({
@@ -398,14 +398,14 @@ test("buildOsc7TypedSetupCommand does not leave the typed runner in bash history
       });
 
       assert.match(output, /echo keepme/);
-      assert.doesNotMatch(output, /NETCATTY_OSC7_FORCE_SHELL|__netcatty_osc7|history -d/);
+      assert.doesNotMatch(output, /MAGIES_TERMINAL_OSC7_FORCE_SHELL|__magiesTerminal_osc7|history -d/);
     });
   });
 });
 
 test("buildOsc7TypedSetupCommand stays idempotent for bash", async () => {
   const sha256 = await getOsc7StagedScriptSha256();
-  withTempHome("netcatty-osc7-typed-bash-idempotent-", (home) => {
+  withTempHome("magiesTerminal-osc7-typed-bash-idempotent-", (home) => {
     const env = { ...process.env, HOME: home, SHELL: "/bin/bash", ZDOTDIR: "", XDG_CONFIG_HOME: "" };
     for (let run = 0; run < 2; run += 1) {
       withStagedSetupScript((scriptPath) => {
@@ -426,7 +426,7 @@ test("buildOsc7TypedSetupCommand honors shell-local unexported zsh ZDOTDIR", asy
   }
 
   const sha256 = await getOsc7StagedScriptSha256();
-  withTempHome("netcatty-osc7-typed-zsh-", (home) => {
+  withTempHome("magiesTerminal-osc7-typed-zsh-", (home) => {
     const zdotdir = join(home, ".config", "zsh");
     withStagedSetupScript((scriptPath) => {
       const command = buildOsc7TypedSetupCommand("zsh", scriptPath, sha256).replace(/\r/g, "\n");
@@ -454,7 +454,7 @@ test("buildOsc7TypedSetupCommand configures fish through its typed fallback", as
   }
 
   const sha256 = await getOsc7StagedScriptSha256();
-  withTempHome("netcatty-osc7-typed-fish-", (home) => {
+  withTempHome("magiesTerminal-osc7-typed-fish-", (home) => {
     withStagedSetupScript((scriptPath) => {
       const command = buildOsc7TypedSetupCommand("fish", scriptPath, sha256).replace(/\r/g, "\n");
       const output = execFileSync(fishPath, ["-c", command], {
@@ -473,7 +473,7 @@ test("buildOsc7TypedSetupCommand configures fish through its typed fallback", as
 test("buildOsc7SetupExecCommand carries the expected cwd for current-tab matching", () => {
   const command = buildOsc7SetupExecCommand("/srv/app's cwd");
 
-  assert.match(command, /NETCATTY_OSC7_EXPECTED_CWD='\/srv\/app'\\''s cwd'/);
+  assert.match(command, /MAGIES_TERMINAL_OSC7_EXPECTED_CWD='\/srv\/app'\\''s cwd'/);
 });
 
 test("buildOsc7SetupExecCommand honors exported zsh ZDOTDIR fallback", (t) => {
@@ -483,7 +483,7 @@ test("buildOsc7SetupExecCommand honors exported zsh ZDOTDIR fallback", (t) => {
     return;
   }
 
-  withTempHome("netcatty-osc7-exec-zsh-", (home) => {
+  withTempHome("magiesTerminal-osc7-exec-zsh-", (home) => {
     const zdotdir = join(home, ".config", "zsh");
     const output = execFileSync("/bin/sh", ["-c", buildOsc7SetupExecCommand()], {
       env: { ...process.env, HOME: home, SHELL: zshPath, ZDOTDIR: zdotdir },
@@ -491,8 +491,8 @@ test("buildOsc7SetupExecCommand honors exported zsh ZDOTDIR fallback", (t) => {
     }).toString("utf8");
 
     const zshrcPath = join(zdotdir, ".zshrc");
-    assert.match(output, /__NETCATTY_OSC7_SETUP_SHELL__=zsh/);
-    assert.match(output, new RegExp(`__NETCATTY_OSC7_SETUP_CONFIG__=${zshrcPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
+    assert.match(output, /__MAGIES_TERMINAL_OSC7_SETUP_SHELL__=zsh/);
+    assert.match(output, new RegExp(`__MAGIES_TERMINAL_OSC7_SETUP_CONFIG__=${zshrcPath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
     assert.equal(markerCount(readFileSync(zshrcPath, "utf8")), 2);
   });
 });
@@ -504,7 +504,7 @@ test("buildOsc7SetupCommand honors zsh ZDOTDIR captured from the current shell",
     return;
   }
 
-  withTempHome("netcatty-osc7-zsh-", (home) => {
+  withTempHome("magiesTerminal-osc7-zsh-", (home) => {
     const zdotdir = join(home, ".config", "zsh");
     runSetup({ HOME: home, SHELL: zshPath, ZDOTDIR: zdotdir });
     runSetup({ HOME: home, SHELL: zshPath, ZDOTDIR: zdotdir });
@@ -523,7 +523,7 @@ test("buildOsc7SetupCommand honors zsh ZDOTDIR captured from the current shell",
 });
 
 test("buildOsc7SetupCommand configures fish once with valid fish syntax", () => {
-  withTempHome("netcatty-osc7-fish-", (home) => {
+  withTempHome("magiesTerminal-osc7-fish-", (home) => {
     const fishPath = existingShells(["/opt/homebrew/bin/fish", "/usr/bin/fish"])[0] ?? "/usr/bin/fish";
     runSetup({ HOME: home, SHELL: fishPath });
     runSetup({ HOME: home, SHELL: fishPath });
@@ -535,7 +535,7 @@ test("buildOsc7SetupCommand configures fish once with valid fish syntax", () => 
 
     if (existsSync(fishPath)) {
       execFileSync(fishPath, ["-n", fishConfigPath], { stdio: "pipe" });
-      execFileSync(fishPath, ["-c", `source ${JSON.stringify(fishConfigPath)}; functions -q __netcatty_osc7_cwd`], {
+      execFileSync(fishPath, ["-c", `source ${JSON.stringify(fishConfigPath)}; functions -q __magiesTerminal_osc7_cwd`], {
         env: { ...process.env, HOME: home },
         stdio: "pipe",
       });
@@ -551,7 +551,7 @@ test("buildOsc7SetupCommand can be pasted into supported shells", () => {
   }
 
   for (const shellPath of shells) {
-    withTempHome(`netcatty-osc7-${basename(shellPath)}-`, (home) => {
+    withTempHome(`magiesTerminal-osc7-${basename(shellPath)}-`, (home) => {
       const zdotdir = join(home, "zdot");
       const xdgConfigHome = join(home, "xdg");
       const specialCwd = join(home, "space dir#frag?query%pct");
@@ -584,7 +584,7 @@ test("buildOsc7SetupCommand can be pasted into supported shells", () => {
 });
 
 test("buildOsc7ReloadCommand does not leave reload command in bash history", () => {
-  withTempHome("netcatty-osc7-reload-history-bash-", (home) => {
+  withTempHome("magiesTerminal-osc7-reload-history-bash-", (home) => {
     const bashrcPath = join(home, ".bashrc");
     const dumpPath = join(home, "bash-history-dump");
     mkdirSync(home, { recursive: true });
@@ -609,12 +609,12 @@ test("buildOsc7ReloadCommand does not leave reload command in bash history", () 
     });
 
     assert.match(output, /echo keepme/);
-    assert.doesNotMatch(output, /osc7_cwd|source .*\.bashrc|__netcatty_osc7|history -d/);
+    assert.doesNotMatch(output, /osc7_cwd|source .*\.bashrc|__magiesTerminal_osc7|history -d/);
   });
 });
 
 test("buildOsc7ReloadCommand preserves bash nounset", () => {
-  withTempHome("netcatty-osc7-reload-nounset-bash-", (home) => {
+  withTempHome("magiesTerminal-osc7-reload-nounset-bash-", (home) => {
     const bashrcPath = join(home, ".bashrc");
     const optionDumpPath = join(home, "bash-options-dump");
     mkdirSync(home, { recursive: true });
@@ -642,7 +642,7 @@ test("buildOsc7ReloadCommand preserves bash nounset", () => {
 });
 
 test("buildOsc7ReloadCommand does not delete bash history when reload is not recorded", () => {
-  withTempHome("netcatty-osc7-reload-ignored-history-bash-", (home) => {
+  withTempHome("magiesTerminal-osc7-reload-ignored-history-bash-", (home) => {
     const bashrcPath = join(home, ".bashrc");
     const dumpPath = join(home, "bash-history-dump");
     mkdirSync(home, { recursive: true });
@@ -656,19 +656,19 @@ test("buildOsc7ReloadCommand does not delete bash history when reload is not rec
       env: {
         HOME: home,
         HISTFILE: join(home, ".bash_history"),
-        HISTIGNORE: "*__netcatty_osc7_history_cleanup_marker__=1*",
+        HISTIGNORE: "*__magiesTerminal_osc7_history_cleanup_marker__=1*",
         SHELL: "/bin/bash",
       },
       input: `echo keepme\n${buildOsc7ReloadCommand({ shell: "bash", configPath: bashrcPath }) ?? ""}`,
     });
 
     assert.match(output, /echo keepme/);
-    assert.doesNotMatch(output, /osc7_cwd|source .*\.bashrc|__netcatty_osc7|history -d/);
+    assert.doesNotMatch(output, /osc7_cwd|source .*\.bashrc|__magiesTerminal_osc7|history -d/);
   });
 });
 
 test("buildOsc7ReloadCommand bypasses custom bash history wrappers", () => {
-  withTempHome("netcatty-osc7-reload-wrapped-history-bash-", (home) => {
+  withTempHome("magiesTerminal-osc7-reload-wrapped-history-bash-", (home) => {
     const bashrcPath = join(home, ".bashrc");
     const dumpPath = join(home, "bash-history-dump");
     mkdirSync(home, { recursive: true });
@@ -692,13 +692,13 @@ test("buildOsc7ReloadCommand bypasses custom bash history wrappers", () => {
     });
 
     assert.match(output, /echo keepme/);
-    assert.doesNotMatch(output, /osc7_cwd|source .*\.bashrc|__netcatty_osc7|history -d/);
+    assert.doesNotMatch(output, /osc7_cwd|source .*\.bashrc|__magiesTerminal_osc7|history -d/);
   });
 });
 
 test("buildOsc7SetupCommand runs under strict unset-variable mode", () => {
   for (const shellPath of existingShells(["/bin/bash", "/bin/zsh"])) {
-    withTempHome(`netcatty-osc7-strict-${basename(shellPath)}-`, (home) => {
+    withTempHome(`magiesTerminal-osc7-strict-${basename(shellPath)}-`, (home) => {
       execFileSync(shellPath, ["-uc", buildOsc7SetupCommand()], {
         env: {
           ...process.env,

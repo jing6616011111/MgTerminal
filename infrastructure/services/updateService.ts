@@ -6,14 +6,14 @@
  * 2. electron-updater bridge (used by SettingsSystemTab for download/install)
  */
 
-import { netcattyBridge } from "./netcattyBridge";
+import { magiesTerminalBridge } from "./magiesTerminalBridge";
 
 // ================================
 // Part 1: GitHub API Version Check
 // ================================
 
-const GITHUB_API_URL = 'https://api.github.com/repos/binaricat/Netcatty/releases/latest';
-const RELEASES_PAGE_URL = 'https://github.com/binaricat/Netcatty/releases';
+const GITHUB_API_URL = 'https://api.github.com/repos/JasonZhangDad/MagiesTerminal/releases/latest';
+const RELEASES_PAGE_URL = 'https://github.com/JasonZhangDad/MagiesTerminal/releases';
 
 export interface ReleaseInfo {
   version: string;       // e.g. "1.0.0" (without 'v' prefix)
@@ -173,7 +173,7 @@ export interface UpdateDownloadProgress {
 }
 
 export async function checkForUpdate(): Promise<ElectronUpdateCheckResult> {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (!bridge?.checkForUpdate) {
     return { available: false, supported: false, error: "Bridge unavailable" };
   }
@@ -186,7 +186,7 @@ export async function checkForUpdate(): Promise<ElectronUpdateCheckResult> {
 }
 
 export async function downloadUpdate(): Promise<{ success: boolean; error?: string }> {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (!bridge?.downloadUpdate) {
     return { success: false, error: "Bridge unavailable" };
   }
@@ -194,24 +194,24 @@ export async function downloadUpdate(): Promise<{ success: boolean; error?: stri
 }
 
 export function installUpdate(): void {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   bridge?.installUpdate?.();
 }
 
 export function onDownloadProgress(
   cb: (progress: UpdateDownloadProgress) => void,
 ): (() => void) | undefined {
-  return netcattyBridge.get()?.onUpdateDownloadProgress?.(cb);
+  return magiesTerminalBridge.get()?.onUpdateDownloadProgress?.(cb);
 }
 
 export function onDownloaded(cb: () => void): (() => void) | undefined {
-  return netcattyBridge.get()?.onUpdateDownloaded?.(cb);
+  return magiesTerminalBridge.get()?.onUpdateDownloaded?.(cb);
 }
 
 export function onError(
   cb: (payload: { error: string }) => void,
 ): (() => void) | undefined {
-  return netcattyBridge.get()?.onUpdateError?.(cb);
+  return magiesTerminalBridge.get()?.onUpdateError?.(cb);
 }
 
 /** Returns the GitHub Releases page URL, optionally for a specific version tag. */

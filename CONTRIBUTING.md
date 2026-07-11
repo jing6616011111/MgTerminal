@@ -1,6 +1,6 @@
-# Contributing to Netcatty
+# Contributing to MagiesTerminal
 
-Thank you for your interest in contributing to Netcatty — an AI-powered SSH client, SFTP browser, and terminal manager built with Electron, React, and xterm.js.
+Thank you for your interest in contributing to MagiesTerminal — an AI-powered SSH client, SFTP browser, and terminal manager built with Electron, React, and xterm.js.
 
 Please read this guide before submitting issues or pull requests.
 
@@ -10,7 +10,7 @@ This project follows the [Contributor Covenant Code of Conduct](./CODE_OF_CONDUC
 
 ## Ways to Contribute
 
-- Report bugs via [GitHub Issues](https://github.com/binaricat/Netcatty/issues)
+- Report bugs via [GitHub Issues](https://github.com/JasonZhangDad/MagiesTerminal/issues)
 - Suggest features or improvements
 - Fix bugs or implement features listed in Issues
 - Improve documentation
@@ -21,8 +21,8 @@ This project follows the [Contributor Covenant Code of Conduct](./CODE_OF_CONDUC
 
 ```bash
 # Clone the repository
-git clone https://github.com/binaricat/Netcatty.git
-cd Netcatty
+git clone https://github.com/JasonZhangDad/MagiesTerminal.git
+cd MagiesTerminal
 
 # Install dependencies
 npm ci
@@ -78,7 +78,7 @@ We recommend following [Conventional Commits](https://www.conventionalcommits.or
 
 ## Architecture & Coding Guidelines
 
-Netcatty is organized around three layers:
+MagiesTerminal is organized around three layers:
 
 - Domain logic in `domain/`
 - Application state in `application/state/`

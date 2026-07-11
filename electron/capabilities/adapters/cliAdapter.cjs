@@ -77,7 +77,7 @@ function listCliCapabilities(options = {}) {
 function formatCliHelpLines(options = {}) {
   return listCliCapabilities(options).flatMap((entry) => {
     const statusSuffix = entry.status === CAPABILITY_STATUS.PLANNED ? " (planned)" : "";
-    return [`  netcatty-tool-cli ${entry.command.join(" ")}${statusSuffix}`];
+    return [`  magies-terminal-tool-cli ${entry.command.join(" ")}${statusSuffix}`];
   });
 }
 

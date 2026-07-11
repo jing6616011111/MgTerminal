@@ -13,7 +13,7 @@ const {
 const passphraseHandler = require("./passphraseHandler.cjs");
 
 function createEncryptedKey(t) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-identity-file-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-identity-file-"));
   t.after(() => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
@@ -28,7 +28,7 @@ function createEncryptedKey(t) {
     "-f",
     keyPath,
     "-C",
-    "netcatty-test",
+    "magiesTerminal-test",
   ], { encoding: "utf8" });
 
   if (result.status !== 0) {
@@ -110,7 +110,7 @@ test("loadIdentityFileForAuth clears an invalid saved passphrase before promptin
   assert.equal(identityFile.passphrase, "secret");
   assert.deepEqual(events, [
     {
-      channel: "netcatty:passphrase-auth-failed",
+      channel: "magiesTerminal:passphrase-auth-failed",
       payload: { keyPaths: [keyPath] },
     },
   ]);
@@ -189,7 +189,7 @@ test("preparePrivateKeyForAuth clears invalid saved inline private key passphras
   assert.equal(prepared.passphrase, "secret");
   assert.deepEqual(events, [
     {
-      channel: "netcatty:passphrase-auth-failed",
+      channel: "magiesTerminal:passphrase-auth-failed",
       payload: { keyPaths: ["SSH key for export-key"], keyIds: ["key-1"] },
     },
   ]);

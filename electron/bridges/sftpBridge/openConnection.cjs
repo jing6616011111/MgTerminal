@@ -125,7 +125,7 @@ function createOpenConnectionApi(ctx) {
     
           let authAgent = null;
           if (hasCertificate) {
-            authAgent = new NetcattyAgent({
+            authAgent = new MagiesTerminalAgent({
               mode: "certificate",
               webContents: event.sender,
               meta: {
@@ -560,7 +560,7 @@ function createOpenConnectionApi(ctx) {
           try {
             sendSftpProgress(event.sender, connId, options.hostname, 'connecting', 'reusing terminal connection');
             await requireSftpChannel(reusedClient);
-            reusedClient.__netcattySudoMode = false;
+            reusedClient.__magiesTerminalSudoMode = false;
             sftpClients.set(connId, reusedClient);
             sendSftpProgress(event.sender, connId, options.hostname, 'connected', 'reused terminal connection');
             console.log(`[SFTP] Reused terminal SSH connection ${options.sourceSessionId} for ${connId}`);
@@ -726,7 +726,7 @@ function createOpenConnectionApi(ctx) {
     
       let authAgent = null;
       if (hasCertificate) {
-        authAgent = new NetcattyAgent({
+        authAgent = new MagiesTerminalAgent({
           mode: "certificate",
           webContents: event.sender,
           meta: {
@@ -935,7 +935,7 @@ function createOpenConnectionApi(ctx) {
         }
     
         // Used by transferBridge to decide whether isolated fast-transfer channels are safe.
-        client.__netcattySudoMode = !!options.sudo;
+        client.__magiesTerminalSudoMode = !!options.sudo;
         sftpClients.set(connId, client);
     
         // Store jump connections for cleanup when SFTP is closed

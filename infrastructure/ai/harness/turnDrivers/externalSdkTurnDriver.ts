@@ -1,6 +1,6 @@
 import { getExternalAgentSdkBackend } from '../../managedAgents';
 import { runSdkAgentTurn, type SdkAgentCallbacks } from '../../sdkAgentAdapter';
-import { getNetcattyBridge, generateId, resolveUserSkillsContext, isToolResultError } from '../../../../components/ai/hooks/aiChatStreamingSupport';
+import { getMagiesTerminalBridge, generateId, resolveUserSkillsContext, isToolResultError } from '../../../../components/ai/hooks/aiChatStreamingSupport';
 import type { ExternalTurnInput, TurnDriver, TurnDriverContext } from './types';
 
 export class ExternalSdkTurnDriver implements TurnDriver {
@@ -30,10 +30,10 @@ async function runExternalTurn(input: ExternalTurnInput, ctx: TurnDriverContext)
     ui,
   } = input;
 
-  const netcattyBridge = bridge ?? getNetcattyBridge();
+  const magiesTerminalBridge = bridge ?? getMagiesTerminalBridge();
   const sdkBackend = getExternalAgentSdkBackend(agentConfig);
 
-  if (!sdkBackend || !netcattyBridge) {
+  if (!sdkBackend || !magiesTerminalBridge) {
     ui.reportStreamError(
       sessionId,
       signal,
@@ -44,7 +44,7 @@ async function runExternalTurn(input: ExternalTurnInput, ctx: TurnDriverContext)
   }
 
   const userSkillsContext = await resolveUserSkillsContext(
-    netcattyBridge,
+    magiesTerminalBridge,
     trimmed,
     context.selectedUserSkillSlugs,
   );
@@ -52,8 +52,8 @@ async function runExternalTurn(input: ExternalTurnInput, ctx: TurnDriverContext)
   const requestId = ctx.turnId;
   ui.setStreamingForScope(sessionId, true);
 
-  if (netcattyBridge.aiMcpUpdateSessions) {
-    await netcattyBridge.aiMcpUpdateSessions(context.terminalSessions, sessionId);
+  if (magiesTerminalBridge.aiMcpUpdateSessions) {
+    await magiesTerminalBridge.aiMcpUpdateSessions(context.terminalSessions, sessionId);
   }
 
   let needsNewAssistantMsg = false;
@@ -146,7 +146,7 @@ async function runExternalTurn(input: ExternalTurnInput, ctx: TurnDriverContext)
 
   try {
     await runSdkAgentTurn(
-      netcattyBridge,
+      magiesTerminalBridge,
       requestId,
       sessionId,
       agentConfig,

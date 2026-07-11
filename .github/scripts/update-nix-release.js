@@ -63,8 +63,8 @@ if (!/^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-.+)?$/.test(version)) 
   throw new Error(`Expected semver version, got: ${args.version}`);
 }
 
-const x64AppImage = findArtifact(args.artifacts, `Netcatty-${version}-linux-x86_64.AppImage`);
-const arm64AppImage = findArtifact(args.artifacts, `Netcatty-${version}-linux-arm64.AppImage`);
+const x64AppImage = findArtifact(args.artifacts, `MagiesTerminal-${version}-linux-x86_64.AppImage`);
+const arm64AppImage = findArtifact(args.artifacts, `MagiesTerminal-${version}-linux-arm64.AppImage`);
 
 const releaseNix = renderReleaseNix({
   version,
@@ -73,4 +73,4 @@ const releaseNix = renderReleaseNix({
 });
 
 fs.writeFileSync('nix/release.nix', releaseNix);
-console.log(`Updated nix/release.nix for Netcatty ${version}`);
+console.log(`Updated nix/release.nix for MagiesTerminal ${version}`);

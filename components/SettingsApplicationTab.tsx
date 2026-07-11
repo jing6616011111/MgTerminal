@@ -15,7 +15,7 @@ type AppInfo = {
   platform?: string;
 };
 
-const REPO_URL = "https://github.com/binaricat/Netcatty";
+const REPO_URL = "https://github.com/JasonZhangDad/MagiesTerminal";
 const BUG_REPORT_TEMPLATE = "bug_report.yml";
 
 const mapIssuePlatform = (platform?: string) => {
@@ -56,7 +56,7 @@ export const buildIssueUrl = (appInfo: AppInfo) => {
   const ua = typeof navigator !== "undefined" ? navigator.userAgent : "unknown";
   params.set(
     "logs",
-    `Reported from Netcatty Settings (${appInfo.name} ${appInfo.version || "unknown"}).\n\nUser-Agent: ${ua}`,
+    `Reported from MagiesTerminal Settings (${appInfo.name} ${appInfo.version || "unknown"}).\n\nUser-Agent: ${ua}`,
   );
 
   return `${REPO_URL}/issues/new?${params.toString()}`;
@@ -96,7 +96,7 @@ interface SettingsApplicationTabProps {
 export default function SettingsApplicationTab({ updateState, checkNow, openReleasePage, installUpdate, startDownload, isUpdateDemoMode }: SettingsApplicationTabProps) {
   const { t } = useI18n();
   const { openExternal, getApplicationInfo } = useApplicationBackend();
-  const [appInfo, setAppInfo] = useState<AppInfo>({ name: "Netcatty", version: "" });
+  const [appInfo, setAppInfo] = useState<AppInfo>({ name: "MagiesTerminal", version: "" });
   const [lastCheckResult, setLastCheckResult] = useState<'none' | 'available' | 'upToDate'>('none');
 
   useEffect(() => {
@@ -173,13 +173,13 @@ export default function SettingsApplicationTab({ updateState, checkNow, openRele
           <div className="flex items-center gap-4">
             <AppLogo className="w-16 h-16" />
             <div>
-              {/* Match the Vault sidebar wordmark so the Netcatty brand
+              {/* Match the Vault sidebar wordmark so the MagiesTerminal brand
                   reads consistently across surfaces — same italic heavy
                   cut, just scaled up for the Settings hero area and
-                  using the branded mixed-case "Netcatty" instead of
+                  using the branded mixed-case "MagiesTerminal" instead of
                   the lowercase electron app name. */}
               <div className="text-3xl font-black italic tracking-tight leading-none text-foreground">
-                Netcatty
+                MagiesTerminal
               </div>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-sm text-muted-foreground">

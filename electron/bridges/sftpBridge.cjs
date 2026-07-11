@@ -21,7 +21,7 @@ try {
 } catch (e) {
   console.warn("[SFTP] Failed to load SFTPWrapper from ssh2, sudo mode will not work:", e.message);
 }
-const { NetcattyAgent } = require("./netcattyAgent.cjs");
+const { MagiesTerminalAgent } = require("./magiesTerminalAgent.cjs");
 const fileWatcherBridge = require("./fileWatcherBridge.cjs");
 const keyboardInteractiveHandler = require("./keyboardInteractiveHandler.cjs");
 const passphraseHandler = require("./passphraseHandler.cjs");
@@ -269,7 +269,7 @@ const getSftpChannel = async (client, options = {}) => {
 
   // sudo sessions must keep using the sudo-bootstrapped SFTP wrapper.
   // Reopening with sshClient.sftp() would silently downgrade permissions.
-  if (client.__netcattySudoMode) {
+  if (client.__magiesTerminalSudoMode) {
     console.warn("[SFTP] Sudo SFTP channel is unavailable; automatic recovery is disabled for sudo sessions. Please reconnect.");
     return null;
   }
@@ -517,7 +517,7 @@ function buildStagedRemotePath(remotePath) {
   const dir = lastSeparatorIndex >= 0 ? remotePath.slice(0, lastSeparatorIndex + 1) : "";
   const baseName = lastSeparatorIndex >= 0 ? remotePath.slice(lastSeparatorIndex + 1) : remotePath;
   const safeBaseName = baseName || "upload";
-  const stagedName = `.netcatty-upload-${randomUUID().slice(0, 8)}-${safeBaseName}.part`;
+  const stagedName = `.magiesTerminal-upload-${randomUUID().slice(0, 8)}-${safeBaseName}.part`;
   return dir ? `${dir}${stagedName}` : stagedName;
 }
 
@@ -526,7 +526,7 @@ function buildBackupRemotePath(remotePath) {
   const dir = lastSeparatorIndex >= 0 ? remotePath.slice(0, lastSeparatorIndex + 1) : "";
   const baseName = lastSeparatorIndex >= 0 ? remotePath.slice(lastSeparatorIndex + 1) : remotePath;
   const safeBaseName = baseName || "upload";
-  const backupName = `.netcatty-backup-${randomUUID().slice(0, 8)}-${safeBaseName}.bak`;
+  const backupName = `.magiesTerminal-backup-${randomUUID().slice(0, 8)}-${safeBaseName}.bak`;
   return dir ? `${dir}${backupName}` : backupName;
 }
 
@@ -665,9 +665,9 @@ function createSessionBackedSftpClient(sessionId, sshClient, options = {}) {
   const client = {
     client: sshClient,
     sftp: null,
-    __netcattySessionBacked: true,
-    __netcattySourceSessionId: options?.sourceSessionId,
-    __netcattyRefHolder: refHolder,
+    __magiesTerminalSessionBacked: true,
+    __magiesTerminalSourceSessionId: options?.sourceSessionId,
+    __magiesTerminalRefHolder: refHolder,
     _reopeningPromise: null,
     async get(remotePath) {
       const sftp = await requireSftpChannel(client);
@@ -870,7 +870,7 @@ async function uploadLocalToSftp(_event, payload) {
 function sendSftpProgress(sender, sessionId, label, status, detail) {
   try {
     if (!sender || sender.isDestroyed()) return;
-    sender.send("netcatty:sftp:connection-progress", { sessionId, label, status, detail });
+    sender.send("magiesTerminal:sftp:connection-progress", { sessionId, label, status, detail });
   } catch {
     // Ignore destroyed webContents
   }
@@ -889,7 +889,7 @@ const openConnectionApi = createOpenConnectionApi({
   get sftpClients() { return sftpClients; },
   get sessions() { return sessions; },
   get electronModule() { return electronModule; },
-  jumpConnectionsMap, SftpClient, SSHClient, NetcattyAgent, keyboardInteractiveHandler, passphraseHandler,
+  jumpConnectionsMap, SftpClient, SSHClient, MagiesTerminalAgent, keyboardInteractiveHandler, passphraseHandler,
   hostKeyVerifier,
   fs, path, net, Buffer, process, console, setTimeout, clearTimeout,
   SFTPWrapper, createProxySocket, buildSftpAlgorithms, getAvailableAgentSocket,
@@ -946,45 +946,45 @@ function registerHandlers(ipcMain, options = {}) {
   const terminalWorkerManager = options.terminalWorkerManager || null;
   if (terminalWorkerManager) {
     [
-      "netcatty:sftp:open",
-      "netcatty:sftp:openForSession",
-      "netcatty:sftp:list",
-      "netcatty:sftp:read",
-      "netcatty:sftp:readBinary",
-      "netcatty:sftp:write",
-      "netcatty:sftp:writeBinary",
-      "netcatty:sftp:writeBinaryWithProgress",
-      "netcatty:sftp:downloadToLocal",
-      "netcatty:sftp:uploadLocal",
-      "netcatty:sftp:cancelUpload",
-      "netcatty:sftp:close",
-      "netcatty:sftp:mkdir",
-      "netcatty:sftp:delete",
-      "netcatty:sftp:rename",
-      "netcatty:sftp:stat",
-      "netcatty:sftp:chmod",
-      "netcatty:sftp:homeDir",
+      "magiesTerminal:sftp:open",
+      "magiesTerminal:sftp:openForSession",
+      "magiesTerminal:sftp:list",
+      "magiesTerminal:sftp:read",
+      "magiesTerminal:sftp:readBinary",
+      "magiesTerminal:sftp:write",
+      "magiesTerminal:sftp:writeBinary",
+      "magiesTerminal:sftp:writeBinaryWithProgress",
+      "magiesTerminal:sftp:downloadToLocal",
+      "magiesTerminal:sftp:uploadLocal",
+      "magiesTerminal:sftp:cancelUpload",
+      "magiesTerminal:sftp:close",
+      "magiesTerminal:sftp:mkdir",
+      "magiesTerminal:sftp:delete",
+      "magiesTerminal:sftp:rename",
+      "magiesTerminal:sftp:stat",
+      "magiesTerminal:sftp:chmod",
+      "magiesTerminal:sftp:homeDir",
     ].forEach((channel) => registerWorkerHandle(ipcMain, terminalWorkerManager, channel));
     return;
   }
-  ipcMain.handle("netcatty:sftp:open", openSftp);
-  ipcMain.handle("netcatty:sftp:openForSession", openSftpForSession);
-  ipcMain.handle("netcatty:sftp:list", listSftp);
-  ipcMain.handle("netcatty:sftp:read", readSftp);
-  ipcMain.handle("netcatty:sftp:readBinary", readSftpBinary);
-  ipcMain.handle("netcatty:sftp:write", writeSftp);
-  ipcMain.handle("netcatty:sftp:writeBinary", writeSftpBinary);
-  ipcMain.handle("netcatty:sftp:writeBinaryWithProgress", writeSftpBinaryWithProgress);
-  ipcMain.handle("netcatty:sftp:downloadToLocal", downloadSftpToLocal);
-  ipcMain.handle("netcatty:sftp:uploadLocal", uploadLocalToSftp);
-  ipcMain.handle("netcatty:sftp:cancelUpload", cancelSftpUpload);
-  ipcMain.handle("netcatty:sftp:close", closeSftp);
-  ipcMain.handle("netcatty:sftp:mkdir", mkdirSftp);
-  ipcMain.handle("netcatty:sftp:delete", deleteSftp);
-  ipcMain.handle("netcatty:sftp:rename", renameSftp);
-  ipcMain.handle("netcatty:sftp:stat", statSftp);
-  ipcMain.handle("netcatty:sftp:chmod", chmodSftp);
-  ipcMain.handle("netcatty:sftp:homeDir", getSftpHomeDir);
+  ipcMain.handle("magiesTerminal:sftp:open", openSftp);
+  ipcMain.handle("magiesTerminal:sftp:openForSession", openSftpForSession);
+  ipcMain.handle("magiesTerminal:sftp:list", listSftp);
+  ipcMain.handle("magiesTerminal:sftp:read", readSftp);
+  ipcMain.handle("magiesTerminal:sftp:readBinary", readSftpBinary);
+  ipcMain.handle("magiesTerminal:sftp:write", writeSftp);
+  ipcMain.handle("magiesTerminal:sftp:writeBinary", writeSftpBinary);
+  ipcMain.handle("magiesTerminal:sftp:writeBinaryWithProgress", writeSftpBinaryWithProgress);
+  ipcMain.handle("magiesTerminal:sftp:downloadToLocal", downloadSftpToLocal);
+  ipcMain.handle("magiesTerminal:sftp:uploadLocal", uploadLocalToSftp);
+  ipcMain.handle("magiesTerminal:sftp:cancelUpload", cancelSftpUpload);
+  ipcMain.handle("magiesTerminal:sftp:close", closeSftp);
+  ipcMain.handle("magiesTerminal:sftp:mkdir", mkdirSftp);
+  ipcMain.handle("magiesTerminal:sftp:delete", deleteSftp);
+  ipcMain.handle("magiesTerminal:sftp:rename", renameSftp);
+  ipcMain.handle("magiesTerminal:sftp:stat", statSftp);
+  ipcMain.handle("magiesTerminal:sftp:chmod", chmodSftp);
+  ipcMain.handle("magiesTerminal:sftp:homeDir", getSftpHomeDir);
 }
 
 /**

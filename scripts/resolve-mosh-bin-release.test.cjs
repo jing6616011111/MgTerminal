@@ -16,7 +16,7 @@ const {
 } = require("./resolve-mosh-bin-release.cjs");
 
 function makeTmp(t) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-resolve-mosh-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-resolve-mosh-"));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   return dir;
 }

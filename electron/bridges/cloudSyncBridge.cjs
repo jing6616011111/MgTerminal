@@ -12,7 +12,7 @@ const {
   resolveOutboundHttpAgent,
 } = require("./httpNetworkProxyAgent.cjs");
 
-const SYNC_FILE_NAME = "netcatty-vault.json";
+const SYNC_FILE_NAME = "magiesTerminal-vault.json";
 
 let electronModuleRef = null;
 
@@ -319,29 +319,29 @@ const handleS3Delete = async (config) => {
 
 const registerHandlers = (ipcMain, electronModule) => {
   electronModuleRef = electronModule || null;
-  ipcMain.handle("netcatty:cloudSync:webdav:initialize", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:cloudSync:webdav:initialize", async (_event, payload) => {
     return handleWebdavInitialize(payload?.config);
   });
-  ipcMain.handle("netcatty:cloudSync:webdav:upload", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:cloudSync:webdav:upload", async (_event, payload) => {
     return handleWebdavUpload(payload?.config, payload?.syncedFile);
   });
-  ipcMain.handle("netcatty:cloudSync:webdav:download", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:cloudSync:webdav:download", async (_event, payload) => {
     return handleWebdavDownload(payload?.config);
   });
-  ipcMain.handle("netcatty:cloudSync:webdav:delete", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:cloudSync:webdav:delete", async (_event, payload) => {
     return handleWebdavDelete(payload?.config);
   });
 
-  ipcMain.handle("netcatty:cloudSync:s3:initialize", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:cloudSync:s3:initialize", async (_event, payload) => {
     return handleS3Initialize(payload?.config);
   });
-  ipcMain.handle("netcatty:cloudSync:s3:upload", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:cloudSync:s3:upload", async (_event, payload) => {
     return handleS3Upload(payload?.config, payload?.syncedFile);
   });
-  ipcMain.handle("netcatty:cloudSync:s3:download", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:cloudSync:s3:download", async (_event, payload) => {
     return handleS3Download(payload?.config);
   });
-  ipcMain.handle("netcatty:cloudSync:s3:delete", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:cloudSync:s3:delete", async (_event, payload) => {
     return handleS3Delete(payload?.config);
   });
 };

@@ -72,9 +72,9 @@ Placement rules (`resolveAgentKinds` in `toolSurfaces.cjs`):
 |---------|-------------------|--------|
 | Catty (sidebar) tools | `npm run generate:capability-tools` → `infrastructure/ai/harness/generated/cattyToolSpecs.json` | Sidebar agent tool set. CI verifies JSON drift. |
 | Global agent tools | same script → `globalAgentToolSpecs.json` | Prepared for future global agent runtime; shared RPC tools only today. |
-| MCP stdio | `electron/capabilities/codegen/mcpToolRegistry.cjs` → `electron/mcp/netcatty-mcp-server.cjs` | Registry-driven; external agents. Harness tools are **not** on MCP. |
-| CLI | `electron/cli/netcatty-tool-cli.cjs` + `electron/capabilities/adapters/cliAdapter.cjs` | **30** catalog commands; exec/sftp/session remain special-case; vault/portforward/snippets use catalog fallback dispatch |
-| RPC dispatch | `electron/bridges/mcpServerBridge.cjs` + `capabilityRpcDispatch.cjs` | `netcatty/*` builtin handlers via `buildBuiltinRpcHandlerRegistry` (catalog-aligned); `public/*`, `vault/*`, `portforward/*` → services |
+| MCP stdio | `electron/capabilities/codegen/mcpToolRegistry.cjs` → `electron/mcp/magies-terminal-mcp-server.cjs` | Registry-driven; external agents. Harness tools are **not** on MCP. |
+| CLI | `electron/cli/magies-terminal-tool-cli.cjs` + `electron/capabilities/adapters/cliAdapter.cjs` | **30** catalog commands; exec/sftp/session remain special-case; vault/portforward/snippets use catalog fallback dispatch |
+| RPC dispatch | `electron/bridges/mcpServerBridge.cjs` + `capabilityRpcDispatch.cjs` | `magiesTerminal/*` builtin handlers via `buildBuiltinRpcHandlerRegistry` (catalog-aligned); `public/*`, `vault/*`, `portforward/*` → services |
 | Vault bridge | `electron/bridges/aiBridge/vaultAgentBridge.cjs` + `infrastructure/ai/vaultAgentBridgeClient.ts` | Renderer vault state; **never** returns password/privateKey |
 | AI context | `buildAITerminalSessionInfo` + `useTerminalAiContexts` | Per-session `hostChain` + `activePortForwards`; mirrored in `getContext` and Catty system prompt |
 
@@ -93,7 +93,7 @@ Placement rules (`resolveAgentKinds` in `toolSurfaces.cjs`):
 ## Data & Storage
 - Persisted keys: see `storageKeys.ts`. Use `localStorageAdapter` for all reads/writes.
 - Seed data: `config/defaultData.ts`; terminal themes: `config/terminalThemes.ts`.
-- **Temporary files**: All temporary files (e.g., SFTP downloaded files for external editing) must be written to Netcatty's dedicated temp directory via `tempDirBridge.getTempFilePath(fileName)`. Do not write directly to `os.tmpdir()`. This ensures proper cleanup and user visibility in Settings > System.
+- **Temporary files**: All temporary files (e.g., SFTP downloaded files for external editing) must be written to MagiesTerminal's dedicated temp directory via `tempDirBridge.getTempFilePath(fileName)`. Do not write directly to `os.tmpdir()`. This ensures proper cleanup and user visibility in Settings > System.
 
 ## Testing & Safety
 - Favor unit tests for domain helpers (e.g., `workspace.ts`, `host.ts`) and hook-level tests for application state.
@@ -107,9 +107,9 @@ Placement rules (`resolveAgentKinds` in `toolSurfaces.cjs`):
 - Maintain ASCII-only unless required by existing file content.
 
 ## Review Boundaries
-- Treat `electron/cli/*`, `netcatty-tool-cli`, the CLI discovery file, and the local TCP bridge as internal Netcatty integration surfaces unless a task explicitly says otherwise.
-- Do not review those surfaces as public APIs by default, and do not assume they must support third-party callers, manual launches, or non-Netcatty agents.
-- On supported first-party paths, assume Netcatty's own launcher provides required integration environment such as `NETCATTY_TOOL_CLI_DISCOVERY_FILE`.
+- Treat `electron/cli/*`, `magies-terminal-tool-cli`, the CLI discovery file, and the local TCP bridge as internal MagiesTerminal integration surfaces unless a task explicitly says otherwise.
+- Do not review those surfaces as public APIs by default, and do not assume they must support third-party callers, manual launches, or non-MagiesTerminal agents.
+- On supported first-party paths, assume MagiesTerminal's own launcher provides required integration environment such as `MAGIES_TERMINAL_TOOL_CLI_DISCOVERY_FILE`.
 - If a review concern depends on external exposure, third-party compatibility, or public API stability, call it out as out of scope unless the task explicitly includes that contract.
 
 ---

@@ -16,8 +16,8 @@
 //   ET_BIN_RELEASE  — release tag in ${ET_BIN_OWNER}/${ET_BIN_REPO}.
 //                     Skip the whole step if unset (printed as a notice so
 //                     the build doesn't silently miss the bundling).
-//   ET_BIN_OWNER    — defaults to the GITHUB_REPOSITORY owner, or 'binaricat'
-//   ET_BIN_REPO     — default 'Netcatty-et-bin' (a dedicated binary
+//   ET_BIN_OWNER    — defaults to the GITHUB_REPOSITORY owner, or 'JasonZhangDad'
+//   ET_BIN_REPO     — default 'MagiesTerminal-et-bin' (a dedicated binary
 //                     repository so the client repo stays source-only).
 //   ET_BIN_BASE_URL — full override (e.g. for staging / local mirror).
 //   ET_BIN_RES_DIR  — override output dir for tests.
@@ -146,8 +146,8 @@ function chmodExecutable(filePath) {
 function parseEtBinRepository(env) {
   const githubOwner = (env.GITHUB_REPOSITORY || "").split("/")[0];
   return {
-    owner: env.ET_BIN_OWNER || githubOwner || "binaricat",
-    repo: env.ET_BIN_REPO || "Netcatty-et-bin",
+    owner: env.ET_BIN_OWNER || githubOwner || "JasonZhangDad",
+    repo: env.ET_BIN_REPO || "MagiesTerminal-et-bin",
   };
 }
 
@@ -225,7 +225,7 @@ function replaceDir(srcDir, destDir) {
 }
 
 function unpackTarGz(buf, target, { resDir }) {
-  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-et-"));
+  const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-et-"));
   const archive = path.join(tmpRoot, "bundle.tar.gz");
   const extractDir = path.join(tmpRoot, "extract");
   const destDir = path.join(resDir, target.localDir);

@@ -5,8 +5,8 @@ import { extractDisplayCommand } from './tool-call';
 
 // Codex (SDK) emits command_execution.command as a STRING that wraps the real
 // command in `<shell> -lc '<full>'`. Under Skills + CLI the real command is a
-// netcatty-tool-cli call. The title must unwrap the shell layer first, else the
-// outer quote leaks (the "netcatty: \"" / "netcatty: …md\"" garbage titles).
+// magies-terminal-tool-cli call. The title must unwrap the shell layer first, else the
+// outer quote leaks (the "magiesTerminal: \"" / "magiesTerminal: …md\"" garbage titles).
 
 test('unwraps a /bin/zsh -lc string wrapper (codex SDK shape)', () => {
   assert.equal(
@@ -15,10 +15,10 @@ test('unwraps a /bin/zsh -lc string wrapper (codex SDK shape)', () => {
   );
 });
 
-test('codex Skills+CLI exec: unwrap shell + netcatty-cli -> remote command', () => {
+test('codex Skills+CLI exec: unwrap shell + magiesTerminal-cli -> remote command', () => {
   assert.equal(
     extractDisplayCommand({
-      command: `/bin/zsh -lc '"/abs/netcatty-tool-cli" exec --session X -- "uptime"'`,
+      command: `/bin/zsh -lc '"/abs/magies-terminal-tool-cli" exec --session X -- "uptime"'`,
     }),
     'uptime',
   );
@@ -27,21 +27,21 @@ test('codex Skills+CLI exec: unwrap shell + netcatty-cli -> remote command', () 
 test('codex Skills+CLI session subcommand -> friendly title', () => {
   assert.equal(
     extractDisplayCommand({
-      command: `/bin/zsh -lc '"/abs/netcatty-tool-cli" session --session X'`,
+      command: `/bin/zsh -lc '"/abs/magies-terminal-tool-cli" session --session X'`,
     }),
-    'netcatty: inspect session',
+    'magiesTerminal: inspect session',
   );
 });
 
-test('raw (unwrapped) netcatty-tool-cli exec still works', () => {
+test('raw (unwrapped) magies-terminal-tool-cli exec still works', () => {
   assert.equal(
-    extractDisplayCommand({ command: `"/abs/netcatty-tool-cli" exec --session X -- "uptime"` }),
+    extractDisplayCommand({ command: `"/abs/magies-terminal-tool-cli" exec --session X -- "uptime"` }),
     'uptime',
   );
 });
 
-test('netcatty-tool-cli env -> list sessions', () => {
-  assert.equal(extractDisplayCommand({ command: 'netcatty-tool-cli env' }), 'netcatty: list sessions');
+test('magies-terminal-tool-cli env -> list sessions', () => {
+  assert.equal(extractDisplayCommand({ command: 'magies-terminal-tool-cli env' }), 'magiesTerminal: list sessions');
 });
 
 test('array shell-wrap shape still unwraps (regression)', () => {

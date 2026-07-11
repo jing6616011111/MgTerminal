@@ -2,7 +2,7 @@ import type { Terminal as XTerm } from "@xterm/xterm";
 import type React from "react";
 import { useEffect } from "react";
 
-import { netcattyBridge } from "../../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../../infrastructure/services/magiesTerminalBridge";
 import { logger } from "../../../lib/logger";
 import type { TerminalSession } from "../../../types";
 import { handleTerminalClipboardPaste } from "../terminalClipboardPaste";
@@ -39,7 +39,7 @@ export function useTerminalFilePaste({
     const handlePaste = (event: ClipboardEvent) => {
       if (status !== "connected") return;
 
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
 
       if (!isLocalConnection || !bridge?.readClipboardFiles) return;
 

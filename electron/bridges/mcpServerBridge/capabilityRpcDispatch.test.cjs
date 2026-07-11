@@ -32,9 +32,9 @@ function createTestDispatcher(overrides = {}) {
   });
 }
 
-test("dispatchCapabilityRpc returns UNROUTED for netcatty builtin methods", async () => {
+test("dispatchCapabilityRpc returns UNROUTED for magiesTerminal builtin methods", async () => {
   const dispatch = createTestDispatcher();
-  const result = await dispatch("netcatty/exec", { chatSessionId: "chat-1" });
+  const result = await dispatch("magiesTerminal/exec", { chatSessionId: "chat-1" });
   assert.equal(result, UNROUTED);
 });
 

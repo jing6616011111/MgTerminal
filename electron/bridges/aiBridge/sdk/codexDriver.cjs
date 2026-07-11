@@ -5,7 +5,7 @@
  *
  * new Codex({ codexPathOverride, env, apiKey, config }).startThread({...}).runStreamed(...)
  * - sandbox:'read-only' blocks local writes; side effects must go through the
- *   injected netcatty MCP server (config.mcp_servers).
+ *   injected magiesTerminal MCP server (config.mcp_servers).
  * - thread.id is the resumable session id; codex.resumeThread(id) continues it.
  *
  * Constructor/event field names are calibrated against @openai/codex-sdk's type
@@ -84,15 +84,15 @@ function buildCodexThreadOptions({ cwd, model }) {
   // Non-interactive `codex exec` CANCELS every MCP tool call ("user cancelled
   // MCP tool call", failing in 0ns before the server is even invoked) unless
   // approvals are fully bypassed. Empirically (tested across all sandbox ×
-  // approval combos) the ONLY combo that lets injected netcatty MCP tools run is
+  // approval combos) the ONLY combo that lets injected magiesTerminal MCP tools run is
   // sandbox "danger-full-access" + approvalPolicy "never" — i.e. codex's
   // `--dangerously-bypass-approvals-and-sandbox`. read-only and workspace-write
   // both cancel under every approval policy, because codex wants an interactive
   // approver for MCP calls and exec has no channel to answer one.
   //
-  // Safe for netcatty's model: the REAL guardrails (approval prompts, command
+  // Safe for magiesTerminal's model: the REAL guardrails (approval prompts, command
   // blocklist, observer/confirm permission modes, session scope) are enforced by
-  // the injected netcatty MCP server on every remote-host action — NOT by codex's
+  // the injected magiesTerminal MCP server on every remote-host action — NOT by codex's
   // local sandbox. claude blocks its built-in side-effect tools via
   // disallowedTools and copilot is MCP-only; codex-sdk exposes no tool-disable
   // switch, so the sandbox is the only lever and it has to be fully open for the

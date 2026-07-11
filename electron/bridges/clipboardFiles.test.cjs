@@ -153,11 +153,11 @@ test("reads CF_HDROP before falling back to FileNameW", () => {
 test("creates stable clipboard image file names", () => {
   assert.equal(
     createClipboardImageFileName(new Date(2026, 5, 11, 3, 4, 5, 6)),
-    "netcatty-paste-20260611-030405-006.png",
+    "magiesTerminal-paste-20260611-030405-006.png",
   );
 });
 
-test("writes clipboard image to Netcatty temp directory", async () => {
+test("writes clipboard image to MagiesTerminal temp directory", async () => {
   const writes = [];
   const content = Buffer.from([1, 2, 3]);
   const result = await readClipboardImage({
@@ -173,19 +173,19 @@ test("writes clipboard image to Netcatty temp directory", async () => {
       },
     },
     tempDirBridge: {
-      getTempFilePath: (name) => `/netcatty-temp/${name}`,
+      getTempFilePath: (name) => `/magiesTerminal-temp/${name}`,
     },
     now: () => new Date(2026, 5, 11, 3, 4, 5, 6),
   });
 
   assert.deepEqual(result, {
-    path: "/netcatty-temp/netcatty-paste-20260611-030405-006.png",
-    name: "netcatty-paste-20260611-030405-006.png",
+    path: "/magiesTerminal-temp/magiesTerminal-paste-20260611-030405-006.png",
+    name: "magiesTerminal-paste-20260611-030405-006.png",
     mediaType: "image/png",
     size: 3,
   });
   assert.deepEqual(writes, [
-    { filePath: "/netcatty-temp/netcatty-paste-20260611-030405-006.png", data: content },
+    { filePath: "/magiesTerminal-temp/magiesTerminal-paste-20260611-030405-006.png", data: content },
   ]);
 });
 
@@ -198,7 +198,7 @@ test("returns null when clipboard image is empty", async () => {
       }),
     },
     tempDirBridge: {
-      getTempFilePath: () => "/netcatty-temp/unused.png",
+      getTempFilePath: () => "/magiesTerminal-temp/unused.png",
     },
   });
 

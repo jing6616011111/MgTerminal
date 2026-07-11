@@ -1,4 +1,4 @@
-export const SDK_SESSION_ID_PREFIX = 'netcatty-sdk-session:';
+export const SDK_SESSION_ID_PREFIX = 'magiesTerminal-sdk-session:';
 
 export interface SdkSessionIdentityPayload {
   v: 1;

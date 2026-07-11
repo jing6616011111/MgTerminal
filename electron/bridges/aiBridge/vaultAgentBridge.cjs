@@ -7,7 +7,7 @@ const pendingVaultRequests = new Map();
 
 function createVaultAgentBridge({ getMainWindowFn, validateSender }) {
   function registerHandlers(ipcMain) {
-    ipcMain.handle("netcatty:ai:vault-agent:response", (event, { requestId, result }) => {
+    ipcMain.handle("magiesTerminal:ai:vault-agent:response", (event, { requestId, result }) => {
       if (!validateSender(event)) {
         return { ok: false, error: "Unauthorized IPC sender" };
       }
@@ -30,7 +30,7 @@ function createVaultAgentBridge({ getMainWindowFn, validateSender }) {
     if (!mainWin || mainWin.isDestroyed()) {
       return {
         ok: false,
-        error: "No active Netcatty window is available for vault access.",
+        error: "No active MagiesTerminal window is available for vault access.",
       };
     }
 
@@ -47,7 +47,7 @@ function createVaultAgentBridge({ getMainWindowFn, validateSender }) {
 
       pendingVaultRequests.set(requestId, { resolve, timer });
       try {
-        mainWin.webContents.send("netcatty:ai:vault-agent:request", {
+        mainWin.webContents.send("magiesTerminal:ai:vault-agent:request", {
           requestId,
           op,
           params,

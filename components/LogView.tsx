@@ -102,8 +102,8 @@ const LogViewComponent: React.FC<LogViewProps> = ({
 
         setIsExporting(true);
         try {
-            const { netcattyBridge } = await import("../infrastructure/services/netcattyBridge");
-            const bridge = netcattyBridge.get();
+            const { magiesTerminalBridge } = await import("../infrastructure/services/magiesTerminalBridge");
+            const bridge = magiesTerminalBridge.get();
             if (bridge?.exportSessionLog) {
                 await bridge.exportSessionLog({
                     terminalData: log.terminalData,

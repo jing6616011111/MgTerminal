@@ -191,7 +191,7 @@ function createMainWindowApi(ctx) {
 
       // Prevent top-level navigation away from the app origin. If a remote origin ever
       // loads in a privileged window (with preload), it can become an RCE vector.
-      const allowedOrigins = new Set(["app://netcatty"]);
+      const allowedOrigins = new Set(["app://magiesTerminal"]);
       if (isDev && devServerUrl) {
         try {
           allowedOrigins.add(new URL(getDevRendererBaseUrl(devServerUrl)).origin);
@@ -202,7 +202,7 @@ function createMainWindowApi(ctx) {
       const isAllowedTopLevelUrl = (targetUrl) => {
         try {
           const parsedUrl = new URL(String(targetUrl));
-          if (parsedUrl.protocol === "app:" && parsedUrl.host === "netcatty") return true;
+          if (parsedUrl.protocol === "app:" && parsedUrl.host === "magiesTerminal") return true;
           return allowedOrigins.has(parsedUrl.origin);
         } catch {
           return false;
@@ -408,18 +408,18 @@ function createMainWindowApi(ctx) {
       };
     
       win.on("enter-full-screen", () => {
-        safeSend("netcatty:window:fullscreen-changed", true);
+        safeSend("magiesTerminal:window:fullscreen-changed", true);
         scheduleSaveState();
       });
     
       win.on("leave-full-screen", () => {
-        safeSend("netcatty:window:fullscreen-changed", false);
+        safeSend("magiesTerminal:window:fullscreen-changed", false);
         updateNormalBounds();
         scheduleSaveState();
       });
 
       win.on("show", () => {
-        safeSend("netcatty:window:shown");
+        safeSend("magiesTerminal:window:shown");
       });
     
       // Ensure native background matches frontend background, even before first paint.
@@ -484,7 +484,7 @@ function createMainWindowApi(ctx) {
       }
     
       // Production mode - load via custom protocol.
-      await win.loadURL(`app://netcatty/index.html${rendererHash}`);
+      await win.loadURL(`app://magiesTerminal/index.html${rendererHash}`);
       return win;
     }
 

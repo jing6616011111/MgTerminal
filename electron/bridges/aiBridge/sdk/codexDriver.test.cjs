@@ -72,7 +72,7 @@ test("mcp_tool_call item -> toolCall + toolResult events (extracts content text)
       type: "item.completed",
       item: {
         type: "mcp_tool_call", id: "i-1",
-        server: "netcatty-remote-hosts", tool: "terminal_execute",
+        server: "magiesTerminal-remote-hosts", tool: "terminal_execute",
         arguments: { command: "ls" },
         result: { content: [{ type: "text", text: "files" }] },
         status: "completed",
@@ -91,7 +91,7 @@ test("mcp_tool_call streams start early and completes without duplicate tool car
   const state = { reasoningOpen: false };
   const item = {
     type: "mcp_tool_call", id: "i-live",
-    server: "netcatty-remote-hosts", tool: "terminal_execute",
+    server: "magiesTerminal-remote-hosts", tool: "terminal_execute",
     arguments: { command: "uptime" },
   };
   translateCodexEvent({ type: "item.started", item: { ...item, status: "in_progress" } }, emitter, state);
@@ -140,7 +140,7 @@ test("mcp_tool_call failure -> toolResult carries the error message", () => {
       type: "item.completed",
       item: {
         type: "mcp_tool_call", id: "i-2",
-        server: "netcatty-remote-hosts", tool: "terminal_execute",
+        server: "magiesTerminal-remote-hosts", tool: "terminal_execute",
         arguments: {}, error: { message: "denied by observer" }, status: "failed",
       },
     },
@@ -240,14 +240,14 @@ test("buildCodexConstructorOptions sets path override + env + mcp config table",
     env: { PATH: "/usr/bin" },
     apiKey: undefined,
     injectedMcpServers: [{
-      name: "netcatty-remote-hosts", command: "/abs/electron",
-      args: ["/abs/server.cjs"], env: [{ name: "NETCATTY_MCP_PORT", value: "1" }],
+      name: "magiesTerminal-remote-hosts", command: "/abs/electron",
+      args: ["/abs/server.cjs"], env: [{ name: "MAGIES_TERMINAL_MCP_PORT", value: "1" }],
     }],
   });
   assert.equal(opts.codexPathOverride, "/abs/codex");
   assert.equal(opts.env.PATH, "/usr/bin");
-  assert.deepEqual(opts.config.mcp_servers["netcatty-remote-hosts"], {
-    command: "/abs/electron", args: ["/abs/server.cjs"], env: { NETCATTY_MCP_PORT: "1" },
+  assert.deepEqual(opts.config.mcp_servers["magiesTerminal-remote-hosts"], {
+    command: "/abs/electron", args: ["/abs/server.cjs"], env: { MAGIES_TERMINAL_MCP_PORT: "1" },
   });
   // request visible reasoning summaries (default "auto" emits none in exec mode)
   assert.equal(opts.config.model_reasoning_summary, "concise");
@@ -257,8 +257,8 @@ test("buildCodexThreadOptions enables MCP via danger-full-access + approvalPolic
   // codex-sdk: model/sandboxMode/workingDirectory are ThreadOptions (startThread),
   // not runStreamed TurnOptions. Non-interactive `codex exec` cancels MCP tool
   // calls under read-only/workspace-write (any approval policy); only the full
-  // bypass (danger-full-access + never) lets injected netcatty MCP tools run.
-  // Real guardrails live in the netcatty MCP server, not codex's local sandbox.
+  // bypass (danger-full-access + never) lets injected magiesTerminal MCP tools run.
+  // Real guardrails live in the magiesTerminal MCP server, not codex's local sandbox.
   const t = buildCodexThreadOptions({ cwd: "/tmp", model: "gpt-5.5" });
   assert.equal(t.sandboxMode, "danger-full-access");
   assert.equal(t.approvalPolicy, "never");

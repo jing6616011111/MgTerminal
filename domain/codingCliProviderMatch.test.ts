@@ -28,7 +28,7 @@ test('matchCodingCliProviderFromTitle detects Claude Code and Codex titles', () 
     'codex',
   );
   assert.equal(
-    matchCodingCliProviderFromTitle('⠋ Working · netcatty')?.id,
+    matchCodingCliProviderFromTitle('⠋ Working · magiesTerminal')?.id,
     'codex',
   );
   assert.equal(
@@ -81,7 +81,7 @@ test('resolveSessionCodingCliProvider keeps sticky provider when title is only a
   assert.equal(
     resolveSessionCodingCliProvider({
       codingCliProviderId: 'codex',
-      dynamicTitle: 'netcatty',
+      dynamicTitle: 'magiesTerminal',
     })?.id,
     'codex',
   );

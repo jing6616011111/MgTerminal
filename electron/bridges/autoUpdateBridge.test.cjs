@@ -104,7 +104,7 @@ async function withMocks({ autoUpdater, autoUpdaterExports, windowManager, globa
 /**
  * A fake BrowserWindow for broadcastToAllWindows() (used by the needs-save
  * notice). Records every channel sent to its webContents so a test can assert
- * whether netcatty:update:needs-save was broadcast.
+ * whether magiesTerminal:update:needs-save was broadcast.
  */
 function makeBroadcastWindow() {
   const sentChannels = [];
@@ -257,7 +257,7 @@ test("install handler marks quitting-for-update before quitAndInstall", async ()
   await withMocks({ autoUpdater, windowManager: fakeWindowManager }, async ({ bridge, fakeGlobalShortcut }) => {
     const ipcMain = makeIpcMain();
     bridge.registerHandlers(ipcMain);
-    await ipcMain.invoke("netcatty:update:install");
+    await ipcMain.invoke("magiesTerminal:update:install");
 
     // The flag must be set with `true`...
     assert.deepEqual(fakeWindowManager.calls, [true]);
@@ -288,7 +288,7 @@ test("install handler is a no-op when the updater fails to load", async () => {
   await withMocks({ autoUpdaterExports: {}, windowManager: fakeWindowManager }, async ({ bridge, fakeGlobalShortcut }) => {
     const ipcMain = makeIpcMain();
     bridge.registerHandlers(ipcMain);
-    await ipcMain.invoke("netcatty:update:install");
+    await ipcMain.invoke("magiesTerminal:update:install");
 
     assert.deepEqual(fakeWindowManager.calls, []);
     assert.equal(fakeGlobalShortcut.cleanupCount, 0);
@@ -318,7 +318,7 @@ test("install handler rolls back quitting-for-update when quitAndInstall throws"
   await withMocks({ autoUpdater, windowManager: fakeWindowManager }, async ({ bridge }) => {
     const ipcMain = makeIpcMain();
     bridge.registerHandlers(ipcMain);
-    await ipcMain.invoke("netcatty:update:install");
+    await ipcMain.invoke("magiesTerminal:update:install");
 
     // First set true (commit), then reset to false on the synchronous throw so
     // the app doesn't get stuck bypassing close-to-tray / the quit guard (#1215).
@@ -360,7 +360,7 @@ test("install handler watchdog clears quitting-for-update if the app never quits
     await withMocks({ autoUpdater, windowManager: fakeWindowManager }, async ({ bridge }) => {
       const ipcMain = makeIpcMain();
       bridge.registerHandlers(ipcMain);
-      await ipcMain.invoke("netcatty:update:install");
+      await ipcMain.invoke("magiesTerminal:update:install");
 
       // Committed to quit, watchdog scheduled but not yet fired.
       assert.deepEqual(fakeWindowManager.calls, [true]);
@@ -425,7 +425,7 @@ test("install handler aborts and notifies when the renderer reports dirty editor
     async ({ bridge, fakeGlobalShortcut }) => {
       const ipcMain = makeIpcMain();
       bridge.registerHandlers(ipcMain);
-      await ipcMain.invoke("netcatty:update:install");
+      await ipcMain.invoke("magiesTerminal:update:install");
 
       // Dirty editors → the install must be fully aborted:
       // - no quitAndInstall, no setQuittingForUpdate, no tray cleanup
@@ -434,8 +434,8 @@ test("install handler aborts and notifies when the renderer reports dirty editor
       assert.deepEqual(fakeWindowManager.calls, []);
       assert.equal(fakeGlobalShortcut.cleanupCount, 0);
       // - every window is told to prompt the user to save (broadcast needs-save)
-      assert.equal(win1.sentChannels.includes("netcatty:update:needs-save"), true);
-      assert.equal(win2.sentChannels.includes("netcatty:update:needs-save"), true);
+      assert.equal(win1.sentChannels.includes("magiesTerminal:update:needs-save"), true);
+      assert.equal(win2.sentChannels.includes("magiesTerminal:update:needs-save"), true);
       // - the dirty check ran first, against the main window's webContents
       assert.equal(order[0], "queryDirtyEditors");
       assert.equal(queriedWebContents, fakeWindowManager.webContents);
@@ -495,13 +495,13 @@ test("install handler checks every app content window before installing", async 
     async ({ bridge, fakeGlobalShortcut }) => {
       const ipcMain = makeIpcMain();
       bridge.registerHandlers(ipcMain);
-      await ipcMain.invoke("netcatty:update:install");
+      await ipcMain.invoke("magiesTerminal:update:install");
 
       assert.deepEqual(queriedWebContents, fakeWindowManager.appContentWindows.map((window) => window.webContents));
       assert.equal(order.includes("quitAndInstall"), false);
       assert.deepEqual(fakeWindowManager.calls, []);
       assert.equal(fakeGlobalShortcut.cleanupCount, 0);
-      assert.equal(win.sentChannels.includes("netcatty:update:needs-save"), true);
+      assert.equal(win.sentChannels.includes("magiesTerminal:update:needs-save"), true);
     },
   );
 });
@@ -546,7 +546,7 @@ test("install handler proceeds to quitAndInstall when there are no dirty editors
       async ({ bridge, fakeGlobalShortcut }) => {
         const ipcMain = makeIpcMain();
         bridge.registerHandlers(ipcMain);
-        await ipcMain.invoke("netcatty:update:install");
+        await ipcMain.invoke("magiesTerminal:update:install");
 
         // Clean editors → install runs as before:
         // dirty check first, then commit-to-quit, then quitAndInstall.
@@ -556,7 +556,7 @@ test("install handler proceeds to quitAndInstall when there are no dirty editors
         assert.equal(order.includes("quitAndInstall"), true);
         assert.equal(fakeGlobalShortcut.cleanupCount, 1);
         // No needs-save broadcast when nothing is dirty.
-        assert.equal(win.sentChannels.includes("netcatty:update:needs-save"), false);
+        assert.equal(win.sentChannels.includes("magiesTerminal:update:needs-save"), false);
       },
     );
   } finally {
@@ -594,7 +594,7 @@ test("install handler installs directly when no main window is reachable", async
       async ({ bridge, fakeWindowManager }) => {
         const ipcMain = makeIpcMain();
         bridge.registerHandlers(ipcMain);
-        await ipcMain.invoke("netcatty:update:install");
+        await ipcMain.invoke("magiesTerminal:update:install");
 
         assert.equal(dirtyCheckCalled, false);
         assert.deepEqual(fakeWindowManager.calls, [true]);

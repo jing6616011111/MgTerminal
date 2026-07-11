@@ -6,7 +6,7 @@
  * Consolidates the env hardening that previously lived in
  * the removed raw-process handler (DANGEROUS_ENV_KEYS) and the per-spawn merge
  * helpers used by SDK agent launches.
- * Callers inject the netcatty helpers so this module stays pure/testable.
+ * Callers inject the magiesTerminal helpers so this module stays pure/testable.
  */
 
 // Env var names that can be used for code injection into a child process.
@@ -31,9 +31,9 @@ function isDangerousEnvKey(key) {
  * @param {Record<string,string>} args.shellEnv            Resolved shell env (PATH-augmented).
  * @param {Record<string,string>} [args.requestedAgentEnv] Per-agent env from the UI (filtered).
  * @param {(e:Record<string,string>)=>Record<string,string>} [args.withCliDiscoveryEnv]
- *        netcatty helper that injects the tool-CLI discovery file path.
+ *        magiesTerminal helper that injects the tool-CLI discovery file path.
  * @param {(e:Record<string,string>)=>Record<string,string>} [args.normalizeClaudeCodeExecutableEnv]
- *        netcatty helper that rewrites CLAUDE_CODE_EXECUTABLE to a runnable path (claude only).
+ *        magiesTerminal helper that rewrites CLAUDE_CODE_EXECUTABLE to a runnable path (claude only).
  * @returns {Record<string,string>}
  */
 function buildSdkAgentEnv({

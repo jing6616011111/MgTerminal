@@ -1,6 +1,6 @@
 # Agent icons
 
-## Originally authored for netcatty
+## Originally authored for magiesTerminal
 
 - `catty.svg`, `terminal.svg`, `plus.svg`, and other generic UI glyphs.
 

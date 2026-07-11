@@ -178,7 +178,7 @@ const LEGACY_DEFAULT_ADDITIONS: Partial<Record<SSHAlgorithmCategory, readonly st
 };
 
 /**
- * Return the algorithm list that NetCatty would actually offer for each
+ * Return the algorithm list that MagiesTerminal would actually offer for each
  * category at connect time given the current legacy toggle. The advanced
  * override UI seeds an untouched category from this list so a partial
  * customization can't accidentally re-enable algorithms the connection

@@ -4,10 +4,10 @@ import {
   serializeHostsToSshConfig,
   mergeWithExistingSshConfig,
 } from "../../domain/sshConfigSerializer";
-import { netcattyBridge } from "../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../infrastructure/services/magiesTerminalBridge";
 
-const MANAGED_BLOCK_BEGIN = "# BEGIN NETCATTY MANAGED - DO NOT EDIT THIS BLOCK";
-const MANAGED_BLOCK_END = "# END NETCATTY MANAGED";
+const MANAGED_BLOCK_BEGIN = "# BEGIN MAGIES_TERMINAL MANAGED - DO NOT EDIT THIS BLOCK";
+const MANAGED_BLOCK_END = "# END MAGIES_TERMINAL MANAGED";
 
 export interface UseManagedSourceSyncOptions {
   hosts: Host[];
@@ -35,7 +35,7 @@ export const useManagedSourceSync = ({
 
   const readExistingFileContent = useCallback(
     async (filePath: string): Promise<string | null> => {
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge?.readLocalFile) {
         return null;
       }
@@ -103,7 +103,7 @@ export const useManagedSourceSync = ({
 
   const writeSshConfigToFile = useCallback(
     async (source: ManagedSource, managedHosts: Host[]) => {
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge?.writeLocalFile) {
         console.warn("[ManagedSourceSync] writeLocalFile not available");
         return false;

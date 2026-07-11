@@ -162,7 +162,7 @@ function makeSender({ rejectHostKeyPrompts = false } = {}) {
     sent: [],
     send(channel, payload) {
       this.sent.push({ channel, payload });
-      if (rejectHostKeyPrompts && channel === "netcatty:host-key:verify") {
+      if (rejectHostKeyPrompts && channel === "magiesTerminal:host-key:verify") {
         const { handleResponse } = require("./hostKeyVerifier.cjs");
         queueMicrotask(() => {
           handleResponse(null, {
@@ -197,7 +197,7 @@ test("SFTP direct connections verify target host keys against known hosts", asyn
   assert.equal(typeof connectOpts.hostVerifier, "function");
   assert.equal(MockSftpClient.instances[0].hostVerifierCalls, 1);
   assert.deepEqual(
-    sender.sent.filter((message) => message.channel === "netcatty:host-key:verify"),
+    sender.sent.filter((message) => message.channel === "magiesTerminal:host-key:verify"),
     [],
   );
 });
@@ -240,7 +240,7 @@ test("SFTP jump-host chains verify hop and target host keys against known hosts"
   assert.equal(typeof targetConnectOpts.hostVerifier, "function");
   assert.equal(MockSftpClient.instances[0].hostVerifierCalls, 1);
   assert.deepEqual(
-    sender.sent.filter((message) => message.channel === "netcatty:host-key:verify"),
+    sender.sent.filter((message) => message.channel === "magiesTerminal:host-key:verify"),
     [],
   );
 });
@@ -270,7 +270,7 @@ test("SFTP direct connections stop when target host keys are rejected", async (t
 
   assert.equal(MockSftpClient.instances[0].hostVerifierCalls, 1);
   assert.equal(
-    sender.sent.filter((message) => message.channel === "netcatty:host-key:verify").length,
+    sender.sent.filter((message) => message.channel === "magiesTerminal:host-key:verify").length,
     1,
   );
 });
@@ -307,7 +307,7 @@ test("SFTP jump-host chains stop when hop host keys are rejected", async (t) => 
 
   assert.equal(MockJumpClient.instances[0].hostVerifierCalls, 1);
   assert.equal(
-    sender.sent.filter((message) => message.channel === "netcatty:host-key:verify").length,
+    sender.sent.filter((message) => message.channel === "magiesTerminal:host-key:verify").length,
     1,
   );
 });

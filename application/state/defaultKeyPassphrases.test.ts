@@ -39,7 +39,7 @@ function installLocalStorage(t: test.TestContext): void {
   });
   Object.defineProperty(globalThis, "window", {
     configurable: true,
-    value: { netcatty: undefined },
+    value: { magiesTerminal: undefined },
   });
 
   t.after(() => {

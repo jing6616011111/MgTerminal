@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="public/icon.png" alt="Netcatty" width="128" height="128">
+  <img src="public/icon.png" alt="MagiesTerminal" width="128" height="128">
 </p>
 
-<h1 align="center">Netcatty</h1>
+<h1 align="center">MagiesTerminal</h1>
 
 <p align="center">
   <strong>🔥 AI 驱动的 SSH 客户端、SFTP 浏览器 & 终端管理器 🚀</strong><br/>
-  <a href="https://netcatty.app"><strong>netcatty.app</strong></a>
+  <a href="https://github.com/JasonZhangDad/MagiesTerminal"><strong>github.com/JasonZhangDad/MagiesTerminal</strong></a>
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/binaricat/Netcatty/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/binaricat/Netcatty?style=for-the-badge&logo=github&label=Release"></a>
+  <a href="https://github.com/JasonZhangDad/MagiesTerminal/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/JasonZhangDad/MagiesTerminal?style=for-the-badge&logo=github&label=Release"></a>
   &nbsp;
   <a href="#"><img alt="Platform" src="https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-blue?style=for-the-badge&logo=electron"></a>
   &nbsp;
@@ -23,8 +23,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/binaricat/Netcatty/releases/latest">
-    <img src="https://img.shields.io/github/v/release/binaricat/Netcatty?style=for-the-badge&logo=github&label=下载最新版&color=success" alt="下载最新版">
+  <a href="https://github.com/JasonZhangDad/MagiesTerminal/releases/latest">
+    <img src="https://img.shields.io/github/v/release/JasonZhangDad/MagiesTerminal?style=for-the-badge&logo=github&label=下载最新版&color=success" alt="下载最新版">
   </a>
 </p>
 
@@ -76,8 +76,8 @@
 # 目录 <!-- omit in toc -->
 
 - [🔥 Catty Agent — AI 搭档](#catty-agent)
-- [Netcatty 是什么](#netcatty-是什么)
-- [为什么是 Netcatty](#为什么是-netcatty)
+- [MagiesTerminal 是什么](#magiesTerminal-是什么)
+- [为什么是 MagiesTerminal](#为什么是-magiesTerminal)
 - [功能特性](#功能特性)
 - [界面截图](#界面截图)
   - [主界面](#主界面)
@@ -94,23 +94,23 @@
 
 ---
 
-<a name="netcatty-是什么"></a>
-# Netcatty 是什么
+<a name="magiesTerminal-是什么"></a>
+# MagiesTerminal 是什么
 
-**Netcatty** 是一款现代化的跨平台 SSH 客户端和终端管理器，专为需要高效管理多台远程服务器的开发者、系统管理员和 DevOps 工程师设计。
+**MagiesTerminal** 是一款现代化的跨平台 SSH 客户端和终端管理器，专为需要高效管理多台远程服务器的开发者、系统管理员和 DevOps 工程师设计。
 
-- **Netcatty 是** PuTTY、Termius、SecureCRT 和 macOS Terminal.app 的现代替代品
-- **Netcatty 是** 一个强大的 SFTP 客户端，支持双窗格文件浏览
-- **Netcatty 是** 一个终端工作空间，支持分屏、标签页和会话管理
-- **Netcatty 支持** SSH、本地终端、Telnet、Mosh、串口（Serial）等连接方式（视环境而定）
-- **Netcatty 不是** Shell 替代品 —— 它通过 SSH/Telnet/Mosh 或本地/串口会话连接到 Shell
+- **MagiesTerminal 是** PuTTY、Termius、SecureCRT 和 macOS Terminal.app 的现代替代品
+- **MagiesTerminal 是** 一个强大的 SFTP 客户端，支持双窗格文件浏览
+- **MagiesTerminal 是** 一个终端工作空间，支持分屏、标签页和会话管理
+- **MagiesTerminal 支持** SSH、本地终端、Telnet、Mosh、串口（Serial）等连接方式（视环境而定）
+- **MagiesTerminal 不是** Shell 替代品 —— 它通过 SSH/Telnet/Mosh 或本地/串口会话连接到 Shell
 
 ---
 
-<a name="为什么是-netcatty"></a>
-# 为什么是 Netcatty
+<a name="为什么是-magiesTerminal"></a>
+# 为什么是 MagiesTerminal
 
-如果你需要同时维护多台服务器，Netcatty 更像是“工作台”而不是单一终端：
+如果你需要同时维护多台服务器，MagiesTerminal 更像是“工作台”而不是单一终端：
 
 - **以工作区为核心** —— 分屏 + 标签页 + 会话恢复，适合长期驻留的工作流
 - **Vault 管理** —— 网格/列表/树形视图，配合快速搜索与拖拽流程更顺手
@@ -172,7 +172,7 @@
 <a name="支持的发行版"></a>
 # 支持的发行版
 
-Netcatty 会自动识别并在主机列表中展示对应的系统图标：
+MagiesTerminal 会自动识别并在主机列表中展示对应的系统图标：
 
 <p align="center">
   <img src="public/distro/ubuntu.svg" width="48" alt="Ubuntu" title="Ubuntu">
@@ -195,7 +195,7 @@ Netcatty 会自动识别并在主机列表中展示对应的系统图标：
 
 ### 下载
 
-从 [GitHub Releases](https://github.com/binaricat/Netcatty/releases/latest) 下载适合您平台的最新版本。
+从 [GitHub Releases](https://github.com/JasonZhangDad/MagiesTerminal/releases/latest) 下载适合您平台的最新版本。
 
 | 操作系统 | 支持情况 |
 | :--- | :--- |
@@ -203,19 +203,19 @@ Netcatty 会自动识别并在主机列表中展示对应的系统图标：
 | **Windows** | x64 / arm64 |
 | **Linux** | x64 / arm64 |
 
-或在 [GitHub Releases](https://github.com/binaricat/Netcatty/releases) 浏览所有版本。
+或在 [GitHub Releases](https://github.com/JasonZhangDad/MagiesTerminal/releases) 浏览所有版本。
 
 > **macOS 用户注意：** 当前发布版本应已完成代码签名和公证。如果 Gatekeeper 仍然提示风险，请确认您下载的是 GitHub Releases 中的最新官方构建。
 
 ### Nix / NixOS
 
-Netcatty 提供了一个 flake，为 Nix 和 NixOS 用户封装了官方 Linux AppImage 发行版：
+MagiesTerminal 提供了一个 flake，为 Nix 和 NixOS 用户封装了官方 Linux AppImage 发行版：
 
 ```bash
-nix run github:binaricat/Netcatty
+nix run github:JasonZhangDad/MagiesTerminal
 ```
 
-声明式安装时，将 Netcatty flake 添加为输入，并在 NixOS 或 Home Manager 的软件包列表中使用 `inputs.netcatty.packages.${pkgs.system}.default`。
+声明式安装时，将 MagiesTerminal flake 添加为输入，并在 NixOS 或 Home Manager 的软件包列表中使用 `inputs.magiesTerminal.packages.${pkgs.system}.default`。
 
 ### 前置条件
 - Node.js 18+ 和 npm
@@ -225,8 +225,8 @@ nix run github:binaricat/Netcatty
 
 ```bash
 # 克隆仓库
-git clone https://github.com/binaricat/Netcatty.git
-cd Netcatty
+git clone https://github.com/JasonZhangDad/MagiesTerminal.git
+cd MagiesTerminal
 
 # 安装依赖
 npm install
@@ -291,8 +291,8 @@ npm run pack:linux   # Linux (AppImage + DEB + RPM)
 
 感谢所有参与贡献的人！
 
-<a href="https://github.com/binaricat/Netcatty/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=binaricat/Netcatty" />
+<a href="https://github.com/JasonZhangDad/MagiesTerminal/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=JasonZhangDad/MagiesTerminal" />
 </a>
 
 ---
@@ -307,11 +307,11 @@ npm run pack:linux   # Linux (AppImage + DEB + RPM)
 <a name="star-历史"></a>
 # Star 历史
 
-<a href="https://star-history.com/#binaricat/Netcatty&Date">
+<a href="https://star-history.com/#JasonZhangDad/MagiesTerminal&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=binaricat/Netcatty&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=binaricat/Netcatty&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=binaricat/Netcatty&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=JasonZhangDad/MagiesTerminal&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=JasonZhangDad/MagiesTerminal&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=JasonZhangDad/MagiesTerminal&type=Date" />
  </picture>
 </a>
 

@@ -29,7 +29,7 @@ const SFTP_CAPABILITIES = [
     "List a remote directory over SFTP.",
     { sensitiveRead: true },
     {
-      builtin: { rpcMethod: "netcatty/sftp/list" },
+      builtin: { rpcMethod: "magiesTerminal/sftp/list" },
       public: { rpcMethod: "public/sftp/list", mcpTool: "sftp_list", confirmInConfirmMode: true },
       cli: { command: ["sftp", "list"] },
     },
@@ -39,7 +39,7 @@ const SFTP_CAPABILITIES = [
     "Read a remote file over SFTP.",
     { sensitiveRead: true },
     {
-      builtin: { rpcMethod: "netcatty/sftp/read" },
+      builtin: { rpcMethod: "magiesTerminal/sftp/read" },
       public: { rpcMethod: "public/sftp/readFile", mcpTool: "sftp_read_file", confirmInConfirmMode: true },
       cli: { command: ["sftp", "read"] },
     },
@@ -49,7 +49,7 @@ const SFTP_CAPABILITIES = [
     "Write a remote file over SFTP.",
     { write: true, bypassesApproval: false, bypassesChatCancel: false },
     {
-      builtin: { rpcMethod: "netcatty/sftp/write" },
+      builtin: { rpcMethod: "magiesTerminal/sftp/write" },
       public: { rpcMethod: "public/sftp/writeFile", mcpTool: "sftp_write_file" },
       cli: { command: ["sftp", "write"] },
     },
@@ -59,7 +59,7 @@ const SFTP_CAPABILITIES = [
     "Download a remote file to a local path.",
     { write: true, bypassesApproval: false, bypassesChatCancel: false },
     {
-      builtin: { rpcMethod: "netcatty/sftp/download" },
+      builtin: { rpcMethod: "magiesTerminal/sftp/download" },
       public: { rpcMethod: "public/sftp/download", mcpTool: "sftp_download" },
       cli: { command: ["sftp", "download"] },
     },
@@ -69,7 +69,7 @@ const SFTP_CAPABILITIES = [
     "Upload a local file to a remote path.",
     { write: true, bypassesApproval: false, bypassesChatCancel: false },
     {
-      builtin: { rpcMethod: "netcatty/sftp/upload" },
+      builtin: { rpcMethod: "magiesTerminal/sftp/upload" },
       public: { rpcMethod: "public/sftp/upload", mcpTool: "sftp_upload" },
       cli: { command: ["sftp", "upload"] },
     },
@@ -79,7 +79,7 @@ const SFTP_CAPABILITIES = [
     "Get remote file metadata over SFTP.",
     { sensitiveRead: true },
     {
-      builtin: { rpcMethod: "netcatty/sftp/stat" },
+      builtin: { rpcMethod: "magiesTerminal/sftp/stat" },
       public: { rpcMethod: "public/sftp/stat", mcpTool: "sftp_stat", confirmInConfirmMode: true },
       cli: { command: ["sftp", "stat"] },
     },
@@ -89,7 +89,7 @@ const SFTP_CAPABILITIES = [
     "Get the remote home directory for a session.",
     { sensitiveRead: true },
     {
-      builtin: { rpcMethod: "netcatty/sftp/home" },
+      builtin: { rpcMethod: "magiesTerminal/sftp/home" },
       public: { rpcMethod: "public/sftp/home", mcpTool: "sftp_home", confirmInConfirmMode: true },
       cli: { command: ["sftp", "home"] },
     },
@@ -99,7 +99,7 @@ const SFTP_CAPABILITIES = [
     "Create a remote directory over SFTP.",
     { write: true, bypassesApproval: false, bypassesChatCancel: false },
     {
-      builtin: { rpcMethod: "netcatty/sftp/mkdir" },
+      builtin: { rpcMethod: "magiesTerminal/sftp/mkdir" },
       public: { rpcMethod: "public/sftp/mkdir", mcpTool: "sftp_mkdir" },
       cli: { command: ["sftp", "mkdir"] },
     },
@@ -109,7 +109,7 @@ const SFTP_CAPABILITIES = [
     "Delete a remote file or directory over SFTP.",
     { write: true, bypassesApproval: false, bypassesChatCancel: false },
     {
-      builtin: { rpcMethod: "netcatty/sftp/delete" },
+      builtin: { rpcMethod: "magiesTerminal/sftp/delete" },
       public: { rpcMethod: "public/sftp/delete", mcpTool: "sftp_delete" },
       cli: { command: ["sftp", "delete"] },
     },
@@ -119,7 +119,7 @@ const SFTP_CAPABILITIES = [
     "Rename a remote file or directory over SFTP.",
     { write: true, bypassesApproval: false, bypassesChatCancel: false },
     {
-      builtin: { rpcMethod: "netcatty/sftp/rename" },
+      builtin: { rpcMethod: "magiesTerminal/sftp/rename" },
       public: { rpcMethod: "public/sftp/rename", mcpTool: "sftp_rename" },
       cli: { command: ["sftp", "rename"] },
     },
@@ -129,7 +129,7 @@ const SFTP_CAPABILITIES = [
     "Change remote file permissions over SFTP.",
     { write: true, bypassesApproval: false, bypassesChatCancel: false },
     {
-      builtin: { rpcMethod: "netcatty/sftp/chmod" },
+      builtin: { rpcMethod: "magiesTerminal/sftp/chmod" },
       public: { rpcMethod: "public/sftp/chmod", mcpTool: "sftp_chmod" },
       cli: { command: ["sftp", "chmod"] },
     },

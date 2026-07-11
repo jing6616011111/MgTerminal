@@ -7,7 +7,7 @@ const path = require("node:path");
 const { moshExtraResources } = require("./mosh-extra-resources.cjs");
 
 function makeTmp(t) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-mosh-resources-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-mosh-resources-"));
   t.after(() => {
     if (process.cwd().startsWith(dir)) process.chdir(os.tmpdir());
     fs.rmSync(dir, { recursive: true, force: true });

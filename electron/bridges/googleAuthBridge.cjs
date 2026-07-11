@@ -9,7 +9,7 @@ const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
 const GOOGLE_DRIVE_API = "https://www.googleapis.com/drive/v3";
 const GOOGLE_DRIVE_UPLOAD_API = "https://www.googleapis.com/upload/drive/v3";
-const DEFAULT_SYNC_FILE_NAME = "netcatty-vault.json";
+const DEFAULT_SYNC_FILE_NAME = "magiesTerminal-vault.json";
 const { randomUUID } = require("node:crypto");
 
 const isNonEmptyString = (v) => typeof v === "string" && v.trim().length > 0;
@@ -48,7 +48,7 @@ function registerHandlers(ipcMain, electronModule) {
   const fetchImpl =
     electronModule?.net?.fetch ? electronModule.net.fetch.bind(electronModule.net) : fetch;
 
-  ipcMain.handle("netcatty:google:oauth:exchange", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:google:oauth:exchange", async (_event, payload) => {
     const clientId = payload?.clientId;
     const clientSecret = payload?.clientSecret;
     const code = payload?.code;
@@ -114,7 +114,7 @@ function registerHandlers(ipcMain, electronModule) {
     };
   });
 
-  ipcMain.handle("netcatty:google:oauth:refresh", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:google:oauth:refresh", async (_event, payload) => {
     const clientId = payload?.clientId;
     const clientSecret = payload?.clientSecret;
     const refreshToken = payload?.refreshToken;
@@ -174,7 +174,7 @@ function registerHandlers(ipcMain, electronModule) {
     };
   });
 
-  ipcMain.handle("netcatty:google:oauth:userinfo", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:google:oauth:userinfo", async (_event, payload) => {
     const accessToken = payload?.accessToken;
     if (!isNonEmptyString(accessToken)) throw new Error("Missing accessToken");
 
@@ -204,7 +204,7 @@ function registerHandlers(ipcMain, electronModule) {
   });
 
   // Google Drive API (appDataFolder) - proxied to avoid CORS/COEP issues in renderer
-  ipcMain.handle("netcatty:google:drive:findSyncFile", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:google:drive:findSyncFile", async (_event, payload) => {
     const accessToken = payload?.accessToken;
     const fileName = isNonEmptyString(payload?.fileName) ? payload.fileName : DEFAULT_SYNC_FILE_NAME;
     if (!isNonEmptyString(accessToken)) throw new Error("Missing accessToken");
@@ -245,14 +245,14 @@ function registerHandlers(ipcMain, electronModule) {
     return { fileId };
   });
 
-  ipcMain.handle("netcatty:google:drive:createSyncFile", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:google:drive:createSyncFile", async (_event, payload) => {
     const accessToken = payload?.accessToken;
     const fileName = isNonEmptyString(payload?.fileName) ? payload.fileName : DEFAULT_SYNC_FILE_NAME;
     const syncedFile = payload?.syncedFile;
     if (!isNonEmptyString(accessToken)) throw new Error("Missing accessToken");
     if (!syncedFile) throw new Error("Missing syncedFile");
 
-    const boundary = `----netcatty_${randomUUID()}`;
+    const boundary = `----magiesTerminal_${randomUUID()}`;
     const metadata = JSON.stringify({
       name: fileName,
       parents: ["appDataFolder"],
@@ -305,7 +305,7 @@ function registerHandlers(ipcMain, electronModule) {
     return { fileId };
   });
 
-  ipcMain.handle("netcatty:google:drive:updateSyncFile", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:google:drive:updateSyncFile", async (_event, payload) => {
     const accessToken = payload?.accessToken;
     const fileId = payload?.fileId;
     const syncedFile = payload?.syncedFile;
@@ -344,7 +344,7 @@ function registerHandlers(ipcMain, electronModule) {
     return { ok: true };
   });
 
-  ipcMain.handle("netcatty:google:drive:downloadSyncFile", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:google:drive:downloadSyncFile", async (_event, payload) => {
     const accessToken = payload?.accessToken;
     const fileId = payload?.fileId;
     if (!isNonEmptyString(accessToken)) throw new Error("Missing accessToken");
@@ -381,7 +381,7 @@ function registerHandlers(ipcMain, electronModule) {
     return { syncedFile: data };
   });
 
-  ipcMain.handle("netcatty:google:drive:deleteSyncFile", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:google:drive:deleteSyncFile", async (_event, payload) => {
     const accessToken = payload?.accessToken;
     const fileId = payload?.fileId;
     if (!isNonEmptyString(accessToken)) throw new Error("Missing accessToken");

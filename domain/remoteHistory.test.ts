@@ -7,8 +7,8 @@ import {
   parseFishHistory,
   parseShellHistory,
   mergeRemoteHistory,
-  isNetcattyAiHistoryCommand,
-  isNetcattyManagedStartupHistoryCommand,
+  isMagiesTerminalAiHistoryCommand,
+  isMagiesTerminalManagedStartupHistoryCommand,
 } from './remoteHistory.ts';
 import { buildDockerExecShellCommand, buildDockerLogsCommand } from './systemManager/dockerShell.ts';
 import { buildTmuxAttachCommand } from './systemManager/tmuxShell.ts';
@@ -183,31 +183,31 @@ test('mergeRemoteHistory: timestamped entries rank above untimestamped ones', ()
   );
 });
 
-test('isNetcattyAiHistoryCommand: detects AI PTY marker lines', () => {
+test('isMagiesTerminalAiHistoryCommand: detects AI PTY marker lines', () => {
   assert.equal(
-    isNetcattyAiHistoryCommand('__NCMCP_abc123=0; ls -la'),
+    isMagiesTerminalAiHistoryCommand('__NCMCP_abc123=0; ls -la'),
     true,
   );
   assert.equal(
-    isNetcattyAiHistoryCommand('/opt/frp/frps.toml__NCMCP_mp56jbh6_3e30833'),
+    isMagiesTerminalAiHistoryCommand('/opt/frp/frps.toml__NCMCP_mp56jbh6_3e30833'),
     true,
   );
-  assert.equal(isNetcattyAiHistoryCommand('ls -la'), false);
-  assert.equal(isNetcattyAiHistoryCommand('grep NCMCP log.txt'), false);
+  assert.equal(isMagiesTerminalAiHistoryCommand('ls -la'), false);
+  assert.equal(isMagiesTerminalAiHistoryCommand('grep NCMCP log.txt'), false);
 });
 
-test('isNetcattyManagedStartupHistoryCommand: detects Docker and tmux terminal launch commands', () => {
-  assert.equal(isNetcattyManagedStartupHistoryCommand(buildDockerExecShellCommand('587abcdef123')), true);
-  assert.equal(isNetcattyManagedStartupHistoryCommand(buildDockerLogsCommand('587abcdef123')), true);
-  assert.equal(isNetcattyManagedStartupHistoryCommand(buildTmuxAttachCommand('my-session')), true);
-  assert.equal(isNetcattyManagedStartupHistoryCommand(buildTmuxAttachCommand('my-session', 2)), true);
-  assert.equal(isNetcattyManagedStartupHistoryCommand('docker ps -a'), false);
-  assert.equal(isNetcattyManagedStartupHistoryCommand('docker logs -f 587abcdef123'), false);
-  assert.equal(isNetcattyManagedStartupHistoryCommand('docker exec -it 587abcdef123 bash'), false);
-  assert.equal(isNetcattyManagedStartupHistoryCommand('tmux attach -t my-session'), false);
+test('isMagiesTerminalManagedStartupHistoryCommand: detects Docker and tmux terminal launch commands', () => {
+  assert.equal(isMagiesTerminalManagedStartupHistoryCommand(buildDockerExecShellCommand('587abcdef123')), true);
+  assert.equal(isMagiesTerminalManagedStartupHistoryCommand(buildDockerLogsCommand('587abcdef123')), true);
+  assert.equal(isMagiesTerminalManagedStartupHistoryCommand(buildTmuxAttachCommand('my-session')), true);
+  assert.equal(isMagiesTerminalManagedStartupHistoryCommand(buildTmuxAttachCommand('my-session', 2)), true);
+  assert.equal(isMagiesTerminalManagedStartupHistoryCommand('docker ps -a'), false);
+  assert.equal(isMagiesTerminalManagedStartupHistoryCommand('docker logs -f 587abcdef123'), false);
+  assert.equal(isMagiesTerminalManagedStartupHistoryCommand('docker exec -it 587abcdef123 bash'), false);
+  assert.equal(isMagiesTerminalManagedStartupHistoryCommand('tmux attach -t my-session'), false);
 });
 
-test('mergeRemoteHistory: drops Netcatty AI PTY history lines', () => {
+test('mergeRemoteHistory: drops MagiesTerminal AI PTY history lines', () => {
   const lists = [
     parseBashHistory(
       ['ls -la', '__NCMCP_abc=0; pwd', 'git status'].join('\n'),
@@ -220,7 +220,7 @@ test('mergeRemoteHistory: drops Netcatty AI PTY history lines', () => {
   );
 });
 
-test('mergeRemoteHistory: drops Netcatty managed Docker and tmux startup lines', () => {
+test('mergeRemoteHistory: drops MagiesTerminal managed Docker and tmux startup lines', () => {
   const lists = [
     parseBashHistory(
       [
@@ -238,7 +238,7 @@ test('mergeRemoteHistory: drops Netcatty managed Docker and tmux startup lines',
   );
 });
 
-test('mergeRemoteHistory: drops Netcatty managed startup lines from zsh and fish history', () => {
+test('mergeRemoteHistory: drops MagiesTerminal managed startup lines from zsh and fish history', () => {
   const zsh = parseZshHistory(
     [
       ': 1700000000:0;git status',

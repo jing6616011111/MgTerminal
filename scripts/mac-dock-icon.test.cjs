@@ -111,7 +111,7 @@ test("macOS keeps the packaged icon unchanged and sizes only runtime Dock icons"
   assert.deepEqual(
     readRgbaPngAlphaBounds(path.join(projectRoot, "public/icon.png")),
     { minX: 61, minY: 61, maxX: 962, maxY: 962 },
-    "The packaged icon already looks correct when Netcatty is not running",
+    "The packaged icon already looks correct when MagiesTerminal is not running",
   );
 
   for (const variant of APP_ICON_VARIANTS) {

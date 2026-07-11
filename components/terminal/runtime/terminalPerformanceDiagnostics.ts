@@ -1,4 +1,4 @@
-import { netcattyBridge } from "../../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../../infrastructure/services/magiesTerminalBridge";
 
 export type TerminalOutputPerfMeta = {
   id: string;
@@ -23,10 +23,10 @@ type TerminalOutputPerfMetaCarrier = {
 };
 
 const DEBUG_KEYS = [
-  "NETCATTY_TERMINAL_PERF_DEBUG",
-  "NETCATTY_TERMINAL_DEBUG",
+  "MAGIES_TERMINAL_TERMINAL_PERF_DEBUG",
+  "MAGIES_TERMINAL_TERMINAL_DEBUG",
 ];
-const PERF_LOG_PREFIX = "[Netcatty Terminal Perf]";
+const PERF_LOG_PREFIX = "[MagiesTerminal Terminal Perf]";
 const LOCAL_STORAGE_DEBUG_CACHE_TTL_MS = 1000;
 
 let localStorageDebugCache = false;
@@ -51,7 +51,7 @@ const sendRendererDiagnostic = (
   payload: Record<string, unknown>,
 ): void => {
   try {
-    const logDiagnostic = netcattyBridge.get()?.logDiagnostic;
+    const logDiagnostic = magiesTerminalBridge.get()?.logDiagnostic;
     if (typeof logDiagnostic !== "function") return;
     void logDiagnostic({
       source: "terminal-perf",

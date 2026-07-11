@@ -1,7 +1,7 @@
 import type React from 'react';
 
-export const AI_PANEL_DIAGNOSTIC_HIDE_KEY = 'netcatty.aiDebug.hide';
-export const AI_PANEL_DIAGNOSTIC_PROFILE_KEY = 'netcatty.aiDebug.profile';
+export const AI_PANEL_DIAGNOSTIC_HIDE_KEY = 'magiesTerminal.aiDebug.hide';
+export const AI_PANEL_DIAGNOSTIC_PROFILE_KEY = 'magiesTerminal.aiDebug.profile';
 export const AI_PANEL_FORCE_HIDE_ALL_CONTENT = false;
 export const AI_PANEL_FORCE_HIDE_SHELL = false;
 

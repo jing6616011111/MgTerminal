@@ -6,7 +6,7 @@ const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 
 test("release notes include Arch pacman downloads for x64 and arm64", (t) => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-release-note-"));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-release-note-"));
   t.after(() => fs.rmSync(tmp, { recursive: true, force: true }));
 
   const script = path.join(__dirname, "..", ".github", "scripts", "generate-release-note.js");
@@ -16,7 +16,7 @@ test("release notes include Arch pacman downloads for x64 and arm64", (t) => {
       ...process.env,
       VERSION: "1.2.3",
       GITHUB_REF_NAME: "v1.2.3",
-      GITHUB_REPOSITORY: "binaricat/Netcatty",
+      GITHUB_REPOSITORY: "JasonZhangDad/MagiesTerminal",
       GITHUB_SHA: "0123456789abcdef",
     },
     stdio: "pipe",
@@ -27,10 +27,10 @@ test("release notes include Arch pacman downloads for x64 and arm64", (t) => {
   assert.match(notes, /ArchPackage arm64/);
   assert.match(
     notes,
-    /https:\/\/github\.com\/binaricat\/Netcatty\/releases\/download\/v1\.2\.3\/Netcatty-1\.2\.3-linux-x64\.pacman/,
+    /https:\/\/github\.com\/JasonZhangDad\/MagiesTerminal\/releases\/download\/v1\.2\.3\/MagiesTerminal-1\.2\.3-linux-x64\.pacman/,
   );
   assert.match(
     notes,
-    /https:\/\/github\.com\/binaricat\/Netcatty\/releases\/download\/v1\.2\.3\/Netcatty-1\.2\.3-linux-aarch64\.pacman/,
+    /https:\/\/github\.com\/JasonZhangDad\/MagiesTerminal\/releases\/download\/v1\.2\.3\/MagiesTerminal-1\.2\.3-linux-aarch64\.pacman/,
   );
 });

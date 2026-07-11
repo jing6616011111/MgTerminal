@@ -12,12 +12,12 @@ import { createTerminalOutputTriggerFilter } from '@/domain/terminalOutputTrigge
 import type { Snippet } from '@/domain/models';
 
 test('findMatchEndingAfter skips stale overlap matches and finds current output', () => {
-  const text = 'NETCATTY_TRIGGER_PROBE old\r\nprompt# NETCATTY_TRIGGER_PROBE: command not found\r\n';
-  const minEndOffset = 'NETCATTY_TRIGGER_PROBE old\r\n'.length;
-  const match = findMatchEndingAfter(text, 'NETCATTY_TRIGGER_PROBE', minEndOffset);
+  const text = 'MAGIES_TERMINAL_TRIGGER_PROBE old\r\nprompt# MAGIES_TERMINAL_TRIGGER_PROBE: command not found\r\n';
+  const minEndOffset = 'MAGIES_TERMINAL_TRIGGER_PROBE old\r\n'.length;
+  const match = findMatchEndingAfter(text, 'MAGIES_TERMINAL_TRIGGER_PROBE', minEndOffset);
   assert.deepEqual(match, {
-    value: 'NETCATTY_TRIGGER_PROBE',
-    endOffset: 'NETCATTY_TRIGGER_PROBE old\r\nprompt# NETCATTY_TRIGGER_PROBE'.length,
+    value: 'MAGIES_TERMINAL_TRIGGER_PROBE',
+    endOffset: 'MAGIES_TERMINAL_TRIGGER_PROBE old\r\nprompt# MAGIES_TERMINAL_TRIGGER_PROBE'.length,
   });
 });
 
@@ -32,9 +32,9 @@ test('findMatchEndingAfter supports regex patterns', () => {
 });
 
 test('findMatchEndingAfter returns null when matches are only stale', () => {
-  const text = 'NETCATTY_TRIGGER_PROBE old\r\nnew output\r\n';
-  const minEndOffset = 'NETCATTY_TRIGGER_PROBE old\r\n'.length;
-  assert.equal(findMatchEndingAfter(text, 'NETCATTY_TRIGGER_PROBE', minEndOffset), null);
+  const text = 'MAGIES_TERMINAL_TRIGGER_PROBE old\r\nnew output\r\n';
+  const minEndOffset = 'MAGIES_TERMINAL_TRIGGER_PROBE old\r\n'.length;
+  assert.equal(findMatchEndingAfter(text, 'MAGIES_TERMINAL_TRIGGER_PROBE', minEndOffset), null);
 });
 
 test('hasApplicableOutputTriggerSnippet ignores non-output-trigger snippets', () => {

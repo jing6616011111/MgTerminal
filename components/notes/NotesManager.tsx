@@ -90,13 +90,13 @@ interface NoteFolderNode {
 
 type NotesToolbarPanel = "search" | null;
 
-const toolbarIconButtonClass = "netcatty-tab h-7 w-7 shrink-0 rounded-md p-0 hover:bg-transparent";
+const toolbarIconButtonClass = "magiesTerminal-tab h-7 w-7 shrink-0 rounded-md p-0 hover:bg-transparent";
 const menuItemClass = "flex h-8 w-full items-center rounded-md px-3 text-left text-sm hover:bg-secondary";
 const NOTES_TREE_DEFAULT_WIDTH = 300;
 const NOTES_TREE_MIN_WIDTH = 220;
 const NOTES_TREE_MAX_WIDTH = 520;
-const NOTE_DRAG_TYPE = "application/x-netcatty-note-id";
-const NOTE_GROUP_DRAG_TYPE = "application/x-netcatty-note-group-path";
+const NOTE_DRAG_TYPE = "application/x-magiesTerminal-note-id";
+const NOTE_GROUP_DRAG_TYPE = "application/x-magiesTerminal-note-group-path";
 
 export const normalizeNoteEditorMode = (value: string | null): NoteEditorMode | null =>
   value === "edit" || value === "preview" ? value : null;
@@ -106,7 +106,7 @@ const isNoteEditorMode = (value: string | null): value is NoteEditorMode =>
 
 const InlineMarkdownEditorFallback = () => (
   <div
-    className="netcatty-lazy-fade-in min-h-[420px]"
+    className="magiesTerminal-lazy-fade-in min-h-[420px]"
     data-notes-editor-loading="true"
     aria-hidden="true"
   />
@@ -667,7 +667,7 @@ export const NotesManager: React.FC<NotesManagerProps> = ({
 
       const blob = buildTextFilesZipBlob(files);
       const safeName = sanitizeNoteExportFileNamePart(fileNamePart, "notes");
-      downloadNotesBlob(blob, `netcatty-notes-${safeName}.zip`);
+      downloadNotesBlob(blob, `magiesTerminal-notes-${safeName}.zip`);
       toast.success(t("notes.export.toast.success", { count: files.length }));
     } catch (err) {
       logger.error("Failed to export notes:", err);

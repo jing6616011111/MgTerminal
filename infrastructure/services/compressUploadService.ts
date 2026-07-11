@@ -4,7 +4,7 @@
  * Provides compressed folder upload functionality using tar compression
  */
 
-import { netcattyBridge } from "./netcattyBridge";
+import { magiesTerminalBridge } from "./magiesTerminalBridge";
 
 export interface CompressUploadOptions {
   compressionId: string;
@@ -40,7 +40,7 @@ export async function startCompressedUpload(
   onComplete?: CompressUploadCompleteCallback,
   onError?: CompressUploadErrorCallback
 ): Promise<{ compressionId: string; success?: boolean; error?: string }> {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (!bridge?.startCompressedUpload) {
     throw new Error("Compressed upload not available");
   }
@@ -61,7 +61,7 @@ export async function startCompressedUpload(
  * Cancel a compressed upload
  */
 export async function cancelCompressedUpload(compressionId: string): Promise<{ success: boolean }> {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (!bridge?.cancelCompressedUpload) {
     throw new Error("Compressed upload not available");
   }
@@ -73,7 +73,7 @@ export async function cancelCompressedUpload(compressionId: string): Promise<{ s
  * Check if compressed upload is supported for a given SFTP session
  */
 export async function checkCompressedUploadSupport(sftpId: string): Promise<CompressUploadSupport> {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (!bridge?.checkCompressedUploadSupport) {
     return {
       supported: false,

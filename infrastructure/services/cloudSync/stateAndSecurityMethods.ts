@@ -28,7 +28,7 @@ import type {
 } from '../../../domain/sync';
 import type { SyncManagerState } from '../CloudSyncManager';
 
-const SYNC_HISTORY_STORAGE_KEY = 'netcatty_sync_history_v1';
+const SYNC_HISTORY_STORAGE_KEY = 'magiesTerminal_sync_history_v1';
 
 export function loadInitialStateImpl(this: any): SyncManagerState {
     // Load persisted configuration

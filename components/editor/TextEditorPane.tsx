@@ -251,7 +251,7 @@ const TextEditorPaneInner: React.FC<TextEditorPaneProps> = ({
   const [themeSignal, setThemeSignal] = useState(() => getThemeSignal());
 
   // Custom theme name
-  const customThemeName = isDarkTheme ? 'netcatty-dark' : 'netcatty-light';
+  const customThemeName = isDarkTheme ? 'magiesTerminal-dark' : 'magiesTerminal-light';
 
   // Define and update custom Monaco themes from active chrome / base UI colors
   useEffect(() => {
@@ -276,14 +276,14 @@ const TextEditorPaneInner: React.FC<TextEditorPaneProps> = ({
       'input.border': colors.border,
     };
 
-    monaco.editor.defineTheme('netcatty-dark', {
+    monaco.editor.defineTheme('magiesTerminal-dark', {
       base: 'vs-dark',
       inherit: true,
       rules: [],
       colors: themeColors,
     });
 
-    monaco.editor.defineTheme('netcatty-light', {
+    monaco.editor.defineTheme('magiesTerminal-light', {
       base: 'vs',
       inherit: true,
       rules: [],
@@ -373,7 +373,7 @@ const TextEditorPaneInner: React.FC<TextEditorPaneProps> = ({
     const distribute = selections.length > 1 && lines.length === selections.length;
 
     editor.executeEdits(
-      'netcatty-paste',
+      'magiesTerminal-paste',
       selections.map((selection, i) => ({
         range: selection,
         text: distribute ? lines[i] : text,

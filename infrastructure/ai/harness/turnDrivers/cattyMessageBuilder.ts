@@ -21,7 +21,7 @@ import {
   type CattyProviderContinuationContext,
 } from '../../../../components/ai/hooks/aiChatStreamingSupport';
 
-const OPENAI_CHAT_ASSISTANT_FIELDS = Symbol('netcatty.openAIChatAssistantFields');
+const OPENAI_CHAT_ASSISTANT_FIELDS = Symbol('magiesTerminal.openAIChatAssistantFields');
 
 type ModelMessageWithOpenAIChatFields = ModelMessage & {
   [OPENAI_CHAT_ASSISTANT_FIELDS]?: OpenAIChatAssistantFields;

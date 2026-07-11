@@ -19,7 +19,7 @@ const {
 } = require("./fetch-mosh-binaries.cjs");
 
 function makeTmp(t) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-fetch-mosh-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-fetch-mosh-"));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   return dir;
 }
@@ -92,11 +92,11 @@ test("resolveHostTarget maps the local platform to the bundled target", () => {
 test("tar archive invocation uses a relative archive name for Windows paths", () => {
   assert.deepEqual(
     resolveTarArchiveInvocation(
-      "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\netcatty-mosh-abc\\bundle.tar.gz",
+      "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\magiesTerminal-mosh-abc\\bundle.tar.gz",
       "win32",
     ),
     {
-      cwd: "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\netcatty-mosh-abc",
+      cwd: "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\magiesTerminal-mosh-abc",
       archive: "bundle.tar.gz",
     },
   );

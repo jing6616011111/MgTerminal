@@ -73,7 +73,7 @@ function createTelnetSessionApi(ctx) {
             };
           }
           const contents = electronModule.webContents.fromId(event.sender.id);
-          contents?.send("netcatty:telnet:echo-mode", {
+          contents?.send("magiesTerminal:telnet:echo-mode", {
             sessionId,
             remoteEcho: remoteEchoEnabled,
             localEcho: localEchoEnabled,
@@ -112,11 +112,11 @@ function createTelnetSessionApi(ctx) {
           },
           onComplete() {
             const contents = electronModule.webContents.fromId(event.sender.id);
-            contents?.send("netcatty:telnet:auto-login-complete", { sessionId });
+            contents?.send("magiesTerminal:telnet:auto-login-complete", { sessionId });
           },
           onUserInput() {
             const contents = electronModule.webContents.fromId(event.sender.id);
-            contents?.send("netcatty:telnet:auto-login-cancelled", { sessionId });
+            contents?.send("magiesTerminal:telnet:auto-login-cancelled", { sessionId });
           },
         });
     
@@ -343,7 +343,7 @@ function createTelnetSessionApi(ctx) {
               if (session) {
                 session.zmodemSentry?.cancel();
                 const contents = electronModule.webContents.fromId(session.webContentsId);
-                contents?.send("netcatty:exit", { sessionId, exitCode: 1, error: err.message, reason: "error" });
+                contents?.send("magiesTerminal:exit", { sessionId, exitCode: 1, error: err.message, reason: "error" });
               }
               ptyProcessTree.unregisterPid(sessionId);
               closeTerminalOutputSession?.(sessionId);
@@ -369,7 +369,7 @@ function createTelnetSessionApi(ctx) {
             if (session) {
               session.zmodemSentry?.cancel();
               const contents = electronModule.webContents.fromId(session.webContentsId);
-              contents?.send("netcatty:exit", { sessionId, exitCode: hadError ? 1 : 0, reason: hadError ? "error" : "closed" });
+              contents?.send("magiesTerminal:exit", { sessionId, exitCode: hadError ? 1 : 0, reason: hadError ? "error" : "closed" });
             }
             ptyProcessTree.unregisterPid(sessionId);
             closeTerminalOutputSession?.(sessionId);

@@ -14,23 +14,23 @@ export type TerminalBackendApi = {
   localAvailable: () => boolean;
   serialAvailable: () => boolean;
   execAvailable: () => boolean;
-  startSSHSession: (options: NetcattySSHOptions) => Promise<string>;
+  startSSHSession: (options: MagiesTerminalSSHOptions) => Promise<string>;
   startTelnetSession: (
-    options: Parameters<NonNullable<NetcattyBridge["startTelnetSession"]>>[0],
+    options: Parameters<NonNullable<MagiesTerminalBridge["startTelnetSession"]>>[0],
   ) => Promise<string>;
   startMoshSession: (
-    options: Parameters<NonNullable<NetcattyBridge["startMoshSession"]>>[0],
+    options: Parameters<NonNullable<MagiesTerminalBridge["startMoshSession"]>>[0],
   ) => Promise<string>;
   startEtSession: (
-    options: Parameters<NonNullable<NetcattyBridge["startEtSession"]>>[0],
+    options: Parameters<NonNullable<MagiesTerminalBridge["startEtSession"]>>[0],
   ) => Promise<string>;
   startLocalSession: (
-    options: Parameters<NonNullable<NetcattyBridge["startLocalSession"]>>[0],
+    options: Parameters<NonNullable<MagiesTerminalBridge["startLocalSession"]>>[0],
   ) => Promise<string>;
   startSerialSession: (
-    options: Parameters<NonNullable<NetcattyBridge["startSerialSession"]>>[0],
+    options: Parameters<NonNullable<MagiesTerminalBridge["startSerialSession"]>>[0],
   ) => Promise<string>;
-  execCommand: (options: Parameters<NetcattyBridge["execCommand"]>[0]) => Promise<{
+  execCommand: (options: Parameters<MagiesTerminalBridge["execCommand"]>[0]) => Promise<{
     stdout?: string;
     stderr?: string;
   }>;
@@ -73,7 +73,7 @@ export type TerminalBackendApi = {
     cb: (sessionId: string, sourceSessionId?: string) => void,
   ) => (() => void) | undefined;
   writeToSession: (sessionId: string, data: string, options?: { automated?: boolean; lineDelayMs?: number; logRewrite?: ProgrammaticCommandLogRewrite }) => void;
-  interruptSession?: (sessionId: string, trace?: NetcattyTerminalInterruptTrace) => void;
+  interruptSession?: (sessionId: string, trace?: MagiesTerminalTerminalInterruptTrace) => void;
   resizeSession: (sessionId: string, cols: number, rows: number) => void;
   /** Pause/resume the source stream for output back-pressure (optional). */
   setSessionFlowPaused?: (sessionId: string, paused: boolean) => void;
@@ -184,5 +184,5 @@ export type TerminalSessionStartersContext = {
 export type TerminalSessionDataMeta = {
   droppedOutputMayAffectTerminalState?: boolean;
   droppedOutputAlternateScreenAction?: 'enter' | 'leave';
-  terminalPerf?: NetcattyTerminalOutputPerfMeta;
+  terminalPerf?: MagiesTerminalTerminalOutputPerfMeta;
 };

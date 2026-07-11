@@ -7,23 +7,23 @@ const { resolveRpcTimeoutMs, isLongRunningRpcMethod, isApprovalWaitRpcMethod } =
 const { CAPABILITY_SURFACES, PERMISSION_MODES, RPC_TIMEOUT_DEFAULTS } = require("./constants.cjs");
 
 test("long-running rpc methods include exec and sftp home", () => {
-  assert.equal(isLongRunningRpcMethod("netcatty/exec"), true);
-  assert.equal(isLongRunningRpcMethod("netcatty/sftp/read"), true);
-  assert.equal(isLongRunningRpcMethod("netcatty/sftp/home"), true);
-  assert.equal(isLongRunningRpcMethod("netcatty/jobPoll"), false);
+  assert.equal(isLongRunningRpcMethod("magiesTerminal/exec"), true);
+  assert.equal(isLongRunningRpcMethod("magiesTerminal/sftp/read"), true);
+  assert.equal(isLongRunningRpcMethod("magiesTerminal/sftp/home"), true);
+  assert.equal(isLongRunningRpcMethod("magiesTerminal/jobPoll"), false);
 });
 
 test("approval wait methods follow confirm mode and capability policy", () => {
   assert.equal(
-    isApprovalWaitRpcMethod("netcatty/exec", CAPABILITY_SURFACES.BUILTIN, PERMISSION_MODES.CONFIRM),
+    isApprovalWaitRpcMethod("magiesTerminal/exec", CAPABILITY_SURFACES.BUILTIN, PERMISSION_MODES.CONFIRM),
     true,
   );
   assert.equal(
-    isApprovalWaitRpcMethod("netcatty/jobStop", CAPABILITY_SURFACES.BUILTIN, PERMISSION_MODES.CONFIRM),
+    isApprovalWaitRpcMethod("magiesTerminal/jobStop", CAPABILITY_SURFACES.BUILTIN, PERMISSION_MODES.CONFIRM),
     false,
   );
   assert.equal(
-    isApprovalWaitRpcMethod("netcatty/sftp/list", CAPABILITY_SURFACES.BUILTIN, PERMISSION_MODES.CONFIRM),
+    isApprovalWaitRpcMethod("magiesTerminal/sftp/list", CAPABILITY_SURFACES.BUILTIN, PERMISSION_MODES.CONFIRM),
     false,
   );
   assert.equal(
@@ -33,7 +33,7 @@ test("approval wait methods follow confirm mode and capability policy", () => {
 });
 
 test("resolveRpcTimeoutMs combines operation and approval budgets", () => {
-  const timeoutMs = resolveRpcTimeoutMs("netcatty/exec", {
+  const timeoutMs = resolveRpcTimeoutMs("magiesTerminal/exec", {
     surface: CAPABILITY_SURFACES.BUILTIN,
     bridgeCommandTimeoutMs: 60_000,
     bridgePermissionMode: PERMISSION_MODES.CONFIRM,
@@ -49,7 +49,7 @@ test("resolveRpcTimeoutMs combines operation and approval budgets", () => {
 });
 
 test("resolveRpcTimeoutMs falls back to default for lightweight rpc", () => {
-  const timeoutMs = resolveRpcTimeoutMs("netcatty/getStatus", {
+  const timeoutMs = resolveRpcTimeoutMs("magiesTerminal/getStatus", {
     surface: CAPABILITY_SURFACES.BUILTIN,
     bridgePermissionMode: PERMISSION_MODES.CONFIRM,
   });

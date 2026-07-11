@@ -29,12 +29,12 @@ test("buildHistoricalUserReplayContent preserves historical file path metadata",
     base64Data: "A".repeat(200),
     mediaType: "text/plain",
     filename: "deploy.log",
-    filePath: "/tmp/netcatty/deploy.log",
+    filePath: "/tmp/magiesTerminal/deploy.log",
   }]);
 
   assert.match(content, /Historical file attachment omitted from replay/);
   assert.match(content, /filename=deploy\.log/);
-  assert.match(content, /path=\/tmp\/netcatty\/deploy\.log/);
+  assert.match(content, /path=\/tmp\/magiesTerminal\/deploy\.log/);
   assert.doesNotMatch(content, /AAAAAAAA/);
 });
 

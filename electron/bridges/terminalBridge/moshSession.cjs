@@ -8,7 +8,7 @@ const {
 const { createSshConnExecProbe } = require("../ai/sessionShellKind.cjs");
 
 // MoshCatty normally emits this cleanup together with an alternate-screen
-// exit. Netcatty keeps the primary screen, so restore only terminal modes that
+// exit. MagiesTerminal keeps the primary screen, so restore only terminal modes that
 // can leak from a full-screen remote program and leave scrollback untouched.
 const MOSH_PRIMARY_SCREEN_RESET = "\x1b[?1l\x1b[0m\x1b[?25h"
   + "\x1b[?1003l\x1b[?1002l\x1b[?1001l\x1b[?1000l"
@@ -178,7 +178,7 @@ function createMoshSessionApi(ctx) {
         try {
           fs.unlinkSync(file);
         } catch {
-          // Best effort cleanup; Settings > System can clear Netcatty temp files.
+          // Best effort cleanup; Settings > System can clear MagiesTerminal temp files.
         }
       }
     }
@@ -431,7 +431,7 @@ function createMoshSessionApi(ctx) {
             flushPaced(() => {
               sessionLogStreamManager.stopStream(sessionId, logStreamToken);
               const contents = electronModule.webContents.fromId(session.webContentsId);
-              contents?.send("netcatty:exit", {
+              contents?.send("magiesTerminal:exit", {
                 sessionId,
                 reason: "error",
                 error: `Failed to spawn mosh-client: ${err.message}`,
@@ -450,7 +450,7 @@ function createMoshSessionApi(ctx) {
         flushPaced(() => {
           sessionLogStreamManager.stopStream(sessionId, logStreamToken);
           const contents = electronModule.webContents.fromId(session.webContentsId);
-          contents?.send("netcatty:exit", {
+          contents?.send("magiesTerminal:exit", {
             sessionId,
             exitCode,
             signal,
@@ -479,7 +479,7 @@ function createMoshSessionApi(ctx) {
         key: parsed.key,
         lang,
       });
-      // Netcatty owns the terminal buffer. Keeping MoshCatty on the primary
+      // MagiesTerminal owns the terminal buffer. Keeping MoshCatty on the primary
       // screen preserves scrollback and lets renderer features such as keyword
       // highlighting keep observing the active buffer.
       env.MOSH_NO_TERM_INIT = "1";
@@ -513,7 +513,7 @@ function createMoshSessionApi(ctx) {
       // good. Stash them so sshBridge can lazily open a best-effort companion
       // SSH connection for host-info stats (CPU/mem/disk), which Mosh's UDP
       // channel cannot provide on its own (issue #1198). Only credentials
-      // Netcatty already holds are kept — a password typed interactively into
+      // MagiesTerminal already holds are kept — a password typed interactively into
       // the handshake PTY is not captured, so that case degrades gracefully.
       session.moshStatsAuth = {
         // Use the configured SSH host, NOT parsed.host: a `MOSH IP` line
@@ -595,7 +595,7 @@ function createMoshSessionApi(ctx) {
         flushPaced(() => {
           sessionLogStreamManager.stopStream(sessionId, session.logStreamToken);
           const contents = electronModule.webContents.fromId(session.webContentsId);
-          contents?.send("netcatty:exit", {
+          contents?.send("magiesTerminal:exit", {
             sessionId,
             exitCode,
             signal,
@@ -617,7 +617,7 @@ function createMoshSessionApi(ctx) {
     /**
      * Start a Mosh session.
      *
-     * Netcatty only uses its bundled `mosh-client` binary here. System
+     * MagiesTerminal only uses its bundled `mosh-client` binary here. System
      * `mosh` / `mosh-client` installs are intentionally ignored so dev,
      * CI, and release builds exercise the same binary.
      */
@@ -646,7 +646,7 @@ function createMoshSessionApi(ctx) {
         fileExists: (p) => isExecutableFile(p) || fs.existsSync(p),
       });
       if (!sshExe) {
-        throw new Error("OpenSSH client not found. Netcatty needs ssh to start the remote mosh-server handshake.");
+        throw new Error("OpenSSH client not found. MagiesTerminal needs ssh to start the remote mosh-server handshake.");
       }
     
       return startMoshSessionViaHandshake(event, options, { bareClient, sshExe });

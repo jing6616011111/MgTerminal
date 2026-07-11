@@ -7,15 +7,15 @@
 }:
 
 let
-  pname = "netcatty";
+  pname = "magies-terminal";
   inherit (release) sources version;
 
   source =
     sources.${stdenv.hostPlatform.system}
-      or (throw "Netcatty AppImage packages are available for x86_64-linux and aarch64-linux only.");
+      or (throw "MagiesTerminal AppImage packages are available for x86_64-linux and aarch64-linux only.");
 
   src = fetchurl {
-    url = "https://github.com/binaricat/Netcatty/releases/download/v${version}/Netcatty-${version}-linux-${source.appImageArch}.AppImage";
+    url = "https://github.com/JasonZhangDad/MagiesTerminal/releases/download/v${version}/MagiesTerminal-${version}-linux-${source.appImageArch}.AppImage";
     inherit (source) hash;
   };
 
@@ -29,11 +29,11 @@ appimageTools.wrapType2 {
   extraInstallCommands = ''
     desktopSource="$(find ${appimageContents} -maxdepth 3 -name '*.desktop' -print -quit)"
     if [ -n "$desktopSource" ]; then
-      desktopFile="$out/share/applications/netcatty.desktop"
+      desktopFile="$out/share/applications/magies-terminal.desktop"
       install -Dm444 "$desktopSource" "$desktopFile"
       substituteInPlace "$desktopFile" \
-        --replace "Exec=AppRun" "Exec=netcatty" \
-        --replace "Exec=Netcatty" "Exec=netcatty"
+        --replace "Exec=AppRun" "Exec=magies-terminal" \
+        --replace "Exec=MagiesTerminal" "Exec=magies-terminal"
     fi
 
     if [ -d "${appimageContents}/usr/share/icons" ]; then
@@ -44,9 +44,9 @@ appimageTools.wrapType2 {
 
   meta = {
     description = "Modern SSH client and terminal manager";
-    homepage = "https://github.com/binaricat/Netcatty";
+    homepage = "https://github.com/JasonZhangDad/MagiesTerminal";
     license = lib.licenses.gpl3Plus;
-    mainProgram = "netcatty";
+    mainProgram = "magies-terminal";
     platforms = builtins.attrNames sources;
     sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
   };

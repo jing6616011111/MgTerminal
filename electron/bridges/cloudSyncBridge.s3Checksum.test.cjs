@@ -8,7 +8,7 @@ const {
 const config = {
   endpoint: "https://s3.example.com",
   region: "us-east-1",
-  bucket: "netcatty-test",
+  bucket: "magiesTerminal-test",
   accessKeyId: "access",
   secretAccessKey: "secret",
   forcePathStyle: true,

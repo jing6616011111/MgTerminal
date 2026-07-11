@@ -211,13 +211,13 @@ async function handleFileChange(watchId, webContents) {
     
     // Show system notification for successful sync
     showSystemNotification(
-      "Netcatty",
+      "MagiesTerminal",
       `File synced to remote: ${fileName}`
     );
     
     // Notify the renderer about successful sync
     if (webContents && !webContents.isDestroyed()) {
-      webContents.send("netcatty:filewatch:synced", {
+      webContents.send("magiesTerminal:filewatch:synced", {
         watchId,
         localPath,
         remotePath,
@@ -230,13 +230,13 @@ async function handleFileChange(watchId, webContents) {
     
     // Show system notification for sync failure
     showSystemNotification(
-      "Netcatty",
+      "MagiesTerminal",
       `Failed to sync ${fileName}: ${err.message}`
     );
     
     // Notify the renderer about sync failure
     if (webContents && !webContents.isDestroyed()) {
-      webContents.send("netcatty:filewatch:error", {
+      webContents.send("magiesTerminal:filewatch:error", {
         watchId,
         localPath,
         remotePath,
@@ -364,20 +364,20 @@ function registerHandlers(ipcMain, options = {}) {
   const terminalWorkerManager = options.terminalWorkerManager || null;
   if (terminalWorkerManager) {
     [
-      "netcatty:filewatch:start",
-      "netcatty:filewatch:stop",
-      "netcatty:filewatch:list",
-      "netcatty:filewatch:registerTempFile",
+      "magiesTerminal:filewatch:start",
+      "magiesTerminal:filewatch:stop",
+      "magiesTerminal:filewatch:list",
+      "magiesTerminal:filewatch:registerTempFile",
     ].forEach((channel) => registerWorkerHandle(ipcMain, terminalWorkerManager, channel));
     return;
   }
-  ipcMain.handle("netcatty:filewatch:start", (event, args) => {
-    console.log("[FileWatcher] IPC netcatty:filewatch:start received", args);
+  ipcMain.handle("magiesTerminal:filewatch:start", (event, args) => {
+    console.log("[FileWatcher] IPC magiesTerminal:filewatch:start received", args);
     return startWatching(event, args);
   });
-  ipcMain.handle("netcatty:filewatch:stop", stopWatching);
-  ipcMain.handle("netcatty:filewatch:list", listWatchers);
-  ipcMain.handle("netcatty:filewatch:registerTempFile", (_event, { sftpId, localPath }) => {
+  ipcMain.handle("magiesTerminal:filewatch:stop", stopWatching);
+  ipcMain.handle("magiesTerminal:filewatch:list", listWatchers);
+  ipcMain.handle("magiesTerminal:filewatch:registerTempFile", (_event, { sftpId, localPath }) => {
     registerTempFile(sftpId, localPath);
     return { success: true };
   });

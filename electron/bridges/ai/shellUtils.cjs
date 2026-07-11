@@ -432,7 +432,7 @@ function getCodexNativeSearchDirsForShim(shimDir) {
   // $NVMD_HOME/bin/codex{.cmd,.exe} are only nvmd router shims. Expand search
   // into the active/recorded Node version roots so the SDK can spawn the real
   // native codex.exe (codexPathOverride) instead of falling back to bundled
-  // optional deps that Netcatty deliberately does not ship.
+  // optional deps that MagiesTerminal deliberately does not ship.
   const nvmdHome = getNvmdHomeFromShimDir(shimDir);
   for (const versionRoot of getNvmdCodexVersionRoots(nvmdHome)) {
     dirs.push(versionRoot);
@@ -756,8 +756,8 @@ function mergeLoginShellPath({
 // ── Windows live PATH refresh ──
 //
 // A GUI-launched Electron process freezes process.env at launch. When a CLI is
-// installed *after* Netcatty starts (its installer appends to the user/system
-// PATH in the registry), a freshly opened cmd/PowerShell sees it but Netcatty
+// installed *after* MagiesTerminal starts (its installer appends to the user/system
+// PATH in the registry), a freshly opened cmd/PowerShell sees it but MagiesTerminal
 // does not — and clicking "Refresh" can't help, because process.env never
 // changes for the life of the process. So on Windows we re-read the authoritative
 // PATH from the registry (the value a brand-new shell would inherit) and merge it
@@ -843,7 +843,7 @@ async function getShellEnv() {
 
     if (process.platform === "win32") {
       // Re-read the live PATH from the registry so CLIs installed after launch
-      // (e.g. CodeBuddy) are discoverable without restarting Netcatty, then fold
+      // (e.g. CodeBuddy) are discoverable without restarting MagiesTerminal, then fold
       // in well-known npm/pnpm/yarn global bin dirs as a belt-and-suspenders.
       let registryPath = "";
       try {

@@ -230,8 +230,8 @@ test('runSdkAgentTurn stores SDK session ids with backend and path metadata', as
   );
 
   assert.equal(sessionIds.length, 1);
-  assert.match(sessionIds[0], /^netcatty-sdk-session:/);
-  const payload = JSON.parse(decodeURIComponent(sessionIds[0].replace(/^netcatty-sdk-session:/, '')));
+  assert.match(sessionIds[0], /^magiesTerminal-sdk-session:/);
+  const payload = JSON.parse(decodeURIComponent(sessionIds[0].replace(/^magiesTerminal-sdk-session:/, '')));
   assert.deepEqual(payload, {
     v: 1,
     id: 'thread-1',

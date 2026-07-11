@@ -16,7 +16,7 @@ import {
 import type { Host } from './models';
 
 const baseSettings = {
-  terminalThemeId: 'netcatty-dark',
+  terminalThemeId: 'magiesTerminal-dark',
   terminalThemeDarkId: 'auto',
   terminalThemeLightId: 'auto',
   followAppTerminalTheme: true,
@@ -112,7 +112,7 @@ test('manual mode uses host override when idle', () => {
     settings: {
       ...baseSettings,
       followAppTerminalTheme: false,
-      terminalThemeDarkId: 'netcatty-dark',
+      terminalThemeDarkId: 'magiesTerminal-dark',
     },
     hostScope: { host, isEphemeral: false },
     customThemes: [],
@@ -151,7 +151,7 @@ test('manual mode intent stays scoped to the picked host', () => {
   } as Host;
   const otherHost = {
     id: 'host-2',
-    theme: 'netcatty-dark',
+    theme: 'magiesTerminal-dark',
     themeOverride: true,
   } as Host;
 
@@ -169,7 +169,7 @@ test('manual mode intent stays scoped to the picked host', () => {
     settings: { ...baseSettings, followAppTerminalTheme: false },
     hostScope: { host: otherHost, isEphemeral: false },
     customThemes: [],
-  }).themeId, 'netcatty-dark');
+  }).themeId, 'magiesTerminal-dark');
 });
 
 test('follow-app session appearance ignores host override', () => {
@@ -184,7 +184,7 @@ test('follow-app session appearance ignores host override', () => {
     'system-chai-light',
   );
   assert.equal(
-    resolveSessionAppearanceThemeId(false, 'netcatty-dark', host),
+    resolveSessionAppearanceThemeId(false, 'magiesTerminal-dark', host),
     'dracula',
   );
 });

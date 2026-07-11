@@ -15,10 +15,10 @@ function createFakeIpcRenderer() {
       handlers.set(channel, handler);
     },
     emitPort(sessionId, port) {
-      handlers.get("netcatty:terminal-output-port")?.({ ports: [port] }, { sessionId });
+      handlers.get("magiesTerminal:terminal-output-port")?.({ ports: [port] }, { sessionId });
     },
     emitUrgentPort(port) {
-      handlers.get("netcatty:terminal-urgent-input-port")?.({ ports: [port] }, {});
+      handlers.get("magiesTerminal:terminal-urgent-input-port")?.({ ports: [port] }, {});
     },
   };
 }

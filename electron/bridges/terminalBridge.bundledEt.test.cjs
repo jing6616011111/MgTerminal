@@ -7,7 +7,7 @@ const path = require("node:path");
 const { bundledEtClient } = require("./terminalBridge.cjs");
 
 function makeTmp() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-et-"));
+  return fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-et-"));
 }
 
 function writeExecutable(filePath, contents = "#!/bin/sh\nexit 0\n") {

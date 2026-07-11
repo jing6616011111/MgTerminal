@@ -11,14 +11,14 @@
  *   (bring-your-own-CLI), so we MUST point `connection` at the user's system
  *   `copilot` binary via RuntimeConnection.forStdio({ path }) — otherwise the SDK
  *   falls back to the (absent) bundled runtime in the shipped app.
- * - MCP mode: side effects route through the injected netcatty MCP server
+ * - MCP mode: side effects route through the injected magiesTerminal MCP server
  *   (stdio). The permission handler rejects local Copilot tools and allows
- *   only MCP requests; netcatty MCP then enforces approval/scope/blocklist.
+ *   only MCP requests; magiesTerminal MCP then enforces approval/scope/blocklist.
  * - Skills mode: only builtin bash is exposed (CLI instructions are injected via
  *   the host prompt; the skill builtin is omitted because its read/custom-tool
  *   permission kinds are not shell-safe to auto-approve). Shell permission
- *   requests are approved only for Netcatty CLI invocations; discovery env is
- *   passed to the Copilot runtime so `netcatty-tool-cli` can reach the host.
+ *   requests are approved only for MagiesTerminal CLI invocations; discovery env is
+ *   passed to the Copilot runtime so `magies-terminal-tool-cli` can reach the host.
  *
  * 🔬 SMOKE-CALIBRATE [copilot-stream]: sendAndWait returns only the final
  *   assistant text. A follow-up can subscribe via session.on(handler) to stream
@@ -75,11 +75,11 @@ function buildCopilotSessionOptions({ model, injectedMcpServers, toolIntegration
   return options;
 }
 
-// Shell chaining/redirection in the local Netcatty CLI prefix (not after exec `--`).
+// Shell chaining/redirection in the local MagiesTerminal CLI prefix (not after exec `--`).
 const LOCAL_SHELL_METACHAR_PATTERN = /(?:[;&|`]|&&|\|\||\$\(|\$\{|<<?|>{1,2}|\r?\n)/;
 const LOCAL_SHELL_WRAPPER_PATTERN = /^(?:\/[^\s]+\/)?(?:ba|z|fi)?sh(?:\.exe)?\s+-c\b/i;
-const NETCATTY_CLI_TOKEN = String.raw`netcatty-tool-cli(?:\.(?:cjs|cmd))?`;
-const NETCATTY_CLI_PATH_SUFFIX = String.raw`(?:[\\/]|^)${NETCATTY_CLI_TOKEN}`;
+const MAGIES_TERMINAL_CLI_TOKEN = String.raw`magies-terminal-tool-cli(?:\.(?:cjs|cmd))?`;
+const MAGIES_TERMINAL_CLI_PATH_SUFFIX = String.raw`(?:[\\/]|^)${MAGIES_TERMINAL_CLI_TOKEN}`;
 
 /** Find the last exec/job-start payload separator outside shell quotes. */
 function findExecPayloadSeparatorIndex(command) {
@@ -154,7 +154,7 @@ function containsUnsafeShellMetachar(text) {
 }
 
 /** Split before the final exec/job-start remote payload (` -- cmd`), not flag values. */
-function getLocalNetcattyCliPrefix(fullCommandText) {
+function getLocalMagiesTerminalCliPrefix(fullCommandText) {
   const command = String(fullCommandText || "").trim();
   const splitAt = findExecPayloadSeparatorIndex(command);
   if (splitAt >= 0) {
@@ -163,19 +163,19 @@ function getLocalNetcattyCliPrefix(fullCommandText) {
   return command;
 }
 
-function isNetcattyCliInvocationPrefix(localPart) {
+function isMagiesTerminalCliInvocationPrefix(localPart) {
   const text = String(localPart || "").trim();
   if (!text) return false;
   const pathPrefix = String.raw`(?:\.\./|\./|/|[A-Za-z]:[\\/])[\w. \\-]*[\\/]`;
   const invocation = new RegExp(
     String.raw`^(?:(?:[A-Za-z_][\w.-]*=[^\s]+\s+)*)?(?:` +
-    String.raw`"[^"]*${NETCATTY_CLI_PATH_SUFFIX}"|` +
-    String.raw `'[^']*${NETCATTY_CLI_PATH_SUFFIX}'|` +
-    String.raw `${NETCATTY_CLI_TOKEN}(?=\s|$)|` +
-    String.raw `${pathPrefix}${NETCATTY_CLI_TOKEN}(?=\s|$)|` +
-    String.raw `node\s+(?:${NETCATTY_CLI_TOKEN}(?=\s|$)|${pathPrefix}${NETCATTY_CLI_TOKEN}(?=\s|$)|` +
-    String.raw `(?:[\w.-]+(?:[\\/][\w.-]+)*[\\/])?${NETCATTY_CLI_TOKEN}(?=\s|$)|` +
-    String.raw `"[^"]*${NETCATTY_CLI_PATH_SUFFIX}"|'[^']*${NETCATTY_CLI_PATH_SUFFIX}'))`,
+    String.raw`"[^"]*${MAGIES_TERMINAL_CLI_PATH_SUFFIX}"|` +
+    String.raw `'[^']*${MAGIES_TERMINAL_CLI_PATH_SUFFIX}'|` +
+    String.raw `${MAGIES_TERMINAL_CLI_TOKEN}(?=\s|$)|` +
+    String.raw `${pathPrefix}${MAGIES_TERMINAL_CLI_TOKEN}(?=\s|$)|` +
+    String.raw `node\s+(?:${MAGIES_TERMINAL_CLI_TOKEN}(?=\s|$)|${pathPrefix}${MAGIES_TERMINAL_CLI_TOKEN}(?=\s|$)|` +
+    String.raw `(?:[\w.-]+(?:[\\/][\w.-]+)*[\\/])?${MAGIES_TERMINAL_CLI_TOKEN}(?=\s|$)|` +
+    String.raw `"[^"]*${MAGIES_TERMINAL_CLI_PATH_SUFFIX}"|'[^']*${MAGIES_TERMINAL_CLI_PATH_SUFFIX}'))`,
     "i",
   );
   return invocation.test(text);
@@ -185,7 +185,7 @@ function hasExecPayloadSubcommand(localPart) {
   return /\b(?:exec|job-start)\b/i.test(String(localPart || ""));
 }
 
-function isLikelyNetcattyCliShellCommand(fullCommandText) {
+function isLikelyMagiesTerminalCliShellCommand(fullCommandText) {
   const command = String(fullCommandText || "").trim();
   if (!command) return false;
 
@@ -194,7 +194,7 @@ function isLikelyNetcattyCliShellCommand(fullCommandText) {
   const remotePayload = splitAt >= 0 ? command.slice(splitAt + 4).trim() : "";
 
   if (!localPart || LOCAL_SHELL_WRAPPER_PATTERN.test(localPart)) return false;
-  if (!isNetcattyCliInvocationPrefix(localPart)) return false;
+  if (!isMagiesTerminalCliInvocationPrefix(localPart)) return false;
 
   if (remotePayload) {
     if (!hasExecPayloadSubcommand(localPart)) return false;
@@ -208,36 +208,36 @@ function isLikelyNetcattyCliShellCommand(fullCommandText) {
   return !containsUnsafeShellMetachar(command);
 }
 
-function approveNetcattyMcpOnly(request) {
+function approveMagiesTerminalMcpOnly(request) {
   if (request?.kind === "mcp" && request?.toolName) {
     return { kind: "approve-once" };
   }
   return {
     kind: "reject",
-    feedback: "Only Netcatty MCP tools are allowed from this integration.",
+    feedback: "Only MagiesTerminal MCP tools are allowed from this integration.",
   };
 }
 
-function approveNetcattyCliShellOnly(request) {
+function approveMagiesTerminalCliShellOnly(request) {
   if (request?.kind === "shell") {
     const fullCommandText = request.fullCommandText || "";
-    if (isLikelyNetcattyCliShellCommand(fullCommandText)) {
+    if (isLikelyMagiesTerminalCliShellCommand(fullCommandText)) {
       return { kind: "approve-once" };
     }
     return {
       kind: "reject",
       feedback:
-        "Only Netcatty CLI shell commands are allowed. Invoke the netcatty-tool-cli launcher or script prefix provided in the host context, and include --chat-session on every call.",
+        "Only MagiesTerminal CLI shell commands are allowed. Invoke the magies-terminal-tool-cli launcher or script prefix provided in the host context, and include --chat-session on every call.",
     };
   }
   return {
     kind: "reject",
-    feedback: "Only Netcatty CLI shell commands are allowed from this integration.",
+    feedback: "Only MagiesTerminal CLI shell commands are allowed from this integration.",
   };
 }
 
 function buildCopilotPermissionHandler(toolIntegrationMode) {
-  return toolIntegrationMode === "skills" ? approveNetcattyCliShellOnly : approveNetcattyMcpOnly;
+  return toolIntegrationMode === "skills" ? approveMagiesTerminalCliShellOnly : approveMagiesTerminalMcpOnly;
 }
 
 function extractCopilotContent(response) {
@@ -384,11 +384,11 @@ async function runCopilotTurn({
     const sessionConfig = {
       ...sessionOptions,
       streaming: true,
-      // MCP mode: only netcatty MCP. Skills mode: only Netcatty CLI shell commands.
+      // MCP mode: only magiesTerminal MCP. Skills mode: only MagiesTerminal CLI shell commands.
       onPermissionRequest: buildCopilotPermissionHandler(toolIntegrationMode),
     };
     // Resume the prior conversation so context carries ACROSS turns (incl. after
-    // a Stop). Always (re)apply sessionConfig so the FRESH netcatty MCP server
+    // a Stop). Always (re)apply sessionConfig so the FRESH magiesTerminal MCP server
     // config — its current port/token/chat-session id — is used, not the stale
     // one from the resumed session. Fall back to a fresh session if there's no id
     // yet or the resume fails (session expired/deleted).
@@ -518,10 +518,10 @@ module.exports = {
   buildCopilotSessionOptions,
   buildCopilotMessageOptions,
   buildCopilotPermissionHandler,
-  approveNetcattyMcpOnly,
-  approveNetcattyCliShellOnly,
-  isLikelyNetcattyCliShellCommand,
-  getLocalNetcattyCliPrefix,
+  approveMagiesTerminalMcpOnly,
+  approveMagiesTerminalCliShellOnly,
+  isLikelyMagiesTerminalCliShellCommand,
+  getLocalMagiesTerminalCliPrefix,
   findExecPayloadSeparatorIndex,
   containsUnsafeShellMetachar,
   matchesShellMetacharAt,

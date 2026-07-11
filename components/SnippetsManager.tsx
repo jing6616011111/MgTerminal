@@ -90,7 +90,7 @@ type PendingSnippetImport = {
 };
 
 export const SNIPPET_IMPORT_EXAMPLE_JSON = `{
-  "kind": "netcatty.snippets",
+  "kind": "magiesTerminal.snippets",
   "version": 1,
   "snippets": [
     {
@@ -110,9 +110,9 @@ const stringifySample = (value: unknown) => JSON.stringify(value, null, 2);
 
 export const SNIPPET_IMPORT_SAMPLE_FILES: SnippetImportSampleFile[] = [
   {
-    name: "01-standard-netcatty-object.json",
+    name: "01-standard-magiesTerminal-object.json",
     content: stringifySample({
-      kind: "netcatty.snippets",
+      kind: "magiesTerminal.snippets",
       version: 1,
       exportedAt: "2026-06-23T00:00:00.000Z",
       snippetPackages: ["ops", "ops/linux"],
@@ -150,7 +150,7 @@ export const SNIPPET_IMPORT_SAMPLE_FILES: SnippetImportSampleFile[] = [
   {
     name: "03-more-snippets-for-multi-select.json",
     content: stringifySample({
-      kind: "netcatty.snippets",
+      kind: "magiesTerminal.snippets",
       version: 1,
       exportedAt: "2026-06-23T00:00:00.000Z",
       snippetPackages: ["containers", "logs"],
@@ -173,7 +173,7 @@ export const SNIPPET_IMPORT_SAMPLE_FILES: SnippetImportSampleFile[] = [
   {
     name: "04-duplicate-command-conflict.json",
     content: stringifySample({
-      kind: "netcatty.snippets",
+      kind: "magiesTerminal.snippets",
       version: 1,
       exportedAt: "2026-06-23T00:00:00.000Z",
       snippetPackages: ["conflicts"],
@@ -190,7 +190,7 @@ export const SNIPPET_IMPORT_SAMPLE_FILES: SnippetImportSampleFile[] = [
   {
     name: "05-host-bindings-ignored.json",
     content: stringifySample({
-      kind: "netcatty.snippets",
+      kind: "magiesTerminal.snippets",
       version: 1,
       exportedAt: "2026-06-23T00:00:00.000Z",
       snippetPackages: ["security"],
@@ -1042,7 +1042,7 @@ const SnippetsManager: React.FC<SnippetsManagerProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `netcatty-snippets-${sanitizeTransferFileNamePart(fileNamePart)}.json`;
+    a.download = `magiesTerminal-snippets-${sanitizeTransferFileNamePart(fileNamePart)}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }, []);
@@ -1052,7 +1052,7 @@ const SnippetsManager: React.FC<SnippetsManagerProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'netcatty-snippet-import-samples.zip';
+    a.download = 'magiesTerminal-snippet-import-samples.zip';
     a.click();
     URL.revokeObjectURL(url);
   }, []);

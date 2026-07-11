@@ -118,21 +118,21 @@ const NOTE_CODE_BLOCK_LANGUAGES = {
 } satisfies Record<string, string>;
 
 const noteCodeHighlightStyle = HighlightStyle.define([
-  { tag: tags.meta, class: "netcatty-code-token-muted" },
-  { tag: tags.link, class: "netcatty-code-token-link" },
-  { tag: tags.heading, class: "netcatty-code-token-heading" },
-  { tag: tags.emphasis, class: "netcatty-code-token-emphasis" },
-  { tag: tags.strong, class: "netcatty-code-token-strong" },
-  { tag: [tags.keyword, tags.regexp, tags.escape, tags.special(tags.string)], class: "netcatty-code-token-keyword" },
-  { tag: [tags.atom, tags.bool, tags.url, tags.labelName], class: "netcatty-code-token-name" },
-  { tag: [tags.literal, tags.inserted, tags.number], class: "netcatty-code-token-value" },
-  { tag: [tags.string, tags.deleted], class: "netcatty-code-token-string" },
-  { tag: [tags.variableName, tags.propertyName], class: "netcatty-code-token-variable" },
-  { tag: [tags.definition(tags.variableName), tags.local(tags.variableName)], class: "netcatty-code-token-variable" },
-  { tag: [tags.typeName, tags.namespace, tags.className, tags.macroName], class: "netcatty-code-token-type" },
-  { tag: [tags.definition(tags.propertyName), tags.special(tags.variableName)], class: "netcatty-code-token-property" },
-  { tag: tags.comment, class: "netcatty-code-token-muted" },
-  { tag: tags.invalid, class: "netcatty-code-token-invalid" },
+  { tag: tags.meta, class: "magiesTerminal-code-token-muted" },
+  { tag: tags.link, class: "magiesTerminal-code-token-link" },
+  { tag: tags.heading, class: "magiesTerminal-code-token-heading" },
+  { tag: tags.emphasis, class: "magiesTerminal-code-token-emphasis" },
+  { tag: tags.strong, class: "magiesTerminal-code-token-strong" },
+  { tag: [tags.keyword, tags.regexp, tags.escape, tags.special(tags.string)], class: "magiesTerminal-code-token-keyword" },
+  { tag: [tags.atom, tags.bool, tags.url, tags.labelName], class: "magiesTerminal-code-token-name" },
+  { tag: [tags.literal, tags.inserted, tags.number], class: "magiesTerminal-code-token-value" },
+  { tag: [tags.string, tags.deleted], class: "magiesTerminal-code-token-string" },
+  { tag: [tags.variableName, tags.propertyName], class: "magiesTerminal-code-token-variable" },
+  { tag: [tags.definition(tags.variableName), tags.local(tags.variableName)], class: "magiesTerminal-code-token-variable" },
+  { tag: [tags.typeName, tags.namespace, tags.className, tags.macroName], class: "magiesTerminal-code-token-type" },
+  { tag: [tags.definition(tags.propertyName), tags.special(tags.variableName)], class: "magiesTerminal-code-token-property" },
+  { tag: tags.comment, class: "magiesTerminal-code-token-muted" },
+  { tag: tags.invalid, class: "magiesTerminal-code-token-invalid" },
 ]);
 
 const NOTE_CODE_MIRROR_EXTENSIONS = [syntaxHighlighting(noteCodeHighlightStyle)];
@@ -375,7 +375,7 @@ export const annotateNoteCodeBlockCopyButtons = (
     const button = document.createElement("button");
     button.type = "button";
     button.dataset.noteCodeCopy = "true";
-    button.className = "netcatty-note-code-copy";
+    button.className = "magiesTerminal-note-code-copy";
     button.title = copyLabel;
     button.setAttribute("aria-label", copyLabel);
     button.textContent = copyLabel;
@@ -478,7 +478,7 @@ export function InlineMarkdownEditor({
     ...(editorMode === "edit" ? [
       toolbarPlugin({
         toolbarContents: () => <NoteMarkdownToolbar />,
-        toolbarClassName: "netcatty-note-markdown-toolbar",
+        toolbarClassName: "magiesTerminal-note-markdown-toolbar",
       }),
     ] : []),
     markdownShortcutPlugin(),
@@ -586,7 +586,7 @@ export function InlineMarkdownEditor({
     const container = containerRef.current;
     if (!container) return;
 
-    container.querySelectorAll<HTMLAnchorElement>(".netcatty-mdx-content a[href]").forEach((link) => {
+    container.querySelectorAll<HTMLAnchorElement>(".magiesTerminal-mdx-content a[href]").forEach((link) => {
       const renderedHref = link.getAttribute("href") || link.href;
       const label = link.textContent?.trim() || renderedHref;
       if (!renderedHref) return;
@@ -597,10 +597,10 @@ export function InlineMarkdownEditor({
       });
 
       if (host) {
-        link.dataset.netcattyHostLink = "true";
+        link.dataset.magiesTerminalHostLink = "true";
         link.title = `打开主机 ${label}`;
       } else {
-        delete link.dataset.netcattyHostLink;
+        delete link.dataset.magiesTerminalHostLink;
         link.removeAttribute("title");
       }
     });
@@ -914,7 +914,7 @@ export function InlineMarkdownEditor({
         </div>
       )}
       {editorMode === "preview" && !value.trim() ? (
-        <div className="netcatty-note-preview-empty">
+        <div className="magiesTerminal-note-preview-empty">
           {previewEmptyLabel ?? placeholder}
         </div>
       ) : (
@@ -925,8 +925,8 @@ export function InlineMarkdownEditor({
           placeholder={placeholder}
           plugins={plugins}
           readOnly={editorMode === "preview"}
-          className={cn("netcatty-mdx-editor", editorMode === "preview" && "netcatty-mdx-editor--preview")}
-          contentEditableClassName="netcatty-mdx-content"
+          className={cn("magiesTerminal-mdx-editor", editorMode === "preview" && "magiesTerminal-mdx-editor--preview")}
+          contentEditableClassName="magiesTerminal-mdx-content"
           onChange={commitMarkdown}
         />
       )}

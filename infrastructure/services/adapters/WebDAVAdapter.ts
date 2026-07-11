@@ -10,7 +10,7 @@ import {
   type ProviderAccount,
   type OAuthTokens,
 } from '../../../domain/sync';
-import { netcattyBridge } from '../netcattyBridge';
+import { magiesTerminalBridge } from '../magiesTerminalBridge';
 
 type WebDAVClient = ReturnType<typeof createClient>;
 
@@ -64,7 +64,7 @@ export class WebDAVAdapter {
       if (!this.config) {
         throw new Error('Missing WebDAV config');
       }
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (bridge?.cloudSyncWebdavInitialize) {
         const result = await bridge.cloudSyncWebdavInitialize(this.config);
         this.resource = result?.resourceId || this.getSyncPath();
@@ -83,7 +83,7 @@ export class WebDAVAdapter {
       if (!this.config) {
         throw new Error('Missing WebDAV config');
       }
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (bridge?.cloudSyncWebdavUpload) {
         const result = await bridge.cloudSyncWebdavUpload(this.config, syncedFile);
         this.resource = result?.resourceId || this.getSyncPath();
@@ -102,7 +102,7 @@ export class WebDAVAdapter {
       if (!this.config) {
         throw new Error('Missing WebDAV config');
       }
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (bridge?.cloudSyncWebdavDownload) {
         const result = await bridge.cloudSyncWebdavDownload(this.config);
         return (result?.syncedFile ?? null) as SyncedFile | null;
@@ -122,7 +122,7 @@ export class WebDAVAdapter {
       if (!this.config) {
         throw new Error('Missing WebDAV config');
       }
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (bridge?.cloudSyncWebdavDelete) {
         await bridge.cloudSyncWebdavDelete(this.config);
         return;

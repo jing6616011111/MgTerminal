@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="public/icon.png" alt="Netcatty" width="128" height="128">
+  <img src="public/icon.png" alt="MagiesTerminal" width="128" height="128">
 </p>
 
-<h1 align="center">Netcatty</h1>
+<h1 align="center">MagiesTerminal</h1>
 
 <p align="center">
   <strong>🔥 AI-Powered SSH Client, SFTP Browser & Terminal Manager 🚀</strong><br/>
-  <a href="https://netcatty.app"><strong>netcatty.app</strong></a>
+  <a href="https://github.com/JasonZhangDad/MagiesTerminal"><strong>github.com/JasonZhangDad/MagiesTerminal</strong></a>
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/binaricat/Netcatty/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/binaricat/Netcatty?style=for-the-badge&logo=github&label=Release"></a>
+  <a href="https://github.com/JasonZhangDad/MagiesTerminal/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/JasonZhangDad/MagiesTerminal?style=for-the-badge&logo=github&label=Release"></a>
   &nbsp;
   <a href="#"><img alt="Platform" src="https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-blue?style=for-the-badge&logo=electron"></a>
   &nbsp;
@@ -23,8 +23,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/binaricat/Netcatty/releases/latest">
-    <img src="https://img.shields.io/github/v/release/binaricat/Netcatty?style=for-the-badge&logo=github&label=Download%20Latest&color=success" alt="Download Latest Release">
+  <a href="https://github.com/JasonZhangDad/MagiesTerminal/releases/latest">
+    <img src="https://img.shields.io/github/v/release/JasonZhangDad/MagiesTerminal?style=for-the-badge&logo=github&label=Download%20Latest&color=success" alt="Download Latest Release">
   </a>
 </p>
 
@@ -75,8 +75,8 @@ Watch Catty Agent orchestrate a Docker Swarm cluster across two servers in one c
 # Contents <!-- omit in toc -->
 
 - [🔥 Catty Agent — AI Partner](#catty-agent)
-- [What is Netcatty](#what-is-netcatty)
-- [Why Netcatty](#why-netcatty)
+- [What is MagiesTerminal](#what-is-magiesTerminal)
+- [Why MagiesTerminal](#why-magiesTerminal)
 - [Features](#features)
 - [Screenshots](#screenshots)
   - [Main Window](#main-window)
@@ -93,23 +93,23 @@ Watch Catty Agent orchestrate a Docker Swarm cluster across two servers in one c
 
 ---
 
-<a name="what-is-netcatty"></a>
-# What is Netcatty
+<a name="what-is-magiesTerminal"></a>
+# What is MagiesTerminal
 
-**Netcatty** is a modern SSH client and terminal manager for macOS, Windows, and Linux, designed for developers, sysadmins, and DevOps engineers who need to manage multiple remote servers efficiently.
+**MagiesTerminal** is a modern SSH client and terminal manager for macOS, Windows, and Linux, designed for developers, sysadmins, and DevOps engineers who need to manage multiple remote servers efficiently.
 
-- **Netcatty is** an alternative to PuTTY, Termius, SecureCRT, and macOS Terminal.app for SSH connections
-- **Netcatty is** a powerful SFTP client with dual-pane file browser
-- **Netcatty is** a terminal workspace with split panes, tabs, and session management
-- **Netcatty supports** SSH, local terminal, Telnet, Mosh, and Serial connections (when available)
-- **Netcatty is not** a shell replacement — it connects to shells via SSH/Telnet/Mosh or local/serial sessions
+- **MagiesTerminal is** an alternative to PuTTY, Termius, SecureCRT, and macOS Terminal.app for SSH connections
+- **MagiesTerminal is** a powerful SFTP client with dual-pane file browser
+- **MagiesTerminal is** a terminal workspace with split panes, tabs, and session management
+- **MagiesTerminal supports** SSH, local terminal, Telnet, Mosh, and Serial connections (when available)
+- **MagiesTerminal is not** a shell replacement — it connects to shells via SSH/Telnet/Mosh or local/serial sessions
 
 ---
 
-<a name="why-netcatty"></a>
-# Why Netcatty
+<a name="why-magiesTerminal"></a>
+# Why MagiesTerminal
 
-If you regularly work with a fleet of servers, Netcatty is built for speed and flow:
+If you regularly work with a fleet of servers, MagiesTerminal is built for speed and flow:
 
 - **Workspace-first** — split panes + tabs + session restore for “always-on” workflows
 - **Vault organization** — grid/list/tree views with fast search and drag-friendly workflows
@@ -173,7 +173,7 @@ Split panes help you monitor multiple servers/services at the same time (deploy 
 <a name="supported-distros"></a>
 # Supported Distros
 
-Netcatty automatically detects and displays OS icons for connected hosts:
+MagiesTerminal automatically detects and displays OS icons for connected hosts:
 
 <p align="center">
   <img src="public/distro/ubuntu.svg" width="48" alt="Ubuntu" title="Ubuntu">
@@ -196,7 +196,7 @@ Netcatty automatically detects and displays OS icons for connected hosts:
 
 ### Download
 
-Download the latest release for your platform from [GitHub Releases](https://github.com/binaricat/Netcatty/releases/latest).
+Download the latest release for your platform from [GitHub Releases](https://github.com/JasonZhangDad/MagiesTerminal/releases/latest).
 
 | OS | Support |
 | :--- | :--- |
@@ -204,19 +204,19 @@ Download the latest release for your platform from [GitHub Releases](https://git
 | **Windows** | x64 / arm64 |
 | **Linux** | x64 / arm64 |
 
-Or browse all releases at [GitHub Releases](https://github.com/binaricat/Netcatty/releases).
+Or browse all releases at [GitHub Releases](https://github.com/JasonZhangDad/MagiesTerminal/releases).
 
 > **macOS Users:** Current releases are expected to be code-signed and notarized. If Gatekeeper still warns, make sure you downloaded the latest official build from GitHub Releases.
 
 ### Nix / NixOS
 
-Netcatty provides a flake that wraps the official Linux AppImage release for Nix and NixOS users:
+MagiesTerminal provides a flake that wraps the official Linux AppImage release for Nix and NixOS users:
 
 ```bash
-nix run github:binaricat/Netcatty
+nix run github:JasonZhangDad/MagiesTerminal
 ```
 
-For declarative installs, add the Netcatty flake as an input and use `inputs.netcatty.packages.${pkgs.system}.default` in your NixOS or Home Manager package list.
+For declarative installs, add the MagiesTerminal flake as an input and use `inputs.magiesTerminal.packages.${pkgs.system}.default` in your NixOS or Home Manager package list.
 
 ### Prerequisites
 - Node.js 18+ and npm
@@ -226,8 +226,8 @@ For declarative installs, add the Netcatty flake as an input and use `inputs.net
 
 ```bash
 # Clone the repository
-git clone https://github.com/binaricat/Netcatty.git
-cd Netcatty
+git clone https://github.com/JasonZhangDad/MagiesTerminal.git
+cd MagiesTerminal
 
 # Install dependencies
 npm install
@@ -292,8 +292,8 @@ See [agents.md](agents.md) for architecture overview and coding conventions.
 
 Thanks to all the people who contribute!
 
-<a href="https://github.com/binaricat/Netcatty/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=binaricat/Netcatty" />
+<a href="https://github.com/JasonZhangDad/MagiesTerminal/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=JasonZhangDad/MagiesTerminal" />
 </a>
 
 ---
@@ -308,11 +308,11 @@ This project is licensed under the **GPL-3.0 License** - see the [LICENSE](LICEN
 <a name="star-history"></a>
 # Star History
 
-<a href="https://star-history.com/#binaricat/Netcatty&Date">
+<a href="https://star-history.com/#JasonZhangDad/MagiesTerminal&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=binaricat/Netcatty&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=binaricat/Netcatty&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=binaricat/Netcatty&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=JasonZhangDad/MagiesTerminal&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=JasonZhangDad/MagiesTerminal&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=JasonZhangDad/MagiesTerminal&type=Date" />
  </picture>
 </a>
 

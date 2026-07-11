@@ -126,9 +126,9 @@ test("buildSshHandshakeCommand interpolates lang and moshServer overrides", () =
 test("buildSshHandshakeCommand shell-quotes lang values", () => {
   const got = buildSshHandshakeCommand({
     host: "h",
-    lang: "C; touch /tmp/netcatty-owned",
+    lang: "C; touch /tmp/magiesTerminal-owned",
   });
-  assert.equal(got.args.at(-1), "LC_ALL='C; touch /tmp/netcatty-owned' mosh-server new -s");
+  assert.equal(got.args.at(-1), "LC_ALL='C; touch /tmp/magiesTerminal-owned' mosh-server new -s");
 });
 
 test("buildMoshServerCommand treats custom server input as a path", () => {

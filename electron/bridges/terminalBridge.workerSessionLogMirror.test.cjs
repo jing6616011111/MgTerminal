@@ -35,12 +35,12 @@ function registerWorkerHandlers(sent) {
 test("worker-mode write forward still delivers the payload to the worker", () => {
   const sent = [];
   const { listeners } = registerWorkerHandlers(sent);
-  const write = listeners.get("netcatty:write");
+  const write = listeners.get("magiesTerminal:write");
 
   write({ sender: { id: 7 } }, { sessionId: "session-x", data: "ls\r" });
 
   assert.deepEqual(sent, [
-    ["netcatty:write", { sessionId: "session-x", data: "ls\r" }, { webContentsId: 7 }],
+    ["magiesTerminal:write", { sessionId: "session-x", data: "ls\r" }, { webContentsId: 7 }],
   ]);
 });
 
@@ -50,7 +50,7 @@ test("worker-mode write forward mirrors sudo autofill rewrites into main-process
   const sessionId = `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const sent = [];
   const { listeners } = registerWorkerHandlers(sent);
-  const write = listeners.get("netcatty:write");
+  const write = listeners.get("magiesTerminal:write");
 
   try {
     const startResult = sessionLogStreamManager.startStreamToFile(sessionId, {
@@ -61,7 +61,7 @@ test("worker-mode write forward mirrors sudo autofill rewrites into main-process
     });
     assert.equal(startResult.ok, true);
 
-    const prepared = "sudo -p '[sudo] password for %p: __NETCATTY_SUDO_abc123__' apt update\r";
+    const prepared = "sudo -p '[sudo] password for %p: __MAGIES_TERMINAL_SUDO_abc123__' apt update\r";
     write({ sender: { id: 7 } }, { sessionId, data: prepared });
     assert.equal(sent.length, 1);
 
@@ -83,7 +83,7 @@ test("worker-mode write forward mirrors programmatic command rewrites into main-
   const sessionId = `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const sent = [];
   const { listeners } = registerWorkerHandlers(sent);
-  const write = listeners.get("netcatty:write");
+  const write = listeners.get("magiesTerminal:write");
 
   try {
     const startResult = sessionLogStreamManager.startStreamToFile(sessionId, {
@@ -96,11 +96,11 @@ test("worker-mode write forward mirrors programmatic command rewrites into main-
 
     write({ sender: { id: 7 } }, {
       sessionId,
-      data: " netcatty-internal-reload\r",
-      logRewrite: { sentCommand: " netcatty-internal-reload", displayCommand: "" },
+      data: " magiesTerminal-internal-reload\r",
+      logRewrite: { sentCommand: " magiesTerminal-internal-reload", displayCommand: "" },
     });
 
-    sessionLogStreamManager.appendData(sessionId, " netcatty-internal-reload\r\nuser@host:~$ ");
+    sessionLogStreamManager.appendData(sessionId, " magiesTerminal-internal-reload\r\nuser@host:~$ ");
     const finalPath = await sessionLogStreamManager.stopStream(sessionId, startResult.token);
 
     assert.equal(finalPath, filePath);

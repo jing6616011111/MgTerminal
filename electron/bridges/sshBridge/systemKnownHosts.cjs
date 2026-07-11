@@ -3,16 +3,16 @@
  *
  * Mosh sessions are bootstrapped by the *system* `ssh`, which records the
  * server's host key in the user's OpenSSH known_hosts files (e.g.
- * `~/.ssh/known_hosts`). That file — not Netcatty's in-app known-hosts vault —
+ * `~/.ssh/known_hosts`). That file — not MagiesTerminal's in-app known-hosts vault —
  * is the real trust source for a Mosh connection: the user vetted and accepted
  * the key through OpenSSH's own prompt during the handshake.
  *
  * The stats companion (moshStatsConnection.cjs) opens a *second*, background
  * ssh2 connection and must only ever ride on a host whose key is already
- * trusted. Netcatty's vault snapshot does not get updated when OpenSSH accepts
+ * trusted. MagiesTerminal's vault snapshot does not get updated when OpenSSH accepts
  * a key, so a host trusted purely via the system would be wrongly classified as
  * "unknown" and the companion permanently disabled (issue: Mosh stats never
- * appear unless the user manually imports/scans the host into Netcatty).
+ * appear unless the user manually imports/scans the host into MagiesTerminal).
  *
  * This module parses the system known_hosts files and answers a single
  * question: "does a non-revoked system entry for this (host, port) record the

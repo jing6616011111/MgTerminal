@@ -204,7 +204,7 @@ test("interruptSession filters pending SSH output under high output pressure", (
     ["write", "\x03"],
   ]);
   assert.deepEqual(sent, [
-    ["netcatty:data", {
+    ["magiesTerminal:data", {
       sessionId: "ssh-1",
       data: "\x1b[?1049l",
       meta: { droppedOutputMayAffectTerminalState: true },

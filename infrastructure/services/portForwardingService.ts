@@ -28,7 +28,7 @@ const FALLBACK_TERMINAL_SETTINGS = {
 import { logger } from '../../lib/logger';
 import { localStorageAdapter } from '../persistence/localStorageAdapter';
 import { STORAGE_KEY_PF_RECONNECT_CANCEL } from '../config/storageKeys';
-import { netcattyBridge } from './netcattyBridge';
+import { magiesTerminalBridge } from './magiesTerminalBridge';
 
 export interface PortForwardingConnection {
   ruleId: string;
@@ -108,7 +108,7 @@ export const initReconnectCancelListener = (): (() => void) => {
     // Also ask the backend to stop any tunnel for this rule.
     // This catches tunnels still in SSH handshake that aren't yet
     // in the renderer's activeConnections or the backend's list output.
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     if (bridge?.stopPortForwardByRuleId) {
       bridge.stopPortForwardByRuleId(ruleId).catch((err: unknown) => {
         logger.warn(`[PortForwardingService] Cross-window stopByRuleId failed for ${ruleId}:`, err);
@@ -204,7 +204,7 @@ export const stopAndCleanupRule = (ruleId: string): void => {
 
   // Use stopPortForwardByRuleId so every tunnel for this rule is marked
   // cancelled before its sockets are closed.
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (bridge?.stopPortForwardByRuleId) {
     bridge.stopPortForwardByRuleId(ruleId).catch((err: unknown) => {
       logger.warn(`[PortForwardingService] Backend stopByRuleId failed for ${ruleId}:`, err);
@@ -252,7 +252,7 @@ const parseRuleIdFromTunnelId = (tunnelId: string): string | null => {
  * This updates the local activeConnections map to match the backend state.
  */
 export const syncWithBackend = async (): Promise<void> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   
   if (!bridge?.listPortForwards) {
     logger.warn('[PortForwardingService] Backend not available for sync');
@@ -298,7 +298,7 @@ export const reconcileWithBackend = async (): Promise<{
   appeared: string[];
 }> => {
   const result = { gone: [] as string[], appeared: [] as string[] };
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
 
   if (!bridge?.listPortForwards) return result;
 
@@ -384,7 +384,7 @@ export const startPortForward = async (
   knownHosts?: KnownHost[],
 ): Promise<{ success: boolean; error?: string }> => {
   const globalTerminalSettings = { ...FALLBACK_TERMINAL_SETTINGS, ...(terminalSettings ?? {}) };
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   
   // Clear any existing reconnect timer
   clearReconnectTimer(rule.id);
@@ -414,7 +414,7 @@ export const startPortForward = async (
     const proxy = host.proxyConfig
       ? resolveProxyConfigAuth(host.proxyConfig, identities)
       : undefined;
-    let jumpHosts: NetcattyJumpHost[] | undefined;
+    let jumpHosts: MagiesTerminalJumpHost[] | undefined;
     if (host.hostChain?.hostIds?.length) {
       const resolvedJumpHosts = host.hostChain.hostIds.map((hostId) =>
         hosts.find((candidate) => candidate.id === hostId),
@@ -628,7 +628,7 @@ export const stopPortForward = async (
   ruleId: string,
   onStatusChange: (status: PortForwardingRule['status']) => void
 ): Promise<{ success: boolean; error?: string }> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   const conn = activeConnections.get(ruleId);
   
   // Clear any pending reconnect timer
@@ -678,14 +678,14 @@ export const getPortForwardStatus = async (
  * Check if backend is available
  */
 export const isBackendAvailable = (): boolean => {
-  return !!(netcattyBridge.get()?.startPortForward);
+  return !!(magiesTerminalBridge.get()?.startPortForward);
 };
 
 /**
  * Stop all active tunnels (cleanup on unmount)
  */
 export const stopAllPortForwards = async (): Promise<void> => {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   
   // Stop everything the renderer knows about
   for (const [ruleId, conn] of activeConnections) {

@@ -43,7 +43,7 @@ import {
   type VaultImportFormat,
 } from '../../domain/vaultImport';
 import { resolveHostAuth } from '../../domain/sshAuth';
-import { netcattyBridge } from '../services/netcattyBridge';
+import { magiesTerminalBridge } from '../services/magiesTerminalBridge';
 
 const SENSITIVE_HOST_KEYS = new Set([
   'password',
@@ -263,7 +263,7 @@ async function executeSnippetOrScriptRun(
   }
 
   const command = applySnippetVariables(snippet.command, variableValues);
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (!bridge?.aiExec) {
     return { ok: false, error: 'Terminal execution bridge is unavailable.' };
   }
@@ -323,9 +323,9 @@ async function registerOpenedSessionInMcpScope(
   host: Host,
   chatSessionId?: string,
 ): Promise<void> {
-  let bridge: ReturnType<typeof netcattyBridge.get> | undefined;
+  let bridge: ReturnType<typeof magiesTerminalBridge.get> | undefined;
   try {
-    bridge = netcattyBridge.get();
+    bridge = magiesTerminalBridge.get();
   } catch {
     // Node unit tests / non-renderer contexts have no window.
     return;
@@ -751,7 +751,7 @@ export async function handleVaultAgentOp(
       return { ok: true, reference: getScriptApiReference() };
     }
     case 'scripts.runs.list': {
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge?.scriptGetRuns) {
         return { ok: false, error: 'Script runs bridge is unavailable.' };
       }
@@ -907,7 +907,7 @@ export function registerVaultAgentHandler(handler: VaultAgentHandler | null): vo
 }
 
 export function setupVaultAgentBridge(): () => void {
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (!bridge?.onVaultAgentRequest || !bridge.respondVaultAgent) {
     return () => {};
   }

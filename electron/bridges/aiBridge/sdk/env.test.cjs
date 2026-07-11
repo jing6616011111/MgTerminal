@@ -47,9 +47,9 @@ test("applies withCliDiscoveryEnv hook", () => {
   const env = buildSdkAgentEnv({
     shellEnv: { PATH: "/usr/bin" },
     requestedAgentEnv: {},
-    withCliDiscoveryEnv: (e) => ({ ...e, NETCATTY_TOOL_CLI_DISCOVERY: "/tmp/x.json" }),
+    withCliDiscoveryEnv: (e) => ({ ...e, MAGIES_TERMINAL_TOOL_CLI_DISCOVERY: "/tmp/x.json" }),
   });
-  assert.equal(env.NETCATTY_TOOL_CLI_DISCOVERY, "/tmp/x.json");
+  assert.equal(env.MAGIES_TERMINAL_TOOL_CLI_DISCOVERY, "/tmp/x.json");
 });
 
 test("normalizes CLAUDE_CODE_EXECUTABLE via injected normalizer", () => {

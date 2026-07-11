@@ -234,9 +234,9 @@ function createBridgeRegistrar(context) {
     vaultBackupBridge.registerHandlers(ipcMain, electronModule);
   
     // ZMODEM cancel handler
-    ipcMain.on("netcatty:zmodem:cancel", (event, payload) => {
+    ipcMain.on("magiesTerminal:zmodem:cancel", (event, payload) => {
       if (terminalWorkerManager) {
-        terminalWorkerManager.send("netcatty:zmodem:cancel", payload, {
+        terminalWorkerManager.send("magiesTerminal:zmodem:cancel", payload, {
           webContentsId: event?.sender?.id,
         });
         return;
@@ -247,9 +247,9 @@ function createBridgeRegistrar(context) {
       }
     });
 
-    ipcMain.handle("netcatty:zmodem:drag-drop-upload", async (event, payload) => {
+    ipcMain.handle("magiesTerminal:zmodem:drag-drop-upload", async (event, payload) => {
       if (terminalWorkerManager) {
-        return terminalWorkerManager.request("netcatty:zmodem:drag-drop-upload", payload, {
+        return terminalWorkerManager.request("magiesTerminal:zmodem:drag-drop-upload", payload, {
           webContentsId: event?.sender?.id,
         });
       }
@@ -308,7 +308,7 @@ function createBridgeRegistrar(context) {
     });
   
     // Fig autocomplete spec loader — uses dynamic import() since @withfig/autocomplete is ESM
-    ipcMain.handle("netcatty:figspec:list", async () => {
+    ipcMain.handle("magiesTerminal:figspec:list", async () => {
       try {
         const fs = require("fs");
         const mod = await import("@withfig/autocomplete");
@@ -328,7 +328,7 @@ function createBridgeRegistrar(context) {
         return [];
       }
     });
-    ipcMain.handle("netcatty:figspec:load", async (_event, commandName) => {
+    ipcMain.handle("magiesTerminal:figspec:load", async (_event, commandName) => {
       try {
         // Sanitize: reject absolute paths, path traversal, and non-spec characters
         if (!commandName || commandName.startsWith("/") || commandName.startsWith("\\") ||
@@ -360,7 +360,7 @@ function createBridgeRegistrar(context) {
     });
   
     // Local directory listing for autocomplete (local terminal sessions)
-    ipcMain.handle("netcatty:local:listdir", async (_event, payload) => {
+    ipcMain.handle("magiesTerminal:local:listdir", async (_event, payload) => {
       try {
         const {
           path: dirPath,
@@ -406,7 +406,7 @@ function createBridgeRegistrar(context) {
     });
   
     // Settings window handler
-    ipcMain.handle("netcatty:settings:open", async (event) => {
+    ipcMain.handle("magiesTerminal:settings:open", async (event) => {
       try {
         await getWindowManager().openSettingsWindow(electronModule, {
           preload,
@@ -424,14 +424,14 @@ function createBridgeRegistrar(context) {
       }
     });
 
-    ipcMain.handle("netcatty:window:openSession", async (_event, payload) => {
+    ipcMain.handle("magiesTerminal:window:openSession", async (_event, payload) => {
       try {
         if (!payload || typeof payload !== "object" || !payload.sourceSession) {
           return { success: false, error: "Invalid session payload" };
         }
         const title = typeof payload.title === "string" && payload.title.trim()
           ? payload.title.trim()
-          : "Netcatty";
+          : "MagiesTerminal";
         const win = await getWindowManager().createWindow(electronModule, {
           preload,
           devServerUrl: effectiveDevServerUrl,
@@ -450,7 +450,7 @@ function createBridgeRegistrar(context) {
         }
         const delivery = await getWindowManager().sendWhenRendererReady(
           win,
-          "netcatty:window:openSession",
+          "magiesTerminal:window:openSession",
           {
             title,
             sourceSession: payload.sourceSession,
@@ -472,7 +472,7 @@ function createBridgeRegistrar(context) {
       }
     });
 
-    ipcMain.handle("netcatty:window:openTerminalPopup", async (event, payload) => {
+    ipcMain.handle("magiesTerminal:window:openTerminalPopup", async (event, payload) => {
       try {
         if (!payload || typeof payload !== "object") {
           return { success: false, error: "Invalid popup payload" };
@@ -513,7 +513,7 @@ function createBridgeRegistrar(context) {
     });
   
     // Cloud sync master password (stored in-memory + persisted via safeStorage)
-    ipcMain.handle("netcatty:cloudSync:session:setPassword", async (_event, password) => {
+    ipcMain.handle("magiesTerminal:cloudSync:session:setPassword", async (_event, password) => {
       cloudSyncSessionPassword = typeof password === "string" && password.length ? password : null;
       if (cloudSyncSessionPassword) {
         persistCloudSyncPassword(cloudSyncSessionPassword);
@@ -523,14 +523,14 @@ function createBridgeRegistrar(context) {
       return true;
     });
   
-    ipcMain.handle("netcatty:cloudSync:session:getPassword", async () => {
+    ipcMain.handle("magiesTerminal:cloudSync:session:getPassword", async () => {
       if (cloudSyncSessionPassword) return cloudSyncSessionPassword;
       const persisted = readPersistedCloudSyncPassword();
       cloudSyncSessionPassword = persisted;
       return persisted;
     });
   
-    ipcMain.handle("netcatty:cloudSync:session:clearPassword", async () => {
+    ipcMain.handle("magiesTerminal:cloudSync:session:clearPassword", async () => {
       cloudSyncSessionPassword = null;
       clearPersistedCloudSyncPassword();
       return true;
@@ -541,12 +541,12 @@ function createBridgeRegistrar(context) {
     // no default browser configured — error 0x483). Rejects only in the rare
     // case where both the system browser AND the fallback window fail, so
     // existing callers that rely on rejection semantics still abort cleanly.
-    ipcMain.handle("netcatty:openExternal", async (_event, url) => {
+    ipcMain.handle("magiesTerminal:openExternal", async (_event, url) => {
       const { shell } = electronModule;
       await getWindowManager().tryOpenExternalWithFallback(shell, url);
     });
   
-    ipcMain.handle("netcatty:openPath", async (_event, targetPath) => {
+    ipcMain.handle("magiesTerminal:openPath", async (_event, targetPath) => {
       if (typeof targetPath !== "string" || targetPath.trim() === "") {
         return { success: false, error: "Invalid path" };
       }
@@ -564,7 +564,7 @@ function createBridgeRegistrar(context) {
     });
   
     // App information for About/Application screens
-    ipcMain.handle("netcatty:app:getInfo", async () => {
+    ipcMain.handle("magiesTerminal:app:getInfo", async () => {
       return {
         name: app.getName(),
         version: app.getVersion(),
@@ -573,7 +573,7 @@ function createBridgeRegistrar(context) {
     });
   
     // PTY child process list for busy-check before close
-    ipcMain.handle("netcatty:pty:childProcesses", async (_event, sessionId) => {
+    ipcMain.handle("magiesTerminal:pty:childProcesses", async (_event, sessionId) => {
       if (typeof sessionId !== "string") return [];
       return ptyProcessTree.getChildProcesses(sessionId);
     });
@@ -582,7 +582,7 @@ function createBridgeRegistrar(context) {
     // Returns true only if the user explicitly clicks "Close". ESC/dialog-dismiss
     // resolves as cancelId (0) → false, which is the safe default (do not close).
     ipcMain.handle(
-      "netcatty:dialog:confirmCloseBusy",
+      "magiesTerminal:dialog:confirmCloseBusy",
       async (event, payload) => {
         const command = typeof payload?.command === "string" ? payload.command : "unknown";
         const title = typeof payload?.title === "string" ? payload.title : "Confirm close";
@@ -607,7 +607,7 @@ function createBridgeRegistrar(context) {
     );
   
     // Clipboard helpers for renderer fallback paths (e.g. Monaco paste in Electron)
-    ipcMain.handle("netcatty:clipboard:readText", async () => {
+    ipcMain.handle("magiesTerminal:clipboard:readText", async () => {
       try {
         return clipboard?.readText?.() || "";
       } catch {
@@ -615,7 +615,7 @@ function createBridgeRegistrar(context) {
       }
     });
 
-    ipcMain.handle("netcatty:clipboard:writeText", async (_event, text) => {
+    ipcMain.handle("magiesTerminal:clipboard:writeText", async (_event, text) => {
       try {
         if (typeof clipboard?.writeText !== "function") return false;
         clipboard.writeText(typeof text === "string" ? text : "");
@@ -625,16 +625,16 @@ function createBridgeRegistrar(context) {
       }
     });
 
-    ipcMain.handle("netcatty:clipboard:readFiles", async () => {
+    ipcMain.handle("magiesTerminal:clipboard:readFiles", async () => {
       return readClipboardFiles({ clipboard, fsImpl: fs, pathImpl: path });
     });
 
-    ipcMain.handle("netcatty:clipboard:readImage", async () => {
+    ipcMain.handle("magiesTerminal:clipboard:readImage", async () => {
       return readClipboardImage({ clipboard, fsImpl: fs, tempDirBridge });
     });
   
     // Select an application from system file picker
-    ipcMain.handle("netcatty:selectApplication", async () => {
+    ipcMain.handle("magiesTerminal:selectApplication", async () => {
       const { dialog } = electronModule;
       
       let filters = [];
@@ -670,7 +670,7 @@ function createBridgeRegistrar(context) {
     });
   
     // Open a file with a specific application
-    ipcMain.handle("netcatty:openWithApplication", async (_event, { filePath, appPath }) => {
+    ipcMain.handle("magiesTerminal:openWithApplication", async (_event, { filePath, appPath }) => {
       const { spawn: cpSpawn } = require("node:child_process");
       
       console.log(`[Main] Opening file with application:`);
@@ -743,7 +743,7 @@ function createBridgeRegistrar(context) {
     });
 
     // Open a file with the system default application
-    ipcMain.handle("netcatty:openWithSystemDefault", async (_event, { filePath }) => {
+    ipcMain.handle("magiesTerminal:openWithSystemDefault", async (_event, { filePath }) => {
       const { shell } = require("electron");
 
       try {
@@ -758,7 +758,7 @@ function createBridgeRegistrar(context) {
     });
   
     // Show save file dialog and return selected path
-    ipcMain.handle("netcatty:showSaveDialog", async (_event, { defaultPath, filters }) => {
+    ipcMain.handle("magiesTerminal:showSaveDialog", async (_event, { defaultPath, filters }) => {
       const { dialog } = electronModule;
   
       const result = await dialog.showSaveDialog({
@@ -774,7 +774,7 @@ function createBridgeRegistrar(context) {
     });
   
     // Select a file and return the selected path
-    ipcMain.handle("netcatty:selectFile", async (_event, { title, defaultPath, filters }) => {
+    ipcMain.handle("magiesTerminal:selectFile", async (_event, { title, defaultPath, filters }) => {
       const { dialog } = electronModule;
   
       const result = await dialog.showOpenDialog({
@@ -792,7 +792,7 @@ function createBridgeRegistrar(context) {
     });
   
     // Select a directory and return the selected path
-    ipcMain.handle("netcatty:selectDirectory", async (_event, { title, defaultPath }) => {
+    ipcMain.handle("magiesTerminal:selectDirectory", async (_event, { title, defaultPath }) => {
       const { dialog } = electronModule;
   
       const result = await dialog.showOpenDialog({
@@ -809,21 +809,21 @@ function createBridgeRegistrar(context) {
     });
   
     // Download SFTP file to temp and return local path
-    ipcMain.handle("netcatty:sftp:downloadToTemp", async (event, { sftpId, remotePath, fileName, encoding }) => {
+    ipcMain.handle("magiesTerminal:sftp:downloadToTemp", async (event, { sftpId, remotePath, fileName, encoding }) => {
       console.log(`[Main] Downloading SFTP file to temp:`);
       console.log(`[Main]   SFTP ID: ${sftpId}`);
       console.log(`[Main]   Remote path: ${remotePath}`);
       console.log(`[Main]   File name: ${fileName}`);
       
       const client = require("../bridges/sftpBridge.cjs");
-      // Use tempDirBridge for dedicated Netcatty temp directory
+      // Use tempDirBridge for dedicated MagiesTerminal temp directory
       const localPath = await getTempDirBridge().getTempFilePath(fileName);
       
       console.log(`[Main]   Local temp path: ${localPath}`);
 
       if (terminalWorkerManager) {
         try {
-          const result = await terminalWorkerManager.request("netcatty:sftp:downloadToLocal", {
+          const result = await terminalWorkerManager.request("magiesTerminal:sftp:downloadToLocal", {
             sftpId,
             remotePath,
             localPath,
@@ -873,11 +873,11 @@ function createBridgeRegistrar(context) {
     });
   
     // Download SFTP file to temp with progress reporting via transfer events.
-    // Progress/complete/cancelled events are delivered via the netcatty:transfer:*
+    // Progress/complete/cancelled events are delivered via the magiesTerminal:transfer:*
     // channels (handled by transferBridge.startTransfer), so the IPC return value
     // only carries the resolved temp path. Cancellation is NOT an error here —
     // the UI already transitions the task to "cancelled" via the dedicated event.
-    ipcMain.handle("netcatty:sftp:downloadToTempWithProgress", async (event, { sftpId, remotePath, fileName, encoding, transferId }) => {
+    ipcMain.handle("magiesTerminal:sftp:downloadToTempWithProgress", async (event, { sftpId, remotePath, fileName, encoding, transferId }) => {
       const localPath = await getTempDirBridge().getTempFilePath(fileName);
       const cleanupPartialDownload = async () => {
         try {
@@ -900,7 +900,7 @@ function createBridgeRegistrar(context) {
         };
   
         const result = terminalWorkerManager
-          ? await terminalWorkerManager.request("netcatty:transfer:start", payload, {
+          ? await terminalWorkerManager.request("magiesTerminal:transfer:start", payload, {
               webContentsId: event?.sender?.id,
             })
           : await transferBridge.startTransfer(event, payload);
@@ -920,13 +920,13 @@ function createBridgeRegistrar(context) {
     });
   
     // Delete a temp file (for cleanup when editors close)
-    ipcMain.handle("netcatty:deleteTempFile", async (_event, { filePath }) => {
+    ipcMain.handle("magiesTerminal:deleteTempFile", async (_event, { filePath }) => {
       try {
-        // Only allow deleting files in Netcatty temp directory for security
-        const netcattyTempDir = path.resolve(getTempDirBridge().getTempDir());
+        // Only allow deleting files in MagiesTerminal temp directory for security
+        const magiesTerminalTempDir = path.resolve(getTempDirBridge().getTempDir());
         const resolvedPath = path.resolve(String(filePath || ""));
-        if (!isPathInside(netcattyTempDir, resolvedPath)) {
-          console.warn(`[Main] Refused to delete file outside Netcatty temp dir: ${filePath}`);
+        if (!isPathInside(magiesTerminalTempDir, resolvedPath)) {
+          console.warn(`[Main] Refused to delete file outside MagiesTerminal temp dir: ${filePath}`);
           return { success: false };
         }
         

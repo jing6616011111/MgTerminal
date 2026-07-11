@@ -1,4 +1,4 @@
-export const OSC7_MARKER = "Netcatty OSC 7 cwd tracking";
+export const OSC7_MARKER = "MagiesTerminal OSC 7 cwd tracking";
 
 export const OSC7_SETUP_TARGETS = [
   "~/.bashrc",
@@ -6,13 +6,13 @@ export const OSC7_SETUP_TARGETS = [
   "~/.config/fish/config.fish",
 ] as const;
 
-export const OSC7_SETUP_SHELL_MARKER = "__NETCATTY_OSC7_SETUP_SHELL__=";
-export const OSC7_SETUP_CONFIG_MARKER = "__NETCATTY_OSC7_SETUP_CONFIG__=";
+export const OSC7_SETUP_SHELL_MARKER = "__MAGIES_TERMINAL_OSC7_SETUP_SHELL__=";
+export const OSC7_SETUP_CONFIG_MARKER = "__MAGIES_TERMINAL_OSC7_SETUP_CONFIG__=";
 // Emitted when the silent exec-channel setup finds the active terminal shell
 // owned by another user (after `su` / `sudo su`); the exec channel cannot
 // configure that shell, so the renderer retypes the setup inside the terminal
 // where it runs as the target user (#1942).
-export const OSC7_SETUP_OTHER_USER_MARKER = "__NETCATTY_OSC7_SETUP_OTHER_USER_SHELL__=";
+export const OSC7_SETUP_OTHER_USER_MARKER = "__MAGIES_TERMINAL_OSC7_SETUP_OTHER_USER_SHELL__=";
 
 export type Osc7SetupActionContext = {
   protocol?: string;
@@ -98,13 +98,13 @@ const quoteForSingleQuotedShellString = (value: string): string =>
 
 const URL_PATH_AWK_SCRIPT_QUOTED = quoteForSingleQuotedShellString(URL_PATH_AWK_SCRIPT);
 
-const BASH_DELETE_MARKED_HISTORY_COMMAND = String.raw`if test -n "${DOLLAR}{BASH_VERSION-}"; then __netcatty_osc7_history_cleanup_marker__=1; __netcatty_osc7_history_line=$(HISTTIMEFORMAT= builtin history 1 2>/dev/null) || __netcatty_osc7_history_line=""; case "$__netcatty_osc7_history_line" in *__netcatty_osc7_history_cleanup_marker__=1*) __netcatty_osc7_history_number=$(printf "%s\n" "$__netcatty_osc7_history_line" | sed "s/^ *\([0-9][0-9]*\).*/\1/"); case "$__netcatty_osc7_history_number" in ""|*[!0-9]*) ;; *) builtin history -d "$__netcatty_osc7_history_number" 2>/dev/null || true;; esac;; esac; unset __netcatty_osc7_history_cleanup_marker__ __netcatty_osc7_history_line __netcatty_osc7_history_number 2>/dev/null || true; fi`;
+const BASH_DELETE_MARKED_HISTORY_COMMAND = String.raw`if test -n "${DOLLAR}{BASH_VERSION-}"; then __magiesTerminal_osc7_history_cleanup_marker__=1; __magiesTerminal_osc7_history_line=$(HISTTIMEFORMAT= builtin history 1 2>/dev/null) || __magiesTerminal_osc7_history_line=""; case "$__magiesTerminal_osc7_history_line" in *__magiesTerminal_osc7_history_cleanup_marker__=1*) __magiesTerminal_osc7_history_number=$(printf "%s\n" "$__magiesTerminal_osc7_history_line" | sed "s/^ *\([0-9][0-9]*\).*/\1/"); case "$__magiesTerminal_osc7_history_number" in ""|*[!0-9]*) ;; *) builtin history -d "$__magiesTerminal_osc7_history_number" 2>/dev/null || true;; esac;; esac; unset __magiesTerminal_osc7_history_cleanup_marker__ __magiesTerminal_osc7_history_line __magiesTerminal_osc7_history_number 2>/dev/null || true; fi`;
 
 const POSIX_SETUP_SCRIPT = String.raw`set -eu
-marker="# >>> Netcatty OSC 7 cwd tracking >>>"
+marker="# >>> MagiesTerminal OSC 7 cwd tracking >>>"
 SELF=$$
-expected_cwd="${DOLLAR}{NETCATTY_OSC7_EXPECTED_CWD:-}"
-forced_shell="${DOLLAR}{NETCATTY_OSC7_FORCE_SHELL:-}"
+expected_cwd="${DOLLAR}{MAGIES_TERMINAL_OSC7_EXPECTED_CWD:-}"
+forced_shell="${DOLLAR}{MAGIES_TERMINAL_OSC7_FORCE_SHELL:-}"
 
 find_login_shell() {
   _shell=$(ps -e -o pid=,ppid=,tty=,comm= 2>/dev/null | awk -v pp="$1" -v self="$SELF" '
@@ -184,19 +184,19 @@ if [ -n "$active_shell_pid" ]; then
   if [ -n "$active_uid" ] && [ -n "$self_uid" ] && [ "$active_uid" != "$self_uid" ]; then
     other_shell=$(cat "/proc/$active_shell_pid/comm" 2>/dev/null | sed "s/^-//" | tr -d "[:space:]" || true)
     printf '%s%s\n' '${OSC7_SETUP_OTHER_USER_MARKER}' "${DOLLAR}{other_shell:-unknown}"
-    printf "Netcatty OSC 7 setup: the active terminal shell belongs to another user\n" >&2
+    printf "MagiesTerminal OSC 7 setup: the active terminal shell belongs to another user\n" >&2
     exit 5
   fi
 fi
 
 if [ -d /proc ] && [ -n "$expected_cwd" ]; then
   if [ -z "$active_shell_pid" ]; then
-    printf "Netcatty OSC 7 setup: could not identify the active terminal shell\n" >&2
+    printf "MagiesTerminal OSC 7 setup: could not identify the active terminal shell\n" >&2
     exit 4
   fi
   active_cwd=$(readlink "/proc/$active_shell_pid/cwd" 2>/dev/null || true)
   if [ "$active_cwd" != "$expected_cwd" ]; then
-    printf "Netcatty OSC 7 setup: active terminal shell did not match the current tab\n" >&2
+    printf "MagiesTerminal OSC 7 setup: active terminal shell did not match the current tab\n" >&2
     exit 4
   fi
 fi
@@ -215,7 +215,7 @@ if [ -n "$active_shell_pid" ]; then
     active_zdotdir=$(read_proc_env_value "$active_env_file" ZDOTDIR || true)
     active_xdg_config_home=$(read_proc_env_value "$active_env_file" XDG_CONFIG_HOME || true)
   elif [ "$active_shell_pid" != "$login_shell_pid" ]; then
-    printf "Netcatty OSC 7 setup: cannot silently configure an active shell owned by another user\n" >&2
+    printf "MagiesTerminal OSC 7 setup: cannot silently configure an active shell owned by another user\n" >&2
     exit 3
   fi
 fi
@@ -234,21 +234,21 @@ case "$forced_shell" in
 esac
 
 home_dir="${DOLLAR}{active_home:-$HOME}"
-zdotdir="${DOLLAR}{active_zdotdir:-${DOLLAR}{NETCATTY_ZDOTDIR:-${DOLLAR}{ZDOTDIR:-$home_dir}}}"
-xdg_config_home="${DOLLAR}{active_xdg_config_home:-${DOLLAR}{NETCATTY_XDG_CONFIG_HOME:-${DOLLAR}{XDG_CONFIG_HOME:-$home_dir/.config}}}"
+zdotdir="${DOLLAR}{active_zdotdir:-${DOLLAR}{MAGIES_TERMINAL_ZDOTDIR:-${DOLLAR}{ZDOTDIR:-$home_dir}}}"
+xdg_config_home="${DOLLAR}{active_xdg_config_home:-${DOLLAR}{MAGIES_TERMINAL_XDG_CONFIG_HOME:-${DOLLAR}{XDG_CONFIG_HOME:-$home_dir/.config}}}"
 
 case "$shell_name" in
   bash) config="$home_dir/.bashrc" ;;
   zsh) config="$zdotdir/.zshrc" ;;
   fish) config="$xdg_config_home/fish/config.fish" ;;
   *)
-    printf "Netcatty OSC 7 setup: unsupported shell %s\n" "$shell_name" >&2
+    printf "MagiesTerminal OSC 7 setup: unsupported shell %s\n" "$shell_name" >&2
     printf "Supported shells: bash, zsh, fish\n" >&2
     exit 2
     ;;
 esac
 
-__netcatty_osc7_url_path() {
+__magiesTerminal_osc7_url_path() {
   printf "%s" "$1" | LC_ALL=C awk ${URL_PATH_AWK_SCRIPT_QUOTED}
 }
 
@@ -259,14 +259,14 @@ if grep -F "$marker" "$config" >/dev/null 2>&1; then
 else
   case "$shell_name" in
     bash)
-      cat >> "$config" <<'NETCATTY_OSC7_BASH'
+      cat >> "$config" <<'MAGIES_TERMINAL_OSC7_BASH'
 
-# >>> Netcatty OSC 7 cwd tracking >>>
-__netcatty_osc7_url_path() {
+# >>> MagiesTerminal OSC 7 cwd tracking >>>
+__magiesTerminal_osc7_url_path() {
   printf "%s" "$1" | LC_ALL=C awk '${URL_PATH_AWK_SCRIPT}'
 }
 osc7_cwd() {
-  printf '\033]7;file://%s%s\a' "${DOLLAR}{HOSTNAME:-localhost}" "$(__netcatty_osc7_url_path "$PWD")"
+  printf '\033]7;file://%s%s\a' "${DOLLAR}{HOSTNAME:-localhost}" "$(__magiesTerminal_osc7_url_path "$PWD")"
 }
 case "${DOLLAR}{PROMPT_COMMAND:-}" in
   *osc7_cwd*) ;;
@@ -279,18 +279,18 @@ osc7_cwd"
     fi
     ;;
 esac
-# <<< Netcatty OSC 7 cwd tracking <<<
-NETCATTY_OSC7_BASH
+# <<< MagiesTerminal OSC 7 cwd tracking <<<
+MAGIES_TERMINAL_OSC7_BASH
       ;;
     zsh)
-      cat >> "$config" <<'NETCATTY_OSC7_ZSH'
+      cat >> "$config" <<'MAGIES_TERMINAL_OSC7_ZSH'
 
-# >>> Netcatty OSC 7 cwd tracking >>>
-__netcatty_osc7_url_path() {
+# >>> MagiesTerminal OSC 7 cwd tracking >>>
+__magiesTerminal_osc7_url_path() {
   printf "%s" "$1" | LC_ALL=C awk '${URL_PATH_AWK_SCRIPT}'
 }
 osc7_cwd() {
-  printf '\033]7;file://%s%s\a' "${DOLLAR}{HOST:-${DOLLAR}{HOSTNAME:-localhost}}" "$(__netcatty_osc7_url_path "$PWD")"
+  printf '\033]7;file://%s%s\a' "${DOLLAR}{HOST:-${DOLLAR}{HOSTNAME:-localhost}}" "$(__magiesTerminal_osc7_url_path "$PWD")"
 }
 if (( ${DOLLAR}{+precmd_functions} )); then
   case " ${DOLLAR}{precmd_functions[*]} " in
@@ -300,21 +300,21 @@ if (( ${DOLLAR}{+precmd_functions} )); then
 else
   precmd_functions=(osc7_cwd)
 fi
-# <<< Netcatty OSC 7 cwd tracking <<<
-NETCATTY_OSC7_ZSH
+# <<< MagiesTerminal OSC 7 cwd tracking <<<
+MAGIES_TERMINAL_OSC7_ZSH
       ;;
     fish)
-      cat >> "$config" <<'NETCATTY_OSC7_FISH'
+      cat >> "$config" <<'MAGIES_TERMINAL_OSC7_FISH'
 
-# >>> Netcatty OSC 7 cwd tracking >>>
-function __netcatty_osc7_url_path
+# >>> MagiesTerminal OSC 7 cwd tracking >>>
+function __magiesTerminal_osc7_url_path
     printf "%s" "$argv[1]" | LC_ALL=C awk '${URL_PATH_AWK_SCRIPT}'
 end
-function __netcatty_osc7_cwd --on-event fish_prompt
-    printf '\033]7;file://%s%s\a' (hostname 2>/dev/null; or printf localhost) (__netcatty_osc7_url_path "$PWD")
+function __magiesTerminal_osc7_cwd --on-event fish_prompt
+    printf '\033]7;file://%s%s\a' (hostname 2>/dev/null; or printf localhost) (__magiesTerminal_osc7_url_path "$PWD")
 end
-# <<< Netcatty OSC 7 cwd tracking <<<
-NETCATTY_OSC7_FISH
+# <<< MagiesTerminal OSC 7 cwd tracking <<<
+MAGIES_TERMINAL_OSC7_FISH
       ;;
   esac
 fi
@@ -324,19 +324,19 @@ if [ -z "$forced_shell" ]; then
   printf '%s%s\n' '${OSC7_SETUP_CONFIG_MARKER}' "$config"
 fi
 host=$(hostname 2>/dev/null || printf localhost)
-printf '\033]7;file://%s%s\a' "$host" "$(__netcatty_osc7_url_path "$PWD")"`;
+printf '\033]7;file://%s%s\a' "$host" "$(__magiesTerminal_osc7_url_path "$PWD")"`;
 
 export const buildOsc7SetupCommand = (): string =>
-  `set +u 2>/dev/null || true; printf "%s\\n" ${quoteForSingleQuotedShellString(POSIX_SETUP_SCRIPT)} | env NETCATTY_ZDOTDIR="$ZDOTDIR" NETCATTY_XDG_CONFIG_HOME="$XDG_CONFIG_HOME" sh\n`;
+  `set +u 2>/dev/null || true; printf "%s\\n" ${quoteForSingleQuotedShellString(POSIX_SETUP_SCRIPT)} | env MAGIES_TERMINAL_ZDOTDIR="$ZDOTDIR" MAGIES_TERMINAL_XDG_CONFIG_HOME="$XDG_CONFIG_HOME" sh\n`;
 
 export const buildOsc7SetupExecCommand = (expectedCwd?: string): string => {
   const envPrefix = expectedCwd
-    ? `env NETCATTY_OSC7_EXPECTED_CWD=${quoteForSingleQuotedShellString(expectedCwd)} `
+    ? `env MAGIES_TERMINAL_OSC7_EXPECTED_CWD=${quoteForSingleQuotedShellString(expectedCwd)} `
     : "";
   return `exec ${envPrefix}sh -c ${quoteForSingleQuotedShellString(POSIX_SETUP_SCRIPT)}\n`;
 };
 
-export const OSC7_SETUP_STAGED_MARKER = "__NETCATTY_OSC7_SETUP_STAGED__=";
+export const OSC7_SETUP_STAGED_MARKER = "__MAGIES_TERMINAL_OSC7_SETUP_STAGED__=";
 
 /** Exact bytes the stage command writes (printf '%s\n' appends the newline). */
 const STAGED_SETUP_SCRIPT_BYTES = `${POSIX_SETUP_SCRIPT}\n`;
@@ -369,7 +369,7 @@ export const getOsc7StagedScriptSha256 = (): Promise<string> => {
 export const buildOsc7StageScriptCommand = (): string => {
   const stageScript = `set -eu
 umask 022
-file=$(mktemp /tmp/.netcatty-osc7-setup.XXXXXX)
+file=$(mktemp /tmp/.magiesTerminal-osc7-setup.XXXXXX)
 printf '%s\\n' ${quoteForSingleQuotedShellString(POSIX_SETUP_SCRIPT)} > "$file"
 chmod 644 "$file"
 printf '%s%s\\n' '${OSC7_SETUP_STAGED_MARKER}' "$file"`;
@@ -390,7 +390,7 @@ const buildVerifiedStagedRunner = (contentSha256: string): string =>
   + `[ -n "$h" ] || h=$(printf "%s\\n" "$c" | shasum -a 256 2>/dev/null | cut -d" " -f1); `
   + `[ -n "$h" ] || h=$(printf "%s\\n" "$c" | openssl dgst -sha256 2>/dev/null | sed "s/^.* //"); `
   + `if [ "x$h" = "x${contentSha256}" ]; then printf "%s\\n" "$c" | sh; `
-  + `else printf "%s\\n" "Netcatty OSC 7 setup: staged script verification failed" >&2; fi`;
+  + `else printf "%s\\n" "MagiesTerminal OSC 7 setup: staged script verification failed" >&2; fi`;
 
 /**
  * Setup command typed into the interactive terminal itself. Used when the
@@ -402,7 +402,7 @@ const buildVerifiedStagedRunner = (contentSha256: string): string =>
  * The command hash-verifies and runs the staged script (see
  * buildOsc7StageScriptCommand / buildVerifiedStagedRunner) inside a POSIX
  * `sh -c` child, and forwards shell-local (possibly unexported) ZDOTDIR /
- * XDG_CONFIG_HOME via the NETCATTY_* overrides the setup script already
+ * XDG_CONFIG_HOME via the MAGIES_TERMINAL_* overrides the setup script already
  * honors, mirroring buildOsc7SetupCommand.
  */
 export const buildOsc7TypedSetupCommand = (
@@ -413,16 +413,16 @@ export const buildOsc7TypedSetupCommand = (
   const quotedPath = quoteForSingleQuotedShellString(scriptPath);
   const quotedRunner = quoteForSingleQuotedShellString(buildVerifiedStagedRunner(contentSha256));
   if (shell === "bash") {
-    const run = `env NETCATTY_OSC7_FORCE_SHELL=bash sh -c ${quotedRunner} sh ${quotedPath}`;
+    const run = `env MAGIES_TERMINAL_OSC7_FORCE_SHELL=bash sh -c ${quotedRunner} sh ${quotedPath}`;
     return `${run}; . "${DOLLAR}HOME/.bashrc" >/dev/null 2>&1; osc7_cwd 2>/dev/null; true; ${BASH_DELETE_MARKED_HISTORY_COMMAND}\r`;
   }
   if (shell === "zsh") {
-    const run = `env NETCATTY_OSC7_FORCE_SHELL=zsh NETCATTY_ZDOTDIR="${DOLLAR}{ZDOTDIR:-}" sh -c ${quotedRunner} sh ${quotedPath}`;
+    const run = `env MAGIES_TERMINAL_OSC7_FORCE_SHELL=zsh MAGIES_TERMINAL_ZDOTDIR="${DOLLAR}{ZDOTDIR:-}" sh -c ${quotedRunner} sh ${quotedPath}`;
     // Leading space keeps the command out of history when HIST_IGNORE_SPACE is set.
     return ` ${run}; . "${DOLLAR}{ZDOTDIR:-${DOLLAR}HOME}/.zshrc" >/dev/null 2>&1; osc7_cwd 2>/dev/null; true\r`;
   }
-  const run = `env NETCATTY_OSC7_FORCE_SHELL=fish NETCATTY_XDG_CONFIG_HOME="${DOLLAR}XDG_CONFIG_HOME" sh -c ${quotedRunner} sh ${quotedPath}`;
-  return ` ${run}; source (test -n "${DOLLAR}XDG_CONFIG_HOME"; and echo "${DOLLAR}XDG_CONFIG_HOME"; or echo "${DOLLAR}HOME/.config")/fish/config.fish >/dev/null 2>&1; __netcatty_osc7_cwd 2>/dev/null; true\r`;
+  const run = `env MAGIES_TERMINAL_OSC7_FORCE_SHELL=fish MAGIES_TERMINAL_XDG_CONFIG_HOME="${DOLLAR}XDG_CONFIG_HOME" sh -c ${quotedRunner} sh ${quotedPath}`;
+  return ` ${run}; source (test -n "${DOLLAR}XDG_CONFIG_HOME"; and echo "${DOLLAR}XDG_CONFIG_HOME"; or echo "${DOLLAR}HOME/.config")/fish/config.fish >/dev/null 2>&1; __magiesTerminal_osc7_cwd 2>/dev/null; true\r`;
 };
 
 const isOsc7SetupShell = (value: string): value is Osc7SetupShell =>
@@ -480,7 +480,7 @@ export const extractOsc7SetupTerminalData = (stdout: string): string => {
 export const buildOsc7ReloadCommand = (metadata: Osc7SetupMetadata | null): string | null => {
   if (!metadata) return null;
   const sourceCommand = `source ${quoteForSingleQuotedShellString(metadata.configPath)} >/dev/null 2>&1`;
-  const emitCommand = metadata.shell === "fish" ? "__netcatty_osc7_cwd" : "osc7_cwd";
+  const emitCommand = metadata.shell === "fish" ? "__magiesTerminal_osc7_cwd" : "osc7_cwd";
   if (metadata.shell === "bash") {
     return `${sourceCommand}; ${emitCommand} 2>/dev/null; true; ${BASH_DELETE_MARKED_HISTORY_COMMAND}\r`;
   }

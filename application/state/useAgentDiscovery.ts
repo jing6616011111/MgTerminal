@@ -2,12 +2,12 @@ import { startTransition, useCallback, useEffect, useRef, useState } from 'react
 import type { DiscoveredAgent, ExternalAgentConfig } from '../../infrastructure/ai/types';
 import { getExternalAgentSdkBackend } from '../../infrastructure/ai/managedAgents';
 
-interface NetcattyBridge {
+interface MagiesTerminalBridge {
   aiDiscoverAgents(options?: { refreshShellEnv?: boolean; apiKeyPresent?: boolean }): Promise<DiscoveredAgent[]>;
 }
 
-function getBridge(): NetcattyBridge | undefined {
-  return (window as unknown as { netcatty?: NetcattyBridge }).netcatty;
+function getBridge(): MagiesTerminalBridge | undefined {
+  return (window as unknown as { magiesTerminal?: MagiesTerminalBridge }).magiesTerminal;
 }
 
 const AGENT_DISCOVERY_CACHE_TTL_MS = 60_000;

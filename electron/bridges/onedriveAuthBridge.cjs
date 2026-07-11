@@ -8,7 +8,7 @@
 const ONEDRIVE_TOKEN_URL = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
 const ONEDRIVE_GRAPH_API = "https://graph.microsoft.com/v1.0";
 const APP_FOLDER_PATH = "/drive/special/approot";
-const DEFAULT_SYNC_FILE_NAME = "netcatty-vault.json";
+const DEFAULT_SYNC_FILE_NAME = "magiesTerminal-vault.json";
 const DEFAULT_SCOPE =
   "https://graph.microsoft.com/Files.ReadWrite.AppFolder https://graph.microsoft.com/User.Read offline_access";
 
@@ -58,7 +58,7 @@ function registerHandlers(ipcMain, electronModule) {
   const fetchImpl =
     electronModule?.net?.fetch ? electronModule.net.fetch.bind(electronModule.net) : fetch;
 
-  ipcMain.handle("netcatty:onedrive:oauth:exchange", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:onedrive:oauth:exchange", async (_event, payload) => {
     const clientId = payload?.clientId;
     const code = payload?.code;
     const codeVerifier = payload?.codeVerifier;
@@ -117,7 +117,7 @@ function registerHandlers(ipcMain, electronModule) {
     };
   });
 
-  ipcMain.handle("netcatty:onedrive:oauth:refresh", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:onedrive:oauth:refresh", async (_event, payload) => {
     const clientId = payload?.clientId;
     const refreshToken = payload?.refreshToken;
     const scope = isNonEmptyString(payload?.scope) ? payload.scope : DEFAULT_SCOPE;
@@ -174,7 +174,7 @@ function registerHandlers(ipcMain, electronModule) {
     };
   });
 
-  ipcMain.handle("netcatty:onedrive:oauth:userinfo", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:onedrive:oauth:userinfo", async (_event, payload) => {
     const accessToken = payload?.accessToken;
     if (!isNonEmptyString(accessToken)) throw new Error("Missing accessToken");
 
@@ -221,7 +221,7 @@ function registerHandlers(ipcMain, electronModule) {
     };
   });
 
-  ipcMain.handle("netcatty:onedrive:drive:findSyncFile", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:onedrive:drive:findSyncFile", async (_event, payload) => {
     const accessToken = payload?.accessToken;
     const fileName = isNonEmptyString(payload?.fileName) ? payload.fileName : DEFAULT_SYNC_FILE_NAME;
     if (!isNonEmptyString(accessToken)) throw new Error("Missing accessToken");
@@ -243,7 +243,7 @@ function registerHandlers(ipcMain, electronModule) {
     return { fileId: item?.id || null };
   });
 
-  ipcMain.handle("netcatty:onedrive:drive:uploadSyncFile", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:onedrive:drive:uploadSyncFile", async (_event, payload) => {
     const accessToken = payload?.accessToken;
     const fileName = isNonEmptyString(payload?.fileName) ? payload.fileName : DEFAULT_SYNC_FILE_NAME;
     const syncedFile = payload?.syncedFile;
@@ -269,7 +269,7 @@ function registerHandlers(ipcMain, electronModule) {
     return { fileId: item.id || null };
   });
 
-  ipcMain.handle("netcatty:onedrive:drive:downloadSyncFile", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:onedrive:drive:downloadSyncFile", async (_event, payload) => {
     const accessToken = payload?.accessToken;
     const fileId = payload?.fileId;
     const fileName = isNonEmptyString(payload?.fileName) ? payload.fileName : DEFAULT_SYNC_FILE_NAME;
@@ -318,7 +318,7 @@ function registerHandlers(ipcMain, electronModule) {
     return { syncedFile: data };
   });
 
-  ipcMain.handle("netcatty:onedrive:drive:deleteSyncFile", async (_event, payload) => {
+  ipcMain.handle("magiesTerminal:onedrive:drive:deleteSyncFile", async (_event, payload) => {
     const accessToken = payload?.accessToken;
     const fileId = payload?.fileId;
     if (!isNonEmptyString(accessToken)) throw new Error("Missing accessToken");

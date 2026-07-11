@@ -344,7 +344,7 @@ function createZmodemSentry(opts) {
       console.warn(`[ZMODEM][${label}] Drag-drop upload did not start before timeout; cancelling pending upload`);
       interruptPendingDragDropCommand();
       clearDragDropUpload();
-      safeSend(getWebContents(), "netcatty:zmodem:error", {
+      safeSend(getWebContents(), "magiesTerminal:zmodem:error", {
         sessionId,
         error: "ZMODEM drag-drop upload did not start",
       });
@@ -417,7 +417,7 @@ function createZmodemSentry(opts) {
 
       console.log(`[ZMODEM][${label}] Detected ${transferType} for session ${sessionId}`);
 
-      safeSend(contents, "netcatty:zmodem:detect", {
+      safeSend(contents, "magiesTerminal:zmodem:detect", {
         sessionId,
         transferType,
       });
@@ -451,13 +451,13 @@ function createZmodemSentry(opts) {
           // Only act if this is still the active session (not replaced by a new one)
           if (currentZSession !== zsession) return;
           console.log(`[ZMODEM][${label}] Transfer completed for session ${sessionId}`);
-          safeSend(contents, "netcatty:zmodem:complete", { sessionId });
+          safeSend(contents, "magiesTerminal:zmodem:complete", { sessionId });
         })
         .catch((err) => {
           if (currentZSession !== zsession) return;
           console.error(`[ZMODEM][${label}] Transfer error:`, err.message || err);
           try { zsession.abort(); } catch { /* ignore */ }
-          safeSend(contents, "netcatty:zmodem:error", {
+          safeSend(contents, "magiesTerminal:zmodem:error", {
             sessionId,
             error: String(err.message || err),
           });
@@ -538,7 +538,7 @@ function createZmodemSentry(opts) {
           }
           active = false;
           currentZSession = null;
-          safeSend(getWebContents(), "netcatty:zmodem:complete", { sessionId });
+          safeSend(getWebContents(), "magiesTerminal:zmodem:complete", { sessionId });
           try { sentry.consume(data); } catch { /* ignore */ }
           return;
         }
@@ -562,7 +562,7 @@ function createZmodemSentry(opts) {
         cooldownUntil = Date.now() + COOLDOWN_MS;
 
         if (wasActive) {
-          safeSend(getWebContents(), "netcatty:zmodem:error", {
+          safeSend(getWebContents(), "magiesTerminal:zmodem:error", {
             sessionId,
             error: errMsg,
           });
@@ -586,7 +586,7 @@ function createZmodemSentry(opts) {
         currentZSession = null;
         cooldownUntil = Date.now() + COOLDOWN_MS;
         scheduleRemoteInterruptAfterCancel(transferRole);
-        safeSend(getWebContents(), "netcatty:zmodem:error", {
+        safeSend(getWebContents(), "magiesTerminal:zmodem:error", {
           sessionId,
           error: "Transfer cancelled",
         });
@@ -661,7 +661,7 @@ function withTimeout(promise, ms, message = "ZMODEM handshake timeout") {
     new Promise((_, reject) => {
       timer = setTimeout(() => {
         const err = new Error(message);
-        err.code = "NETCATTY_ZMODEM_TIMEOUT";
+        err.code = "MAGIES_TERMINAL_ZMODEM_TIMEOUT";
         reject(err);
       }, ms);
     }),
@@ -669,7 +669,7 @@ function withTimeout(promise, ms, message = "ZMODEM handshake timeout") {
 }
 
 function isZmodemTimeoutError(err) {
-  return err && err.code === "NETCATTY_ZMODEM_TIMEOUT";
+  return err && err.code === "MAGIES_TERMINAL_ZMODEM_TIMEOUT";
 }
 
 /**
@@ -809,7 +809,7 @@ async function handleUpload(zsession, opts) {
     const { filePath, stat, name } = offers[i];
     opts.resetUploadBackpressure?.();
 
-    safeSend(contents, "netcatty:zmodem:progress", {
+    safeSend(contents, "magiesTerminal:zmodem:progress", {
       sessionId,
       filename: name,
       transferred: 0,
@@ -853,7 +853,7 @@ async function handleUpload(zsession, opts) {
         xfer.send(new Uint8Array(buf.buffer, buf.byteOffset, bytesRead));
         sent += bytesRead;
 
-        safeSend(contents, "netcatty:zmodem:progress", {
+        safeSend(contents, "magiesTerminal:zmodem:progress", {
           sessionId,
           filename: name,
           transferred: sent,
@@ -871,7 +871,7 @@ async function handleUpload(zsession, opts) {
       // All data written to Node.js buffer — but TCP may still be
       // flushing to the remote.  Show "finalizing" state while we
       // wait for the remote to acknowledge.
-      safeSend(contents, "netcatty:zmodem:progress", {
+      safeSend(contents, "magiesTerminal:zmodem:progress", {
         sessionId,
         filename: name,
         transferred: stat.size,
@@ -955,7 +955,7 @@ async function handleDownload(zsession, opts) {
     const savePath = path.join(downloadDir, name);
     const currentIndex = fileIndex++;
 
-    safeSend(contents, "netcatty:zmodem:progress", {
+    safeSend(contents, "magiesTerminal:zmodem:progress", {
       sessionId,
       filename: name,
       transferred: 0,
@@ -1003,7 +1003,7 @@ async function handleDownload(zsession, opts) {
         const now = Date.now();
         if (now - lastProgressTime >= 100) {
           lastProgressTime = now;
-          safeSend(contents, "netcatty:zmodem:progress", {
+          safeSend(contents, "magiesTerminal:zmodem:progress", {
             sessionId,
             filename: name,
             transferred: received,

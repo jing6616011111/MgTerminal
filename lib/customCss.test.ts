@@ -12,7 +12,7 @@ function readProjectFile(path: string): string {
 test('custom CSS helper uses a single stable style element id', () => {
   const source = readProjectFile('lib/customCss.ts');
 
-  assert.match(source, /netcatty-custom-css/);
+  assert.match(source, /magiesTerminal-custom-css/);
   assert.match(source, /styleEl\.textContent = css/);
 });
 

@@ -58,7 +58,7 @@ test("stored string sync handlers refresh from same-window and browser storage e
   const env = installLocalStorage();
   t.after(() => env.restore());
 
-  const storageKey = "netcatty:test-mode";
+  const storageKey = "magiesTerminal:test-mode";
   const syncedValues: TestMode[] = [];
   const handlers = createStoredStringSyncHandlers<TestMode>({
     storageKey,
@@ -84,7 +84,7 @@ test("stored string helpers read fallback and resolve updater-style toggles", (t
   const env = installLocalStorage();
   t.after(() => env.restore());
 
-  const storageKey = "netcatty:test-mode";
+  const storageKey = "magiesTerminal:test-mode";
   assert.equal(readStoredStringValue(storageKey, "edit", isTestMode), "edit");
   assert.equal(readOptionalStoredStringValue(storageKey, isTestMode), null);
 

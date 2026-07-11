@@ -33,7 +33,7 @@ test("createNdjsonRpcClient resolves rpc responses", async () => {
   const socket = createFakeSocket();
   const client = createNdjsonRpcClient({ socket, surface: CAPABILITY_SURFACES.BUILTIN });
 
-  const result = await client.call("netcatty/getStatus", {});
+  const result = await client.call("magiesTerminal/getStatus", {});
   assert.deepEqual(result, { ok: true });
 });
 
@@ -60,7 +60,7 @@ test("createNdjsonRpcClient surfaces RPC_ERROR with code for bridge failures", a
   });
 
   await assert.rejects(
-    () => client.call("netcatty/exec", { sessionId: "sess-1", command: "pwd" }),
+    () => client.call("magiesTerminal/exec", { sessionId: "sess-1", command: "pwd" }),
     (error) => error.code === "RPC_ERROR" && error.message === "Operation denied by user.",
   );
 });
@@ -77,14 +77,14 @@ test("createNdjsonRpcClient uses injectable cli-compatible timeout messages", as
     },
     messages: {
       rpcTimeout: (method, timeoutMs) => (
-        `Timed out waiting for Netcatty RPC response to "${method}" after ${timeoutMs}ms.`
+        `Timed out waiting for MagiesTerminal RPC response to "${method}" after ${timeoutMs}ms.`
       ),
     },
   });
 
   await assert.rejects(
-    () => client.call("netcatty/exec", { sessionId: "sess-1", command: "pwd", chatSessionId: "chat-1" }),
-    (error) => error.code === "RPC_TIMEOUT" && /Netcatty RPC response/.test(error.message),
+    () => client.call("magiesTerminal/exec", { sessionId: "sess-1", command: "pwd", chatSessionId: "chat-1" }),
+    (error) => error.code === "RPC_TIMEOUT" && /MagiesTerminal RPC response/.test(error.message),
   );
 });
 

@@ -65,7 +65,7 @@ function createExternalWindowApi(ctx) {
           sandbox: true,
           webSecurity: true,
           // Isolated session so users' browsing does not mix with main app state.
-          partition: "persist:netcatty-fallback-browser",
+          partition: "persist:magiesTerminal-fallback-browser",
         },
       });
     
@@ -273,7 +273,7 @@ function createExternalWindowApi(ctx) {
             icon: currentIcon,
             autoHideMenuBar: true,
             menuBarVisible: false,
-            title: "Netcatty Authorization",
+            title: "MagiesTerminal Authorization",
             webPreferences: {
               contextIsolation: true,
               nodeIntegration: false,

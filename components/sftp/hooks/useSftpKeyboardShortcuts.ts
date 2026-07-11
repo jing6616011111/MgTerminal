@@ -9,7 +9,7 @@ import { useCallback, useEffect } from "react";
 import type { MutableRefObject } from "react";
 import { KeyBinding, matchesKeyBinding } from "../../../domain/models";
 import { getParentPath, joinPath } from "../../../application/state/sftp/utils";
-import { netcattyBridge } from "../../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../../infrastructure/services/magiesTerminalBridge";
 import { sftpClipboardStore, SftpClipboardFile } from "./useSftpClipboard";
 import { sftpFocusStore } from "./useSftpFocusedPane";
 import { sftpDialogActionStore } from "./useSftpDialogAction";
@@ -53,7 +53,7 @@ const replaceSystemClipboardWithSftpPaths = async (paths: string[]) => {
   const text = paths.join("\n");
   if (!text) return;
   const writeTask = (async () => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     try {
       if (bridge?.writeClipboardText && await bridge.writeClipboardText(text)) return;
     } catch {
@@ -413,7 +413,7 @@ export const useSftpKeyboardShortcuts = ({
 
       const targetPath = getClipboardUploadTarget(pane);
       const pendingClipboardWrite = pendingSftpSystemClipboardWrite;
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       const dataTransfer = e.clipboardData;
       const hasClipboardItems = (dataTransfer?.items?.length ?? 0) > 0;
       // webkitGetAsEntry must be invoked synchronously during the paste event.

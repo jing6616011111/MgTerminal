@@ -205,7 +205,7 @@ test("sends the Tera Term style cancel sequence", async () => {
 });
 
 test("receives a YMODEM file into the selected directory", async () => {
-  const targetDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-ymodem-receive-"));
+  const targetDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-ymodem-receive-"));
   try {
     const serial = new FakeSerialPort();
     const transfer = receiveYmodemFiles(serial, {
@@ -264,7 +264,7 @@ test("receives a YMODEM file into the selected directory", async () => {
 });
 
 test("rejects an incomplete received file and removes the partial file", async () => {
-  const targetDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-ymodem-short-"));
+  const targetDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-ymodem-short-"));
   try {
     const serial = new FakeSerialPort();
     const transfer = receiveYmodemFiles(serial, {
@@ -298,7 +298,7 @@ test("rejects an incomplete received file and removes the partial file", async (
 });
 
 test("does not delete an existing file if creating the receive target fails", async () => {
-  const targetDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-ymodem-race-"));
+  const targetDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-ymodem-race-"));
   const targetPath = path.join(targetDir, "race.log");
   const originalOpen = fs.promises.open;
   try {

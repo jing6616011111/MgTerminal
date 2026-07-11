@@ -147,7 +147,7 @@ test("listWindowsHiddenBasenames invokes attrib.exe with /d so hidden directorie
 });
 
 test("collectLocalTreeEntries preserves empty directories in selected folders", async () => {
-  const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), "netcatty-upload-tree-"));
+  const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-upload-tree-"));
   const selected = path.join(root, "project");
   await fs.promises.mkdir(path.join(selected, "empty"), { recursive: true });
   await fs.promises.mkdir(path.join(selected, "src"), { recursive: true });
@@ -173,7 +173,7 @@ test("collectLocalTreeEntries preserves empty directories in selected folders", 
 
 test("readLocalFile returns only the trailing maxBytes when requested", async () => {
   const { readLocalFile } = require("./localFsBridge.cjs");
-  const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), "netcatty-local-read-"));
+  const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), "magiesTerminal-local-read-"));
   const filePath = path.join(root, "hist.txt");
   const body = "AAAA\nBBBB\nCCCC\nDDDD\n";
   await fs.promises.writeFile(filePath, body);

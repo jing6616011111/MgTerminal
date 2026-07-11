@@ -13,7 +13,7 @@ test("registered chat attachments can be listed and read by path or filename", a
     {
       filename: "note.txt",
       mediaType: "text/plain",
-      filePath: "/tmp/netcatty-note.txt",
+      filePath: "/tmp/magiesTerminal-note.txt",
       base64Data: Buffer.from("hello attachment").toString("base64"),
     },
   ], "chat-a");
@@ -23,13 +23,13 @@ test("registered chat attachments can be listed and read by path or filename", a
   assert.deepEqual(listed.attachments, [{
     filename: "note.txt",
     mediaType: "text/plain",
-    filePath: "/tmp/netcatty-note.txt",
+    filePath: "/tmp/magiesTerminal-note.txt",
     sizeBytes: 16,
   }]);
 
   const byPath = bridge.handleReadAttachment({
     chatSessionId: "chat-a",
-    filePath: "/tmp/netcatty-note.txt",
+    filePath: "/tmp/magiesTerminal-note.txt",
   });
   assert.equal(byPath.ok, true);
   assert.equal(byPath.text, "hello attachment");
@@ -43,7 +43,7 @@ test("registered chat attachments can be listed and read by path or filename", a
 });
 
 test("attachment reads reject unregistered local paths", async (t) => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-attachment-test-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-attachment-test-"));
   const secretPath = path.join(dir, "secret.txt");
   fs.writeFileSync(secretPath, "secret");
   t.after(() => {

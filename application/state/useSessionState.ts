@@ -35,7 +35,7 @@ import {
   LOCAL_STORAGE_ADAPTER_CHANGED_EVENT,
   localStorageAdapter,
 } from '../../infrastructure/persistence/localStorageAdapter';
-import { netcattyBridge } from '../../infrastructure/services/netcattyBridge';
+import { magiesTerminalBridge } from '../../infrastructure/services/magiesTerminalBridge';
 import { sessionRestoreStorage } from './sessionRestoreStorage';
 import {
   buildAndWriteSessionRestorePayload,
@@ -194,7 +194,7 @@ export const useSessionState = ({
     };
 
     window.addEventListener(LOCAL_STORAGE_ADAPTER_CHANGED_EVENT, handleLocalStorageAdapterChanged);
-    const unsubscribeSettingsSync = netcattyBridge.get()?.onSettingsChanged?.((payload) => {
+    const unsubscribeSettingsSync = magiesTerminalBridge.get()?.onSettingsChanged?.((payload) => {
       handleRestorePreviousSessionChanged(payload?.key);
     });
     return () => {

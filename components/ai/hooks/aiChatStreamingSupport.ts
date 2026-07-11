@@ -1,4 +1,4 @@
-import type { NetcattyBridge } from '../../../infrastructure/ai/cattyAgent/executor';
+import type { MagiesTerminalBridge } from '../../../infrastructure/ai/cattyAgent/executor';
 import type {
   OpenAIChatAssistantFields,
   ProviderContinuationOptions,
@@ -143,8 +143,8 @@ export type StreamChunk =
   | RawChunk
   | { type: 'reasoning-end' | 'text-start' | 'text-end' | 'start' | 'finish' | 'start-step' | 'finish-step' | 'tool-approval-request'; approvalId?: string; toolCallId?: string; toolName?: string; approved?: boolean; toolCall?: StreamChunkToolCallRef; input?: unknown; args?: unknown };
 
-/** Shape of the netcatty bridge exposed on `window` (panel-specific subset). */
-export interface PanelBridge extends NetcattyBridge {
+/** Shape of the magiesTerminal bridge exposed on `window` (panel-specific subset). */
+export interface PanelBridge extends MagiesTerminalBridge {
   credentialsDecrypt?: (value: string) => Promise<string>;
   aiSyncProviders?: (providers: Array<{ id: string; providerId: string; apiKey?: string; baseURL?: string; enabled: boolean }>) => Promise<{ ok: boolean }>;
   aiSyncWebSearch?: (apiHost: string | null, apiKey: string | null) => Promise<{ ok: boolean }>;
@@ -223,10 +223,10 @@ export function toAssistantModelContent(parts: AssistantContentPart[]): string |
   return parts;
 }
 
-/** Typed accessor for the netcatty bridge on the window object. */
-export function getNetcattyBridge(): PanelBridge | undefined {
+/** Typed accessor for the magiesTerminal bridge on the window object. */
+export function getMagiesTerminalBridge(): PanelBridge | undefined {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (window as any).netcatty as PanelBridge | undefined;
+  return (window as any).magiesTerminal as PanelBridge | undefined;
 }
 
 // ApprovalInfo and PendingApprovalContext removed — approval is now handled
@@ -246,7 +246,7 @@ interface UserSkillsContextResult {
 
 function buildExplicitUserSkillsFallback(selectedUserSkillSlugs?: string[]): string {
   if (!selectedUserSkillSlugs?.length) return '';
-  return `The user explicitly selected these Netcatty user skills for this request: ${selectedUserSkillSlugs.map((slug) => `/${slug}`).join(', ')}. Honor those selections even if their expanded skill content is unavailable.`;
+  return `The user explicitly selected these MagiesTerminal user skills for this request: ${selectedUserSkillSlugs.map((slug) => `/${slug}`).join(', ')}. Honor those selections even if their expanded skill content is unavailable.`;
 }
 
 export async function resolveUserSkillsContext(

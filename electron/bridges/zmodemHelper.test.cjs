@@ -77,7 +77,7 @@ test("buildModeRestores strips trailing slashes and dedupes duplicate basenames"
 });
 
 test("queued drag-drop upload keeps temp files until cancel", () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-zmodem-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-zmodem-"));
   const tempPath = path.join(tempDir, "upload.txt");
   fs.writeFileSync(tempPath, "payload");
 
@@ -101,7 +101,7 @@ test("queued drag-drop upload keeps temp files until cancel", () => {
 });
 
 test("queued drag-drop upload interrupts the remote command when cancelled before detect", () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-zmodem-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-zmodem-"));
   const tempPath = path.join(tempDir, "upload.txt");
   fs.writeFileSync(tempPath, "payload");
   const writes = [];
@@ -136,7 +136,7 @@ test("queued drag-drop upload interrupts the remote command when cancelled befor
 });
 
 test("queued drag-drop upload cleans temp files when rz never starts", async () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-zmodem-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-zmodem-"));
   const tempPath = path.join(tempDir, "upload.txt");
   fs.writeFileSync(tempPath, "payload");
   const writes = [];
@@ -189,7 +189,7 @@ test("queued drag-drop upload rejects a second pending upload", () => {
 });
 
 test("queued drag-drop upload cleans temp files when command write fails", () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-zmodem-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-zmodem-"));
   const firstTempPath = path.join(tempDir, "first.txt");
   const secondTempPath = path.join(tempDir, "second.txt");
   fs.writeFileSync(firstTempPath, "first");
@@ -227,7 +227,7 @@ test("queued drag-drop upload cleans temp files when command write fails", () =>
 });
 
 test("handleUpload completes when the remote confirms after progress reaches 100 percent", async () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-zmodem-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-zmodem-"));
   const filePath = path.join(tempDir, "upload.txt");
   fs.writeFileSync(filePath, "payload");
   const events = [];
@@ -263,14 +263,14 @@ test("handleUpload completes when the remote confirms after progress reaches 100
   assert.equal(endCalled, true);
   assert.equal(closed, true);
   assert.equal(
-    events.some((event) => event.channel === "netcatty:zmodem:progress" && event.data.finalizing === true),
+    events.some((event) => event.channel === "magiesTerminal:zmodem:progress" && event.data.finalizing === true),
     true,
   );
   fs.rmSync(tempDir, { recursive: true, force: true });
 });
 
 test("handleUpload uses injected file picker when no drag-drop upload is queued", async () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-zmodem-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-zmodem-"));
   const filePath = path.join(tempDir, "picker-upload.txt");
   fs.writeFileSync(filePath, "payload");
   let pickerCalled = false;
@@ -306,7 +306,7 @@ test("handleUpload uses injected file picker when no drag-drop upload is queued"
 });
 
 test("handleDownload uses injected directory picker before accepting remote files", async () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-zmodem-download-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-zmodem-download-"));
   let pickerCalled = false;
   const handlers = new Map();
   let startCalled = false;
@@ -339,7 +339,7 @@ test("handleDownload uses injected directory picker before accepting remote file
 });
 
 test("handleUpload times out when the remote never confirms after progress reaches 100 percent", async () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-zmodem-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-zmodem-"));
   const filePath = path.join(tempDir, "upload.txt");
   fs.writeFileSync(filePath, "payload");
   let releaseEnd;
@@ -395,7 +395,7 @@ test("handleUpload times out when the remote never confirms after progress reach
 });
 
 test("handleUpload does not run timeout recovery when the remote rejects the final confirmation", async () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-zmodem-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-zmodem-"));
   const filePath = path.join(tempDir, "upload.txt");
   fs.writeFileSync(filePath, "payload");
   const writes = [];
@@ -440,7 +440,7 @@ test("handleUpload does not run timeout recovery when the remote rejects the fin
 });
 
 test("handleUpload allows a longer final wait after upload backpressure", async () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-zmodem-"));
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-zmodem-"));
   const filePath = path.join(tempDir, "upload.txt");
   fs.writeFileSync(filePath, "payload");
   let closed = false;

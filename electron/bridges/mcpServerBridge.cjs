@@ -1,7 +1,7 @@
 /**
  * MCP Server Bridge — TCP host in Electron main process
  *
- * Starts a local TCP server that the netcatty-mcp-server.cjs child process
+ * Starts a local TCP server that the magies-terminal-mcp-server.cjs child process
  * connects to. Handles JSON-RPC calls by dispatching to real terminal sessions.
  */
 "use strict";
@@ -21,7 +21,7 @@ const { EXTERNAL_MCP_CHAT_SESSION_ID } = require("../cli/externalMcpDiscoveryPat
 const sftpBridge = require("./sftpBridge.cjs");
 const portForwardingBridge = require("./portForwardingBridge.cjs");
 
-const DEBUG_MCP = process.env.NETCATTY_MCP_DEBUG === "1";
+const DEBUG_MCP = process.env.MAGIES_TERMINAL_MCP_DEBUG === "1";
 
 /** Optional external-MCP activity / host-ready hooks (set by externalMcpController). */
 let externalMcpActivityHook = null;
@@ -52,8 +52,8 @@ const externalMcpSockets = new Set();
 function markExternalMcpSocket(socket) {
   if (!socket || socket.destroyed) return;
   externalMcpSockets.add(socket);
-  if (!socket.__netcattyExternalMcpCleanupBound) {
-    socket.__netcattyExternalMcpCleanupBound = true;
+  if (!socket.__magiesTerminalExternalMcpCleanupBound) {
+    socket.__magiesTerminalExternalMcpCleanupBound = true;
     const cleanup = () => {
       externalMcpSockets.delete(socket);
     };
@@ -145,7 +145,7 @@ function setMainWindowGetter(fn) {
  */
 // External SDK agents (for example Codex) may give up on MCP tool calls after
 // about 120 seconds; see openai/codex#6127 ("timed out awaiting tools/call
-// after 120s"). Keep the Netcatty-side approval window below that with a small
+// after 120s"). Keep the MagiesTerminal-side approval window below that with a small
 // buffer so a stale approval cannot still be accepted after the agent has
 // already timed out and abandoned the call.
 const { MCP_APPROVAL_TIMEOUT_MS } = require("../shared/approvalConstants.cjs");
@@ -196,7 +196,7 @@ function requestApprovalFromRenderer(toolName, args, chatSessionId) {
         pendingApprovals.delete(approvalId);
         resolve(false);
         // Notify renderer(s) to remove the stale approval card
-        broadcastApprovalEvent('netcatty:ai:mcp:approval-cleared', { approvalIds: [approvalId] });
+        broadcastApprovalEvent('magiesTerminal:ai:mcp:approval-cleared', { approvalIds: [approvalId] });
       }
     }, APPROVAL_TIMEOUT_MS);
 
@@ -207,7 +207,7 @@ function requestApprovalFromRenderer(toolName, args, chatSessionId) {
       },
       chatSessionId: chatSessionId || null,
     });
-    broadcastApprovalEvent('netcatty:ai:mcp:approval-request', {
+    broadcastApprovalEvent('magiesTerminal:ai:mcp:approval-request', {
       approvalId,
       toolName,
       args,
@@ -229,7 +229,7 @@ function resolveApprovalFromRenderer(approvalId, approved) {
 
 function notifyRendererApprovalCleared(approvalIds) {
   if (!Array.isArray(approvalIds) || approvalIds.length === 0) return;
-  broadcastApprovalEvent("netcatty:ai:mcp:approval-cleared", { approvalIds });
+  broadcastApprovalEvent("magiesTerminal:ai:mcp:approval-cleared", { approvalIds });
 }
 
 /**
@@ -385,7 +385,7 @@ function shutdownHost({ preserveScopedMetadata = false } = {}) {
 function echoCommandToSession(session, sessionId, command) {
   if (!electronModule || !session?.webContentsId || !command) return;
   const contents = electronModule.webContents?.fromId?.(session.webContentsId);
-  safeSend(contents, "netcatty:data", {
+  safeSend(contents, "magiesTerminal:data", {
     sessionId,
     data: formatSyntheticEcho(command),
     syntheticEcho: true,
@@ -993,7 +993,7 @@ async function handleMessage(socket, line) {
           id,
           error: {
             code: -32001,
-            message: "External MCP is disabled. Re-enable it in Netcatty Settings → AI.",
+            message: "External MCP is disabled. Re-enable it in MagiesTerminal Settings → AI.",
           },
         }) + "\n";
         if (!socket.destroyed) {
@@ -1043,7 +1043,7 @@ async function handleMessage(socket, line) {
       && !externalMcpActivityHook?.isEnabled?.()
     ) {
       throw new Error(
-        "External MCP is disabled. Re-enable it in Netcatty Settings → AI.",
+        "External MCP is disabled. Re-enable it in MagiesTerminal Settings → AI.",
       );
     }
     notifyExternalMcpActivity(method, callParams);
@@ -1222,14 +1222,14 @@ async function handleWorkerTerminalExec(params = {}) {
     return {
       ok: false,
       code: "COMMAND_ALREADY_RUNNING",
-      error: `Another Netcatty command is already running for chat session "${chatSessionId}". Wait for it to finish before starting a new exec.`,
+      error: `Another MagiesTerminal command is already running for chat session "${chatSessionId}". Wait for it to finish before starting a new exec.`,
       activeCommand: executionLock.active.command,
       activeSessionId: executionLock.active.sessionId,
     };
   }
 
   try {
-    return await terminalWorkerManager.request("netcatty:ai:exec", {
+    return await terminalWorkerManager.request("magiesTerminal:ai:exec", {
       sessionId,
       command,
       chatSessionId,
@@ -1265,7 +1265,7 @@ async function handleWorkerJobStart(params = {}) {
   }
 
   try {
-    const result = await terminalWorkerManager.request("netcatty:ai:jobStart", {
+    const result = await terminalWorkerManager.request("magiesTerminal:ai:jobStart", {
       sessionId,
       command,
       chatSessionId,
@@ -1304,7 +1304,7 @@ async function handleWorkerJobPoll(params = {}) {
     const scopeErr = validateSessionScope(job.sessionId, chatSessionId || null, scopedSessionIds);
     if (scopeErr) return { ok: false, error: scopeErr };
   }
-  const result = await terminalWorkerManager.request("netcatty:ai:jobPoll", params, {});
+  const result = await terminalWorkerManager.request("magiesTerminal:ai:jobPoll", params, {});
   if (result?.completed) {
     workerBackgroundJobs.delete(jobId);
   }
@@ -1321,7 +1321,7 @@ async function handleWorkerJobStop(params = {}) {
   if (Array.isArray(scopedSessionIds) && job.sessionId && !scopedSessionIds.includes(job.sessionId)) {
     return { ok: false, error: `Session "${job.sessionId}" is not in the current scope.` };
   }
-  const result = await terminalWorkerManager.request("netcatty:ai:jobStop", params, {});
+  const result = await terminalWorkerManager.request("magiesTerminal:ai:jobStop", params, {});
   if (result?.completed) {
     workerBackgroundJobs.delete(jobId);
   }
@@ -1336,7 +1336,7 @@ function cancelWorkerBackgroundJobsForSession(chatSessionId) {
     }
   }
   try {
-    terminalWorkerManager?.send?.("netcatty:ai:catty:cancel", { chatSessionId }, {});
+    terminalWorkerManager?.send?.("magiesTerminal:ai:catty:cancel", { chatSessionId }, {});
   } catch {
     // Worker may already be gone while cancelling a torn-down chat/session.
   }
@@ -1375,7 +1375,7 @@ function getBuiltinRpcHandlerRegistry() {
 async function dispatch(method, params) {
   debugLog("dispatch", { method, params, permissionMode });
 
-  if (!method.startsWith("netcatty/")) {
+  if (!method.startsWith("magiesTerminal/")) {
     const capabilityResult = await dispatchCapabilityRpc(method, params || {});
     if (capabilityResult !== UNROUTED) {
       return capabilityResult;
@@ -1404,7 +1404,7 @@ async function dispatch(method, params) {
   // Validate session scope *first* so out-of-scope callers cannot infer the
   // existence or activity of foreign sessions through busy-state error
   // messages, and so requests fail fast without blocking the write lock.
-  if (method !== "netcatty/getContext" && params?.sessionId) {
+  if (method !== "magiesTerminal/getContext" && params?.sessionId) {
     const scopeErr = validateSessionScope(params.sessionId, params?.chatSessionId, params?.scopedSessionIds);
     if (scopeErr) return { ok: false, error: scopeErr };
   }
@@ -1427,7 +1427,7 @@ async function dispatch(method, params) {
 
   try {
     // Confirm mode: request user approval for write operations.
-    // netcatty/jobStop bypasses approval — it's a stop/cancel action that
+    // magiesTerminal/jobStop bypasses approval — it's a stop/cancel action that
     // must remain available even if the renderer is unavailable; otherwise
     // a runaway terminal_start job could not be interrupted at all.
     if (permission.requiresApproval) {
@@ -1483,7 +1483,7 @@ async function handleGetContext(params) {
   if (chatSessionId === EXTERNAL_MCP_CHAT_SESSION_ID) {
     if (!externalMcpActivityHook?.isEnabled?.()) {
       return {
-        environment: "netcatty-terminal",
+        environment: "magiesTerminal-terminal",
         description: "External MCP is disabled.",
         hosts: [],
         hostCount: 0,
@@ -1508,7 +1508,7 @@ async function handleGetContext(params) {
   // it as "no access" rather than falling back to all sessions.
   if (hasScopedContext && (!resolvedScopedIds || resolvedScopedIds.length === 0)) {
     return {
-      environment: "netcatty-terminal",
+      environment: "magiesTerminal-terminal",
       description: "No hosts are available in the current scope.",
       hosts: [],
       hostCount: 0,
@@ -1561,11 +1561,11 @@ async function handleGetContext(params) {
   }
 
   return {
-    environment: "netcatty-terminal",
+    environment: "magiesTerminal-terminal",
     description: appendVaultAgentGuidance(
-      "You are operating inside Netcatty, a multi-session terminal manager. " +
+      "You are operating inside MagiesTerminal, a multi-session terminal manager. " +
       "The available sessions may be remote hosts, local terminals, Mosh-backed shells, or serial port connections (network devices, embedded systems). " +
-      "Use the provided tools to execute commands through the sessions exposed by Netcatty. " +
+      "Use the provided tools to execute commands through the sessions exposed by MagiesTerminal. " +
       buildTerminalToolGuidance(toolHints) +
       "Serial sessions (protocol: serial, shellType: raw) do not run a standard shell — commands are sent as-is. " +
       "Network device sessions (deviceType: network) use vendor CLIs (Huawei VRP, Cisco IOS, etc.) — commands are sent as-is without shell wrapping, and exit codes are unavailable. " +
@@ -1582,7 +1582,7 @@ async function handleGetContext(params) {
 function handleGetStatus() {
   return {
     ok: true,
-    environment: "netcatty-terminal",
+    environment: "magiesTerminal-terminal",
     permissionMode,
     approvalTimeoutMs: APPROVAL_TIMEOUT_MS,
     commandTimeoutMs,

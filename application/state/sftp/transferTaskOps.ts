@@ -1,6 +1,6 @@
 import { useCallback, type Dispatch, type MutableRefObject, type SetStateAction } from "react";
 import type { FileConflict, TransferStatus, TransferTask } from "../../../domain/models";
-import { netcattyBridge } from "../../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../../infrastructure/services/magiesTerminalBridge";
 import { logger } from "../../../lib/logger";
 import type { TransferResult } from "./useSftpTransfers.types";
 
@@ -63,7 +63,7 @@ export function useSftpTransferTaskOps({
       }
     }
 
-    const cancelTransferAtBackend = netcattyBridge.get()?.cancelTransfer;
+    const cancelTransferAtBackend = magiesTerminalBridge.get()?.cancelTransfer;
     if (!cancelTransferAtBackend) return;
 
     await Promise.all(

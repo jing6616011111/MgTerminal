@@ -23,7 +23,7 @@ import type {
   StartProviderAuthResult,
 } from '../CloudSyncManager';
 
-const SYNC_REMOTE_ANCHOR_STORAGE_KEY = 'netcatty_sync_remote_anchor_v1';
+const SYNC_REMOTE_ANCHOR_STORAGE_KEY = 'magiesTerminal_sync_remote_anchor_v1';
 
 export async function startProviderAuthImpl(this: any,
   provider: CloudProvider,

@@ -18,7 +18,7 @@ import {
   type SyncedFile,
   type GitHubDeviceCodeResponse,
 } from '../../../domain/sync';
-import { netcattyBridge } from '../netcattyBridge';
+import { magiesTerminalBridge } from '../magiesTerminalBridge';
 
 // ============================================================================
 // Types
@@ -110,7 +110,7 @@ export const startDeviceFlow = async (): Promise<DeviceFlowState> => {
   console.log('[GitHub] Starting device flow...');
   console.log('[GitHub] Client ID:', SYNC_CONSTANTS.GITHUB_CLIENT_ID);
 
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   if (bridge?.githubStartDeviceFlow) {
     return bridge.githubStartDeviceFlow({
       clientId: SYNC_CONSTANTS.GITHUB_CLIENT_ID,
@@ -167,7 +167,7 @@ export const pollForToken = async (
   signal?: AbortSignal
 ): Promise<OAuthTokens | null> => {
   const pollInterval = Math.max(interval, 5) * 1000; // Minimum 5 seconds
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
 
   while (Date.now() < expiresAt) {
     await delayWithSignal(pollInterval, signal);
@@ -314,7 +314,7 @@ export const validateToken = async (accessToken: string): Promise<boolean> => {
 // ============================================================================
 
 /**
- * Find existing Netcatty sync gist
+ * Find existing MagiesTerminal sync gist
  */
 export const findSyncGist = async (
   accessToken: string,

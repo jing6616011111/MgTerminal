@@ -92,7 +92,7 @@ test("SDK resume only uses the current backend/path session key", () => {
 });
 
 test("SDK resume uses persisted session identity only when backend and path match", () => {
-  const persisted = `netcatty-sdk-session:${encodeURIComponent(JSON.stringify({
+  const persisted = `magiesTerminal-sdk-session:${encodeURIComponent(JSON.stringify({
     v: 1,
     id: "persisted-session",
     backend: "codex",

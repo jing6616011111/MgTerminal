@@ -51,14 +51,14 @@ test("SSH debug logging keeps auth messages but drops noisy channel data", () =>
   );
 });
 
-test("SSH diagnostic log defaults to Netcatty's managed temp directory", () => {
+test("SSH diagnostic log defaults to MagiesTerminal's managed temp directory", () => {
   const logPath = _getSshDebugLogFilePath();
-  assert.equal(path.basename(path.dirname(logPath)), "Netcatty");
-  assert.match(path.basename(logPath), /netcatty-ssh\.log$/);
+  assert.equal(path.basename(path.dirname(logPath)), "MagiesTerminal");
+  assert.match(path.basename(logPath), /magiesTerminal-ssh\.log$/);
 });
 
 test("SSH diagnostic logging can be enabled at runtime and writes safe connection events", () => {
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-ssh-debug-"));
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-ssh-debug-"));
   const logPath = path.join(tempRoot, "ssh-debug.log");
 
   try {
@@ -96,7 +96,7 @@ test("SSH diagnostic logging can be enabled at runtime and writes safe connectio
 });
 
 test("SSH diagnostic logger keeps each session's enabled state isolated", () => {
-  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-ssh-debug-"));
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-ssh-debug-"));
   const logPath = path.join(tempRoot, "ssh-debug.log");
 
   try {

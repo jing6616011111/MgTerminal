@@ -1,7 +1,7 @@
 import { useCallback, useRef, useMemo, useState } from "react";
 import { FileConflict, FileConflictAction, TransferStatus, SftpFilenameEncoding } from "../../../domain/models";
 import { getSftpConflictTypeKey } from "../../../domain/sftpConflict";
-import { netcattyBridge } from "../../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../../infrastructure/services/magiesTerminalBridge";
 import { logger } from "../../../lib/logger";
 import { notify } from "../../notification";
 import { joinPath } from "./utils";
@@ -60,7 +60,7 @@ export const useSftpExternalOperations = (
       }
 
       if (pane.connection.isLocal) {
-        const bridge = netcattyBridge.get();
+        const bridge = magiesTerminalBridge.get();
         if (bridge?.readLocalFile) {
           const buffer = await bridge.readLocalFile(filePath);
           return new TextDecoder().decode(buffer);
@@ -73,7 +73,7 @@ export const useSftpExternalOperations = (
         throw new Error("SFTP session not found");
       }
 
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge) {
         throw new Error("Bridge not available");
       }
@@ -91,7 +91,7 @@ export const useSftpExternalOperations = (
       }
 
       if (pane.connection.isLocal) {
-        const bridge = netcattyBridge.get();
+        const bridge = magiesTerminalBridge.get();
         if (bridge?.readLocalFile) {
           return await bridge.readLocalFile(filePath);
         }
@@ -103,7 +103,7 @@ export const useSftpExternalOperations = (
         throw new Error("SFTP session not found");
       }
 
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge?.readSftpBinary) {
         throw new Error("Binary file reading not supported");
       }
@@ -121,7 +121,7 @@ export const useSftpExternalOperations = (
       }
 
       if (pane.connection.isLocal) {
-        const bridge = netcattyBridge.get();
+        const bridge = magiesTerminalBridge.get();
         if (bridge?.writeLocalFile) {
           const data = new TextEncoder().encode(content);
           await bridge.writeLocalFile(filePath, data.buffer);
@@ -135,7 +135,7 @@ export const useSftpExternalOperations = (
         throw new Error("SFTP session not found");
       }
 
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge) {
         throw new Error("Bridge not available");
       }
@@ -162,7 +162,7 @@ export const useSftpExternalOperations = (
       }
 
       if (pane.connection.isLocal) {
-        const bridge = netcattyBridge.get();
+        const bridge = magiesTerminalBridge.get();
         if (!bridge?.writeLocalFile) throw new Error("Local file writing not supported");
         const data = new TextEncoder().encode(content);
         await bridge.writeLocalFile(filePath, data.buffer);
@@ -172,7 +172,7 @@ export const useSftpExternalOperations = (
       const sftpId = sftpSessionsRef.current.get(pane.connection.id);
       if (!sftpId) throw new Error("SFTP session not found");
 
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge) throw new Error("Bridge not available");
 
       await bridge.writeSftp(sftpId, filePath, content, filenameEncoding ?? pane.filenameEncoding);
@@ -191,7 +191,7 @@ export const useSftpExternalOperations = (
         throw new Error("No connection available");
       }
 
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge?.downloadSftpToTemp) {
         throw new Error("SFTP temp download not supported");
       }
@@ -339,7 +339,7 @@ export const useSftpExternalOperations = (
         throw new Error("No connection available");
       }
 
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge?.openWithApplication) {
         throw new Error("System app opening not supported");
       }
@@ -402,7 +402,7 @@ export const useSftpExternalOperations = (
           throw new Error("No connection available");
         }
 
-        const bridge = netcattyBridge.get();
+        const bridge = magiesTerminalBridge.get();
         if (!bridge?.openWithSystemDefault) {
           throw new Error("System default opening not supported");
         }
@@ -533,38 +533,38 @@ export const useSftpExternalOperations = (
     };
   }, []);
 
-  // Create upload bridge that wraps netcattyBridge
+  // Create upload bridge that wraps magiesTerminalBridge
   const createUploadBridge = useMemo((): UploadBridge => {
-    const bridge = netcattyBridge.get();
+    const bridge = magiesTerminalBridge.get();
     return {
       writeLocalFile: bridge?.writeLocalFile,
       mkdirLocal: bridge?.mkdirLocal,
       statLocal: bridge?.statLocal,
       deleteLocalFile: bridge?.deleteLocalFile,
       mkdirSftp: async (sftpId: string, path: string) => {
-        const b = netcattyBridge.get();
+        const b = magiesTerminalBridge.get();
         if (b?.mkdirSftp) {
           await b.mkdirSftp(sftpId, path);
         }
       },
       statSftp: async (sftpId: string, path: string) => {
-        const b = netcattyBridge.get();
+        const b = magiesTerminalBridge.get();
         if (!b?.statSftp) return null;
         return b.statSftp(sftpId, path);
       },
       deleteSftp: async (sftpId: string, path: string) => {
-        const b = netcattyBridge.get();
+        const b = magiesTerminalBridge.get();
         if (b?.deleteSftp) {
           await b.deleteSftp(sftpId, path);
         }
       },
       writeSftpBinary: bridge?.writeSftpBinary,
-      // Wrap writeSftpBinaryWithProgress to adapt UploadBridge interface to NetcattyBridge interface
+      // Wrap writeSftpBinaryWithProgress to adapt UploadBridge interface to MagiesTerminalBridge interface
       // UploadBridge: (sftpId, path, data, taskId, onProgress, onComplete, onError)
-      // NetcattyBridge: (sftpId, path, content, transferId, encoding, onProgress, onComplete, onError)
+      // MagiesTerminalBridge: (sftpId, path, content, transferId, encoding, onProgress, onComplete, onError)
       writeSftpBinaryWithProgress: bridge?.writeSftpBinaryWithProgress
         ? async (sftpId, path, data, taskId, onProgress, onComplete, onError) => {
-            const b = netcattyBridge.get();
+            const b = magiesTerminalBridge.get();
             if (!b?.writeSftpBinaryWithProgress) return undefined;
             // Pass undefined for encoding to use session default, and forward callbacks
             return b.writeSftpBinaryWithProgress(
@@ -583,7 +583,7 @@ export const useSftpExternalOperations = (
       // Stream transfer for large files (avoids loading into memory)
       startStreamTransfer: bridge?.startStreamTransfer
         ? async (options, onProgress, onComplete, onError) => {
-            const b = netcattyBridge.get();
+            const b = magiesTerminalBridge.get();
             if (!b?.startStreamTransfer) {
               return { transferId: options.transferId, error: 'Stream transfer not available' };
             }
@@ -609,7 +609,7 @@ export const useSftpExternalOperations = (
         throw new Error("No active connection");
       }
 
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge) {
         throw new Error("Bridge not available");
       }
@@ -693,7 +693,7 @@ export const useSftpExternalOperations = (
         throw new Error("No active connection");
       }
 
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge) {
         throw new Error("Bridge not available");
       }
@@ -772,7 +772,7 @@ export const useSftpExternalOperations = (
         throw new Error("No active connection");
       }
 
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge) {
         throw new Error("Bridge not available");
       }
@@ -826,7 +826,7 @@ export const useSftpExternalOperations = (
             type: "",
             path: entry.localPath,
             arrayBuffer: async () => {
-              const currentBridge = netcattyBridge.get();
+              const currentBridge = magiesTerminalBridge.get();
               if (!currentBridge?.readLocalFile) {
                 throw new Error("Local file reading not supported");
               }
@@ -901,7 +901,7 @@ export const useSftpExternalOperations = (
         throw new Error("No active connection");
       }
 
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge) {
         throw new Error("Bridge not available");
       }
@@ -991,7 +991,7 @@ export const useSftpExternalOperations = (
 
   const selectApplication = useCallback(
     async (): Promise<{ path: string; name: string } | null> => {
-      const bridge = netcattyBridge.get();
+      const bridge = magiesTerminalBridge.get();
       if (!bridge?.selectApplication) {
         return null;
       }

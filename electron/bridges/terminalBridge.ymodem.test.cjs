@@ -103,7 +103,7 @@ test("YMODEM receive is refused while ZMODEM owns the same serial session", asyn
 });
 
 test("YMODEM receive sends cancel bytes when the receive setup fails", async () => {
-  const targetDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-ymodem-bridge-"));
+  const targetDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-ymodem-bridge-"));
   try {
     const destinationFile = path.join(targetDir, "not-a-directory");
     fs.writeFileSync(destinationFile, "not a directory");

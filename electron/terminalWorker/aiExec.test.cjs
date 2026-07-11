@@ -109,12 +109,12 @@ test("worker AI background jobs start, poll, stop, and block overlapping exec", 
   const ipcMain = createFakeIpcMain();
   registerWorkerAiExecHandlers(ipcMain, { sessions });
 
-  assert.equal(typeof ipcMain.handlers.get("netcatty:ai:jobStart"), "function");
-  assert.equal(typeof ipcMain.handlers.get("netcatty:ai:jobPoll"), "function");
-  assert.equal(typeof ipcMain.handlers.get("netcatty:ai:jobStop"), "function");
+  assert.equal(typeof ipcMain.handlers.get("magiesTerminal:ai:jobStart"), "function");
+  assert.equal(typeof ipcMain.handlers.get("magiesTerminal:ai:jobPoll"), "function");
+  assert.equal(typeof ipcMain.handlers.get("magiesTerminal:ai:jobStop"), "function");
 
   const event = createFakeEvent();
-  const started = await ipcMain.handlers.get("netcatty:ai:jobStart")(event, {
+  const started = await ipcMain.handlers.get("magiesTerminal:ai:jobStart")(event, {
     sessionId: "ssh-1",
     command: "npm test",
     chatSessionId: "chat-1",
@@ -128,7 +128,7 @@ test("worker AI background jobs start, poll, stop, and block overlapping exec", 
   assert.equal(started.outputMode, "foreground-mirrored");
   assert.deepEqual(event.rendererMessages, [
     {
-      channel: "netcatty:data",
+      channel: "magiesTerminal:data",
       payload: {
         sessionId: "ssh-1",
         data: "npm test\r\n",
@@ -141,7 +141,7 @@ test("worker AI background jobs start, poll, stop, and block overlapping exec", 
   pty.emit("data", `${marker}_S\r\nready\r\n`);
   await nextTick();
 
-  const polled = await ipcMain.handlers.get("netcatty:ai:jobPoll")(event, {
+  const polled = await ipcMain.handlers.get("magiesTerminal:ai:jobPoll")(event, {
     jobId: started.jobId,
     offset: 0,
     chatSessionId: "chat-1",
@@ -152,7 +152,7 @@ test("worker AI background jobs start, poll, stop, and block overlapping exec", 
   assert.equal(polled.output, "ready\n");
   assert.equal(polled.nextOffset, "ready\n".length);
 
-  const busy = await ipcMain.handlers.get("netcatty:ai:exec")(event, {
+  const busy = await ipcMain.handlers.get("magiesTerminal:ai:exec")(event, {
     sessionId: "ssh-1",
     command: "pwd",
     chatSessionId: "chat-1",
@@ -160,7 +160,7 @@ test("worker AI background jobs start, poll, stop, and block overlapping exec", 
   assert.equal(busy.ok, false);
   assert.match(busy.error, /already has a long-running command in progress/);
 
-  const stopped = await ipcMain.handlers.get("netcatty:ai:jobStop")(event, {
+  const stopped = await ipcMain.handlers.get("magiesTerminal:ai:jobStop")(event, {
     jobId: started.jobId,
     chatSessionId: "chat-1",
   });
@@ -171,7 +171,7 @@ test("worker AI background jobs start, poll, stop, and block overlapping exec", 
   pty.emit("data", `${marker}_E:130\r\n`);
   await nextTick();
 
-  const cancelled = await ipcMain.handlers.get("netcatty:ai:jobPoll")(event, {
+  const cancelled = await ipcMain.handlers.get("magiesTerminal:ai:jobPoll")(event, {
     jobId: started.jobId,
     offset: 0,
     chatSessionId: "chat-1",
@@ -194,7 +194,7 @@ test("worker chat cancellation stops matching background jobs", async () => {
   registerWorkerAiExecHandlers(ipcMain, { sessions });
 
   const event = createFakeEvent();
-  const started = await ipcMain.handlers.get("netcatty:ai:jobStart")(event, {
+  const started = await ipcMain.handlers.get("magiesTerminal:ai:jobStart")(event, {
     sessionId: "ssh-1",
     command: "sleep 30",
     chatSessionId: "chat-1",
@@ -204,13 +204,13 @@ test("worker chat cancellation stops matching background jobs", async () => {
   pty.emit("data", `${marker}_S\r\nrunning\r\n`);
   await nextTick();
 
-  ipcMain.listeners.get("netcatty:ai:catty:cancel")(event, {
+  ipcMain.listeners.get("magiesTerminal:ai:catty:cancel")(event, {
     chatSessionId: "chat-1",
   });
 
   assert.ok(pty.writes.includes("\x03"), "expected chat cancellation to send Ctrl+C to the background job");
 
-  const stopping = await ipcMain.handlers.get("netcatty:ai:jobPoll")(event, {
+  const stopping = await ipcMain.handlers.get("magiesTerminal:ai:jobPoll")(event, {
     jobId: started.jobId,
     offset: 0,
     chatSessionId: "chat-1",
@@ -221,7 +221,7 @@ test("worker chat cancellation stops matching background jobs", async () => {
   pty.emit("data", `${marker}_E:130\r\n`);
   await nextTick();
 
-  const cancelled = await ipcMain.handlers.get("netcatty:ai:jobPoll")(event, {
+  const cancelled = await ipcMain.handlers.get("magiesTerminal:ai:jobPoll")(event, {
     jobId: started.jobId,
     offset: 0,
     chatSessionId: "chat-1",
@@ -243,7 +243,7 @@ test("worker background job probes unset remote shellKind before wrapping", asyn
   registerWorkerAiExecHandlers(ipcMain, { sessions });
 
   const event = createFakeEvent();
-  const started = await ipcMain.handlers.get("netcatty:ai:jobStart")(event, {
+  const started = await ipcMain.handlers.get("magiesTerminal:ai:jobStart")(event, {
     sessionId: "ssh-fish",
     command: "echo fish",
     chatSessionId: "chat-1",
@@ -277,7 +277,7 @@ test("worker background job reserves the session while shellKind probe is pendin
   registerWorkerAiExecHandlers(ipcMain, { sessions });
 
   const event = createFakeEvent();
-  const firstStart = ipcMain.handlers.get("netcatty:ai:jobStart")(event, {
+  const firstStart = ipcMain.handlers.get("magiesTerminal:ai:jobStart")(event, {
     sessionId: "ssh-fish",
     command: "sleep 1",
     chatSessionId: "chat-1",
@@ -285,7 +285,7 @@ test("worker background job reserves the session while shellKind probe is pendin
   });
   await nextTick();
 
-  const second = await ipcMain.handlers.get("netcatty:ai:jobStart")(event, {
+  const second = await ipcMain.handlers.get("magiesTerminal:ai:jobStart")(event, {
     sessionId: "ssh-fish",
     command: "pwd",
     chatSessionId: "chat-1",
@@ -320,7 +320,7 @@ test("worker chat cancel during shellKind probe aborts job start before PTY writ
   registerWorkerAiExecHandlers(ipcMain, { sessions });
 
   const event = createFakeEvent();
-  const pendingStart = ipcMain.handlers.get("netcatty:ai:jobStart")(event, {
+  const pendingStart = ipcMain.handlers.get("magiesTerminal:ai:jobStart")(event, {
     sessionId: "ssh-fish",
     command: "sleep 999",
     chatSessionId: "chat-cancel-probe",
@@ -329,7 +329,7 @@ test("worker chat cancel during shellKind probe aborts job start before PTY writ
   await nextTick();
 
   // Cancel while the shell probe is still in-flight.
-  ipcMain.listeners.get("netcatty:ai:catty:cancel")(event, {
+  ipcMain.listeners.get("magiesTerminal:ai:catty:cancel")(event, {
     chatSessionId: "chat-cancel-probe",
   });
 

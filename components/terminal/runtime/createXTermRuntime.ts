@@ -33,7 +33,7 @@ import { resolveFontWeightBold } from "../../../lib/fontWeightAvailability";
 import { resolveTerminalFontFamilyId } from "../../../infrastructure/config/fonts";
 import { logger } from "../../../lib/logger";
 import { isMacPlatform } from "../../../lib/utils";
-import { netcattyBridge } from "../../../infrastructure/services/netcattyBridge";
+import { magiesTerminalBridge } from "../../../infrastructure/services/magiesTerminalBridge";
 import {
   clearTerminalViewport,
   installEraseInDisplayHandlers,
@@ -121,7 +121,7 @@ type TerminalBackendApi = {
   openExternalAvailable: () => boolean;
   openExternal: (url: string) => Promise<void>;
   writeToSession: (sessionId: string, data: string) => void;
-  interruptSession?: (sessionId: string, trace?: NetcattyTerminalInterruptTrace) => void;
+  interruptSession?: (sessionId: string, trace?: MagiesTerminalTerminalInterruptTrace) => void;
   resizeSession: (sessionId: string, cols: number, rows: number) => void;
   setSessionFlowPaused?: (sessionId: string, paused: boolean) => void;
 };
@@ -303,7 +303,7 @@ export const createXTermRuntime = (ctx: CreateXTermRuntimeContext): XTermRuntime
 
   const settings = ctx.terminalSettingsRef.current;
   const rendererType = settings?.rendererType ?? "auto";
-  const bridge = netcattyBridge.get();
+  const bridge = magiesTerminalBridge.get();
   const isLocalTerminalHost = ctx.host.protocol === "local";
   const windowsPty =
     platform === "win32" && isLocalTerminalHost
@@ -1334,7 +1334,7 @@ export const createXTermRuntime = (ctx: CreateXTermRuntimeContext): XTermRuntime
         // Use Electron bridge as primary, fall back to navigator.clipboard
         const readClipboard = async (): Promise<string> => {
           try {
-            const bridge = netcattyBridge.get();
+            const bridge = magiesTerminalBridge.get();
             if (bridge?.readClipboardText) return await bridge.readClipboardText();
           } catch { /* fall through to navigator.clipboard */ }
           return navigator.clipboard.readText();

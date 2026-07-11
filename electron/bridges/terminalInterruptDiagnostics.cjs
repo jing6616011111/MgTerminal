@@ -1,8 +1,8 @@
 "use strict";
 
 const DEBUG_ENV_KEYS = [
-  "NETCATTY_CTRL_C_DEBUG",
-  "NETCATTY_TERMINAL_DEBUG",
+  "MAGIES_TERMINAL_CTRL_C_DEBUG",
+  "MAGIES_TERMINAL_TERMINAL_DEBUG",
 ];
 
 function isEnvEnabled() {
@@ -106,7 +106,7 @@ function logTerminalInterruptDebug(event, details = {}, trace = null) {
     ...details,
   };
   try {
-    console.info(`[Netcatty Ctrl+C] ${safeJson(payload)}`);
+    console.info(`[MagiesTerminal Ctrl+C] ${safeJson(payload)}`);
   } catch {
     // Diagnostics must never affect terminal control flow.
   }

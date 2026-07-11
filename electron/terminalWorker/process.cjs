@@ -17,7 +17,7 @@ function createWorkerSender(parentPort, webContentsId) {
       return false;
     },
     send(channel, payload) {
-      if (channel === "netcatty:data") {
+      if (channel === "magiesTerminal:data") {
         const message = {
           kind: "output",
           sessionId: payload?.sessionId,
@@ -169,10 +169,10 @@ function main() {
         ensureMoshStatsConnection: (...args) => sshBridge.ensureMoshStatsConnection(...args),
         process,
       }).registerHandlers(ipcMain);
-      ipcMain.on("netcatty:zmodem:cancel", (_event, payload) => {
+      ipcMain.on("magiesTerminal:zmodem:cancel", (_event, payload) => {
         sessions.get(payload?.sessionId)?.zmodemSentry?.cancel(payload?.options);
       });
-      ipcMain.handle("netcatty:zmodem:drag-drop-upload", async (_event, payload) => {
+      ipcMain.handle("magiesTerminal:zmodem:drag-drop-upload", async (_event, payload) => {
         const { sessionId, files, uploadCommand } = payload || {};
         const session = sessions.get(sessionId);
         if (!session?.zmodemSentry?.queueDragDropUpload) {

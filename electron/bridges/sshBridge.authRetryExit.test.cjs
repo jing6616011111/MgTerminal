@@ -188,7 +188,7 @@ test("fresh SSH sessions preserve the server locale for the default UTF-8 charse
   bridge.init({ sessions: new Map(), electronModule: {} });
   bridge.registerHandlers(ipcMain);
 
-  const result = await ipcMain.handlers.get("netcatty:start")(
+  const result = await ipcMain.handlers.get("magiesTerminal:start")(
     { sender: makeSender() },
     {
       sessionId: "default-locale-session",
@@ -233,7 +233,7 @@ test("retryable encrypted-key auth failure does not emit exit before retry succe
   const ipcMain = makeIpcMain();
   bridge.init({ sessions: new Map(), electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
   const sender = makeSender();
 
   const result = await start(
@@ -251,14 +251,14 @@ test("retryable encrypted-key auth failure does not emit exit before retry succe
   assert.equal(MockSSHClient.instances.length, 2);
   assert.equal(
     sender.sent.some((message) => (
-      message.channel === "netcatty:exit"
+      message.channel === "magiesTerminal:exit"
       && message.payload.sessionId === "retry-session"
     )),
     false,
   );
   assert.equal(
     sender.sent.some((message) => (
-      message.channel === "netcatty:auth:failed"
+      message.channel === "magiesTerminal:auth:failed"
       && message.payload.sessionId === "retry-session"
     )),
     true,
@@ -291,7 +291,7 @@ test("stale close from failed first attempt does not close successful retry sess
   const ipcMain = makeIpcMain();
   bridge.init({ sessions, electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
   const sender = makeSender();
 
   await start(
@@ -314,7 +314,7 @@ test("stale close from failed first attempt does not close successful retry sess
   assert.equal(sessions.has("stale-close-session"), true);
   assert.equal(
     sender.sent.some((message) => (
-      message.channel === "netcatty:exit"
+      message.channel === "magiesTerminal:exit"
       && message.payload.sessionId === "stale-close-session"
     )),
     false,
@@ -347,7 +347,7 @@ test("stale error from failed first attempt does not mark successful retry sessi
   const ipcMain = makeIpcMain();
   bridge.init({ sessions, electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
   const sender = makeSender();
 
   await start(
@@ -397,7 +397,7 @@ test("jump-host auth failure does not emit exit before encrypted-key retry succe
   const ipcMain = makeIpcMain();
   bridge.init({ sessions: new Map(), electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
   const sender = makeSender();
 
   const result = await start(
@@ -416,7 +416,7 @@ test("jump-host auth failure does not emit exit before encrypted-key retry succe
   assert.equal(MockSSHClient.connectCount, 3);
   assert.equal(
     sender.sent.some((message) => (
-      message.channel === "netcatty:exit"
+      message.channel === "magiesTerminal:exit"
       && message.payload.sessionId === "jump-retry-session"
     )),
     false,
@@ -431,7 +431,7 @@ test("jump-host auth failure is attributed to the failing jump host", async (t) 
   const ipcMain = makeIpcMain();
   bridge.init({ sessions: new Map(), electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
 
   await assert.rejects(
     start(
@@ -467,7 +467,7 @@ test("jump-host too-many-auth failures are attributed to the failing jump host",
   const ipcMain = makeIpcMain();
   bridge.init({ sessions: new Map(), electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
 
   await assert.rejects(
     start(
@@ -520,7 +520,7 @@ test("jump-host auth attribution survives encrypted-key retry failure", async (t
   const ipcMain = makeIpcMain();
   bridge.init({ sessions: new Map(), electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
 
   await assert.rejects(
     start(
@@ -566,7 +566,7 @@ test("jump-host socket errors with auth in hostname are not wrapped as auth fail
   const ipcMain = makeIpcMain();
   bridge.init({ sessions: new Map(), electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
   const sender = makeSender();
 
   await assert.rejects(
@@ -597,7 +597,7 @@ test("jump-host socket errors with auth in hostname are not wrapped as auth fail
   assert.equal(passphraseRequests, 0);
   assert.equal(
     sender.sent.some((message) => (
-      message.channel === "netcatty:exit"
+      message.channel === "magiesTerminal:exit"
       && message.payload.sessionId === "jump-socket-error-session"
       && message.payload.error === "Connection reset by auth-bastion.example.com"
     )),
@@ -623,7 +623,7 @@ test("jump-host permission-denied socket errors are not wrapped as auth failures
   const ipcMain = makeIpcMain();
   bridge.init({ sessions: new Map(), electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
   const sender = makeSender();
 
   await assert.rejects(
@@ -654,7 +654,7 @@ test("jump-host permission-denied socket errors are not wrapped as auth failures
   assert.equal(passphraseRequests, 0);
   assert.equal(
     sender.sent.some((message) => (
-      message.channel === "netcatty:exit"
+      message.channel === "magiesTerminal:exit"
       && message.payload.sessionId === "jump-permission-denied-socket-error-session"
       && message.payload.error === "Permission denied opening channel to auth-bastion.example.com"
     )),
@@ -699,7 +699,7 @@ test("fresh fallback after reuse failure still retries encrypted default key", a
   const ipcMain = makeIpcMain();
   bridge.init({ sessions, electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
   const sender = makeSender(events);
 
   const result = await start(
@@ -719,14 +719,14 @@ test("fresh fallback after reuse failure still retries encrypted default key", a
   assert.equal(events.includes("passphrase-request"), true);
   assert.equal(
     sender.sent.some((message) => (
-      message.channel === "netcatty:connection-reuse:fallback"
+      message.channel === "magiesTerminal:connection-reuse:fallback"
       && message.payload.sessionId === "reuse-fallback-retry-session"
     )),
     true,
   );
   assert.equal(
     sender.sent.some((message) => (
-      message.channel === "netcatty:exit"
+      message.channel === "magiesTerminal:exit"
       && message.payload.sessionId === "reuse-fallback-retry-session"
     )),
     false,
@@ -751,7 +751,7 @@ test("fresh fallback after reuse failure without encrypted keys emits one final 
   const ipcMain = makeIpcMain();
   bridge.init({ sessions, electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
   const sender = makeSender();
 
   await assert.rejects(
@@ -771,13 +771,13 @@ test("fresh fallback after reuse failure without encrypted keys emits one final 
 
   assert.equal(
     sender.sent.some((message) => (
-      message.channel === "netcatty:connection-reuse:fallback"
+      message.channel === "magiesTerminal:connection-reuse:fallback"
       && message.payload.sessionId === "reuse-fallback-failed-session"
     )),
     true,
   );
   const exits = sender.sent.filter((message) => (
-    message.channel === "netcatty:exit"
+    message.channel === "magiesTerminal:exit"
     && message.payload.sessionId === "reuse-fallback-failed-session"
   ));
   assert.equal(exits.length, 1);
@@ -786,7 +786,7 @@ test("fresh fallback after reuse failure without encrypted keys emits one final 
 
 test("stale close from failed encrypted-key retry does not stop successful retry log stream", async (t) => {
   const sessionId = "retry-session-log";
-  const logDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-auth-retry-log-"));
+  const logDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-auth-retry-log-"));
   t.after(async () => {
     await sessionLogStreamManager.stopStream(sessionId);
     fs.rmSync(logDirectory, { recursive: true, force: true });
@@ -817,7 +817,7 @@ test("stale close from failed encrypted-key retry does not stop successful retry
   const ipcMain = makeIpcMain();
   bridge.init({ sessions, electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
   const sender = makeSender();
 
   await start(
@@ -852,7 +852,7 @@ test("non-retryable auth failure still emits one exit", async (t) => {
   const ipcMain = makeIpcMain();
   bridge.init({ sessions: new Map(), electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
   const sender = makeSender();
 
   await assert.rejects(
@@ -870,7 +870,7 @@ test("non-retryable auth failure still emits one exit", async (t) => {
   );
 
   const exits = sender.sent.filter((message) => (
-    message.channel === "netcatty:exit"
+    message.channel === "magiesTerminal:exit"
     && message.payload.sessionId === "failed-session"
   ));
   assert.equal(exits.length, 1);
@@ -897,7 +897,7 @@ test("cancelled encrypted-key retry emits one final exit", async (t) => {
   const ipcMain = makeIpcMain();
   bridge.init({ sessions: new Map(), electronModule: {} });
   bridge.registerHandlers(ipcMain);
-  const start = ipcMain.handlers.get("netcatty:start");
+  const start = ipcMain.handlers.get("magiesTerminal:start");
   const sender = makeSender(events);
 
   await assert.rejects(
@@ -915,14 +915,14 @@ test("cancelled encrypted-key retry emits one final exit", async (t) => {
   );
 
   const exits = sender.sent.filter((message) => (
-    message.channel === "netcatty:exit"
+    message.channel === "magiesTerminal:exit"
     && message.payload.sessionId === "cancelled-session"
   ));
   assert.equal(exits.length, 1);
   assert.equal(exits[0].payload.reason, "error");
   assert.equal(events.includes("passphrase-request"), true);
   assert.equal(
-    events.indexOf("send:netcatty:exit") > events.indexOf("passphrase-request"),
+    events.indexOf("send:magiesTerminal:exit") > events.indexOf("passphrase-request"),
     true,
   );
 });

@@ -36,7 +36,7 @@ interface TerminalHostTreeToolbarProps {
   onCollapse: () => void;
 }
 
-const iconButtonClass = 'netcatty-tab h-7 w-7 shrink-0 rounded-md p-0 hover:bg-transparent';
+const iconButtonClass = 'magiesTerminal-tab h-7 w-7 shrink-0 rounded-md p-0 hover:bg-transparent';
 
 export const TerminalHostTreeToolbar: React.FC<TerminalHostTreeToolbarProps> = ({
   theme,

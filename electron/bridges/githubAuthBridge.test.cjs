@@ -37,7 +37,7 @@ test("GitHub device flow uses electron.net.fetch when available", async () => {
     },
   });
 
-  const start = ipcMain.handlers.get("netcatty:github:deviceFlow:start");
+  const start = ipcMain.handlers.get("magiesTerminal:github:deviceFlow:start");
   const result = await start(null, { clientId: "client" });
   assert.equal(result.deviceCode, "dc");
   assert.equal(calls.length, 1);

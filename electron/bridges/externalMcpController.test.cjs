@@ -50,7 +50,7 @@ describe("externalMcpController", () => {
   let removed;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "netcatty-ext-ctrl-"));
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-ext-ctrl-"));
     discoveryPath = path.join(tmpDir, "discovery.json");
     written = [];
     removed = [];
@@ -65,7 +65,7 @@ describe("externalMcpController", () => {
     const controller = createExternalMcpController({
       mcpServerBridge: bridge,
       getDiscoveryFilePath: () => discoveryPath,
-      getLauncherPath: () => "/fake/netcatty-external-mcp",
+      getLauncherPath: () => "/fake/magies-terminal-external-mcp",
       writeDiscovery: (filePath, options) => {
         written.push({ filePath, options });
         fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -77,12 +77,12 @@ describe("externalMcpController", () => {
         fs.rmSync(filePath, { force: true });
       },
       createCodexSetup: () => ({
-        getStatus: async () => ({ ok: true, state: "not_configured", launcherPath: "/fake/netcatty-external-mcp" }),
-        addToCodex: async () => ({ ok: true, state: "configured", launcherPath: "/fake/netcatty-external-mcp" }),
+        getStatus: async () => ({ ok: true, state: "not_configured", launcherPath: "/fake/magies-terminal-external-mcp" }),
+        addToCodex: async () => ({ ok: true, state: "configured", launcherPath: "/fake/magies-terminal-external-mcp" }),
       }),
       createClaudeSetup: () => ({
-        getStatus: async () => ({ ok: true, state: "not_configured", launcherPath: "/fake/netcatty-external-mcp" }),
-        addToClaude: async () => ({ ok: true, state: "configured", launcherPath: "/fake/netcatty-external-mcp" }),
+        getStatus: async () => ({ ok: true, state: "not_configured", launcherPath: "/fake/magies-terminal-external-mcp" }),
+        addToClaude: async () => ({ ok: true, state: "configured", launcherPath: "/fake/magies-terminal-external-mcp" }),
       }),
       setTimeout: overrides.setTimeout || ((fn) => {
         // Do not auto-fire idle timers in unit tests unless requested.
