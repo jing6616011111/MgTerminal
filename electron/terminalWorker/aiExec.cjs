@@ -377,7 +377,7 @@ function createWorkerAiJobStartHandler({
     activeSessionJobs.set(sessionId, jobId);
 
     // Insert into backgroundJobs *before* the shell-kind probe so
-    // magiesTerminal:ai:catty:cancel / cancelWorkerBackgroundJobsForSession can
+    // magiesTerminal:ai:magiesTerminal:cancel / cancelWorkerBackgroundJobsForSession can
     // latch cancellation while we await. Without this, the first job on an
     // unprobed remote session has no map entry during the probe and still
     // writes to the PTY after chat cancel (Codex P2 on #2061).
@@ -565,7 +565,7 @@ function registerWorkerAiExecHandlers(ipcMain, { sessions }) {
   ipcMain.handle("magiesTerminal:ai:jobStop", createWorkerAiJobStopHandler({
     backgroundJobs,
   }));
-  ipcMain.on("magiesTerminal:ai:catty:cancel", (_event, payload = {}) => {
+  ipcMain.on("magiesTerminal:ai:magiesTerminal:cancel", (_event, payload = {}) => {
     cancelPtyExecsForSession(activePtyExecs, payload.chatSessionId);
     cancelWorkerBackgroundJobsForSession(backgroundJobs, payload.chatSessionId);
   });

@@ -34,7 +34,7 @@ const MODEL_PICKER_MAX_WIDTH = 360;
 const PROVIDER_PICKER_MAX_WIDTH = 320;
 
 /**
- * Provider picker payload used by Catty Agent. When set, the model chip
+ * Provider picker payload used by MagiesTerminal Agent. When set, the model chip
  * switches to a flat provider list (provider icon + name + the provider's
  * configured default model as caption) in place of the generic Cpu glyph
  * + model-preset dropdown. Each provider exposes a single model — its
@@ -89,14 +89,14 @@ interface ChatInputProps {
   onAddUserSkill?: (slug: string) => void;
   /** Callback to remove a selected user skill */
   onRemoveUserSkill?: (slug: string) => void;
-  /** Permission mode (only shown for Catty Agent) */
+  /** Permission mode (only shown for MagiesTerminal Agent) */
   permissionMode?: AIPermissionMode;
   /** Callback when user changes permission mode */
   onPermissionModeChange?: (mode: AIPermissionMode) => void;
   /**
    * Provider→model two-level picker payload. When provided, replaces the
    * single-list model dropdown with a provider-aware picker. Used for the
-   * Catty Agent only — external SDK agents (Claude/Codex) keep the
+   * MagiesTerminal Agent only — external SDK agents (Claude/Codex) keep the
    * `modelPresets` dropdown because their provider is wired inside the CLI.
    */
   providerSwitcher?: ProviderSwitcherConfig;
@@ -494,7 +494,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     return { selectedPreset: undefined, selectedThinking: undefined };
   })();
   const selectedBaseModelId = selectedPreset?.id;
-  // Provider switcher mode (Catty Agent): two-column popover, chip carries
+  // Provider switcher mode (MagiesTerminal Agent): two-column popover, chip carries
   // the provider's icon + name + model name. Falls back to the existing
   // single-list model dropdown for external SDK agents.
   const hasProviderSwitcher = !!providerSwitcher && providerSwitcher.providers.length > 0;
@@ -986,7 +986,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
               </>,
               document.body,
             )}
-            {/* Permission mode chip — only for Catty Agent */}
+            {/* Permission mode chip — only for MagiesTerminal Agent */}
             {permissionMode && onPermissionModeChange && (
               <>
                 <Tooltip>

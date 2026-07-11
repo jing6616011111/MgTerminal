@@ -36,7 +36,7 @@ test('buildManagedAgentState removes stale managed agents when path detection fa
     state.agents.map((agent) => agent.id),
     ['custom-agent'],
   );
-  assert.equal(state.defaultAgentId, 'catty');
+  assert.equal(state.defaultAgentId, 'magiesTerminal');
 });
 
 test('buildManagedAgentState keeps unrelated defaults when removing stale managed agents', () => {
@@ -73,7 +73,7 @@ test('buildManagedAgentState keeps unrelated defaults when removing stale manage
 test('buildManagedAgentState stores the system Claude executable for SDK runs', () => {
   const state = buildManagedAgentState(
     [],
-    'catty',
+    'magiesTerminal',
     'claude',
     { path: '/opt/homebrew/bin/claude', version: '2.1.145 (Claude Code)', available: true },
   );
@@ -89,13 +89,13 @@ test('buildManagedAgentState stores the system Claude executable for SDK runs', 
 test('buildManagedAgentState stores SDK backend keys for discovered managed agents', () => {
   const codexState = buildManagedAgentState(
     [],
-    'catty',
+    'magiesTerminal',
     'codex',
     { path: '/opt/homebrew/bin/codex', version: '1.0.0', available: true },
   );
   const copilotState = buildManagedAgentState(
     [],
-    'catty',
+    'magiesTerminal',
     'copilot',
     { path: '/opt/homebrew/bin/copilot', version: '1.0.0', available: true },
   );
@@ -108,7 +108,7 @@ test('buildManagedAgentState stores SDK backend keys for discovered managed agen
 test('getInitialManagedAgentPaths ignores auto-detected command paths', () => {
   const state = buildManagedAgentState(
     [],
-    'catty',
+    'magiesTerminal',
     'codex',
     { path: '/opt/homebrew/bin/codex', version: '1.0.0', available: true },
     'auto',
@@ -121,7 +121,7 @@ test('getInitialManagedAgentPaths ignores auto-detected command paths', () => {
 test('getInitialManagedAgentPaths keeps manual and legacy command paths', () => {
   const manualState = buildManagedAgentState(
     [],
-    'catty',
+    'magiesTerminal',
     'codex',
     { path: '/opt/homebrew/bin/codex', version: '1.0.0', available: true },
     'manual',
@@ -141,7 +141,7 @@ test('getInitialManagedAgentPaths keeps manual and legacy command paths', () => 
 test('buildManagedAgentState stores SDK backend key for discovered Cursor', () => {
   const state = buildManagedAgentState(
     [],
-    'catty',
+    'magiesTerminal',
     'cursor',
     { path: 'cursor', version: 'Cursor SDK 1.0.18', available: true },
   );
@@ -176,13 +176,13 @@ test('buildManagedAgentState preserves a saved Cursor API key when SDK is not re
   assert.equal(state.agents[0].apiKey, 'enc:v1:test');
   assert.equal(state.agents[0].enabled, false);
   assert.equal(state.agents[0].available, false);
-  assert.equal(state.defaultAgentId, 'catty');
+  assert.equal(state.defaultAgentId, 'magiesTerminal');
 });
 
 test('buildManagedAgentState stores CODEBUDDY_CODE_PATH for codebuddy', () => {
   const state = buildManagedAgentState(
     [],
-    'catty',
+    'magiesTerminal',
     'codebuddy',
     { path: '/opt/homebrew/bin/codebuddy', version: '0.1.0', available: true },
   );
@@ -198,7 +198,7 @@ test('buildManagedAgentState stores CODEBUDDY_CODE_PATH for codebuddy', () => {
 test('buildManagedAgentState stores OPENCODE_BIN for opencode', () => {
   const state = buildManagedAgentState(
     [],
-    'catty',
+    'magiesTerminal',
     'opencode',
     { path: '/opt/homebrew/bin/opencode', version: '1.0.0', available: true },
   );
@@ -235,7 +235,7 @@ test('buildManagedAgentState preserves disabled CodeBuddy config when path detec
     { path: null, version: null, available: false },
   );
 
-  assert.equal(state.defaultAgentId, 'catty');
+  assert.equal(state.defaultAgentId, 'magiesTerminal');
   assert.equal(state.agents.length, 1);
   assert.equal(state.agents[0].id, 'discovered_codebuddy');
   assert.equal(state.agents[0].enabled, false);
@@ -250,7 +250,7 @@ test('buildManagedAgentState enables preconfigured CodeBuddy when path detection
 
   const state = buildManagedAgentState(
     agents,
-    'catty',
+    'magiesTerminal',
     'codebuddy',
     { path: '/opt/homebrew/bin/codebuddy', version: '0.1.0', available: true },
   );

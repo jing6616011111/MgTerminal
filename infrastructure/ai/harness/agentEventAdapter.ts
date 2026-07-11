@@ -14,7 +14,7 @@ export interface StreamEventContext {
   turnId?: string;
 }
 
-export interface CattyStreamChunk {
+export interface MagiesTerminalStreamChunk {
   type: string;
   text?: string;
   textDelta?: string;
@@ -115,14 +115,14 @@ export function mapSdkStreamEventToAgentEvents(
   }
 }
 
-export function mapCattyStreamChunkToAgentEvents(
-  chunk: CattyStreamChunk,
+export function mapMagiesTerminalStreamChunkToAgentEvents(
+  chunk: MagiesTerminalStreamChunk,
   ctx: StreamEventContext,
 ): AgentEvent[] {
   const base = {
     sessionId: ctx.sessionId,
     chatSessionId: ctx.chatSessionId,
-    backend: 'catty' as const,
+    backend: 'magiesTerminal' as const,
     timestamp: Date.now(),
     turnId: ctx.turnId,
   };

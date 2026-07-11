@@ -29,7 +29,7 @@ import { buildExternalBridgeContextMessages } from './externalBridgeContext';
 
 export interface PrepareTurnContextInput {
   messages: ModelMessage[];
-  backend: 'catty' | 'external-bridge';
+  backend: 'magiesTerminal' | 'external-bridge';
   contextWindow?: number;
   reservedTokens?: number;
   maxOutputTokens?: number;
@@ -68,7 +68,7 @@ function emitCompactionEvent(
     type: 'compaction',
     sessionId: input.sessionId,
     chatSessionId: input.chatSessionId,
-    backend: input.backend === 'catty' ? 'catty' : 'external-sdk',
+    backend: input.backend === 'magiesTerminal' ? 'magiesTerminal' : 'external-sdk',
     timestamp: Date.now(),
     trace,
   });
@@ -89,7 +89,7 @@ function emitCompactionStart(
     type: 'compaction_start',
     sessionId: input.sessionId,
     chatSessionId: input.chatSessionId,
-    backend: input.backend === 'catty' ? 'catty' : 'external-sdk',
+    backend: input.backend === 'magiesTerminal' ? 'magiesTerminal' : 'external-sdk',
     timestamp: Date.now(),
     trigger,
   });
@@ -361,7 +361,7 @@ function applyStepBudgetGuard(
 /** Step-level typed pruning — no LLM summarize (reserved for pre-turn / 413). */
 export async function prepareStepContext(
   input: PrepareStepContextInput,
-): Promise<ContextPrepareResult & { runtimeContext?: import('./cattyRuntimeContext').CattyRuntimeContext }> {
+): Promise<ContextPrepareResult & { runtimeContext?: import('./magiesTerminalRuntimeContext').MagiesTerminalRuntimeContext }> {
   const contextWindow = input.contextWindow ?? DEFAULT_CONTEXT_WINDOW_TOKENS;
   const maxOutputTokens = input.maxOutputTokens ?? DEFAULT_MAX_OUTPUT_TOKENS;
   const protectRecent = input.protectRecentMessages ?? DEFAULT_PROTECT_RECENT_MESSAGES;
@@ -447,12 +447,12 @@ export async function prepareStepContext(
     emitCompactionStart(input.onEvent, {
       sessionId: input.sessionId,
       chatSessionId: input.chatSessionId,
-      backend: 'catty',
+      backend: 'magiesTerminal',
     }, 'step');
     emitCompactionEvent(input.onEvent, {
       sessionId: input.sessionId,
       chatSessionId: input.chatSessionId,
-      backend: 'catty',
+      backend: 'magiesTerminal',
     }, trace);
   }
 

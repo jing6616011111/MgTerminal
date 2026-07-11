@@ -335,7 +335,7 @@ export const DEFAULT_AI_SETTINGS: AISettings = {
   globalPermissionMode: 'confirm',
   toolIntegrationMode: 'mcp',
   externalAgents: [],
-  defaultAgentId: 'catty',
+  defaultAgentId: 'magiesTerminal',
   commandBlocklist: [...DEFAULT_COMMAND_BLOCKLIST],
   commandTimeout: DEFAULT_COMMAND_TIMEOUT_SECONDS,
   maxIterations: 20,

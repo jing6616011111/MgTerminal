@@ -3,7 +3,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { AGENT_KINDS, listAgentToolSpecs, listCattyToolSpecs } = require("../electron/capabilities/codegen/toolSurfaces.cjs");
+const { AGENT_KINDS, listAgentToolSpecs, listMagiesTerminalToolSpecs } = require("../electron/capabilities/codegen/toolSurfaces.cjs");
 
 const generatedDir = path.join(
   __dirname,
@@ -17,7 +17,7 @@ function writeSpecs(filename, specs) {
   return { outputPath, count: specs.length };
 }
 
-const sidebar = writeSpecs("cattyToolSpecs.json", listCattyToolSpecs());
+const sidebar = writeSpecs("magiesTerminalToolSpecs.json", listMagiesTerminalToolSpecs());
 const globalAgent = writeSpecs(
   "globalAgentToolSpecs.json",
   listAgentToolSpecs(AGENT_KINDS.GLOBAL),

@@ -2,7 +2,7 @@
 
 /**
  * Input field definitions keyed by capability id.
- * Single source for MCP, Catty, and CLI tool schemas.
+ * Single source for MCP, MagiesTerminal, and CLI tool schemas.
  */
 const TOOL_INPUT_FIELDS = Object.freeze({
   "terminal.execute": {

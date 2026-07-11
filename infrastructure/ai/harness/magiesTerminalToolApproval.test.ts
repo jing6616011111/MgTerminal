@@ -1,10 +1,10 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildCattyToolApproval } from './cattyToolApproval';
+import { buildMagiesTerminalToolApproval } from './magiesTerminalToolApproval';
 
-describe('buildCattyToolApproval', () => {
+describe('buildMagiesTerminalToolApproval', () => {
   it('auto-approves read-only tools', async () => {
-    const approval = buildCattyToolApproval({ permissionMode: 'confirm', chatSessionId: 'chat-1' });
+    const approval = buildMagiesTerminalToolApproval({ permissionMode: 'confirm', chatSessionId: 'chat-1' });
     const result = await approval({
       toolCall: {
         toolCallId: 'call-1',
@@ -16,7 +16,7 @@ describe('buildCattyToolApproval', () => {
   });
 
   it('allows observer-bypass write tools in observer mode', async () => {
-    const approval = buildCattyToolApproval({ permissionMode: 'observer', chatSessionId: 'chat-1' });
+    const approval = buildMagiesTerminalToolApproval({ permissionMode: 'observer', chatSessionId: 'chat-1' });
     const result = await approval({
       toolCall: {
         toolCallId: 'call-stop',
@@ -28,7 +28,7 @@ describe('buildCattyToolApproval', () => {
   });
 
   it('denies write tools in observer mode', async () => {
-    const approval = buildCattyToolApproval({ permissionMode: 'observer', chatSessionId: 'chat-1' });
+    const approval = buildMagiesTerminalToolApproval({ permissionMode: 'observer', chatSessionId: 'chat-1' });
     const result = await approval({
       toolCall: {
         toolCallId: 'call-2',
@@ -43,7 +43,7 @@ describe('buildCattyToolApproval', () => {
   });
 
   it('auto-approves write tools in auto mode', async () => {
-    const approval = buildCattyToolApproval({ permissionMode: 'auto', chatSessionId: 'chat-1' });
+    const approval = buildMagiesTerminalToolApproval({ permissionMode: 'auto', chatSessionId: 'chat-1' });
     const result = await approval({
       toolCall: {
         toolCallId: 'call-3',
@@ -56,7 +56,7 @@ describe('buildCattyToolApproval', () => {
 
   it('awaits user approval in confirm mode for write tools', async () => {
     let approvalRequested = false;
-    const approval = buildCattyToolApproval({
+    const approval = buildMagiesTerminalToolApproval({
       permissionMode: 'confirm',
       chatSessionId: 'chat-1',
       requestApproval: async (toolCallId, toolName) => {
@@ -78,7 +78,7 @@ describe('buildCattyToolApproval', () => {
   });
 
   it('returns denied when confirm-mode approval is rejected', async () => {
-    const approval = buildCattyToolApproval({
+    const approval = buildMagiesTerminalToolApproval({
       permissionMode: 'confirm',
       chatSessionId: 'chat-1',
       requestApproval: async () => false,

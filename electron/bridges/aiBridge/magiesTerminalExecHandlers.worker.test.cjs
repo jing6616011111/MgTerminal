@@ -1,7 +1,7 @@
 const assert = require("node:assert/strict");
 const test = require("node:test");
 
-const { registerCattyExecHandlers } = require("./cattyExecHandlers.cjs");
+const { registerMagiesTerminalExecHandlers } = require("./magiesTerminalExecHandlers.cjs");
 
 function createFakeIpcMain() {
   return {
@@ -12,7 +12,7 @@ function createFakeIpcMain() {
   };
 }
 
-test("catty AI exec proxies to the terminal worker when the real session lives in the worker", async () => {
+test("magiesTerminal AI exec proxies to the terminal worker when the real session lives in the worker", async () => {
   const ipcMain = createFakeIpcMain();
   const requests = [];
   const terminalWorkerManager = {
@@ -44,7 +44,7 @@ test("catty AI exec proxies to the terminal worker when the real session lives i
     activePtyExecs: new Map(),
   };
 
-  registerCattyExecHandlers({
+  registerMagiesTerminalExecHandlers({
     ipcMain,
     validateSender: () => true,
     sessions: new Map(),

@@ -4,7 +4,7 @@ import {
   buildHistoricalToolReplayMaps,
   buildHistoricalToolResultReplayText,
   buildHistoricalUserReplayContent,
-} from '../../../../components/ai/cattyHistoryReplay';
+} from '../../../../components/ai/magiesTerminalHistoryReplay';
 import {
   buildPromptWithTerminalSelectionAttachments,
   isTerminalSelectionAttachment,
@@ -18,7 +18,7 @@ import {
 import {
   toAssistantModelContent,
   type AssistantContentPart,
-  type CattyProviderContinuationContext,
+  type MagiesTerminalProviderContinuationContext,
 } from '../../../../components/ai/hooks/aiChatStreamingSupport';
 
 const OPENAI_CHAT_ASSISTANT_FIELDS = Symbol('magiesTerminal.openAIChatAssistantFields');
@@ -66,17 +66,17 @@ export function collectOpenAIChatAssistantFieldsForMessages(
   return fields;
 }
 
-export interface BuildCattySdkMessagesInput {
+export interface BuildMagiesTerminalSdkMessagesInput {
   allMessages: ChatMessage[];
   includeCurrentUserMessage: boolean;
   trimmed: string;
   attachments?: ChatMessageAttachment[];
-  continuationContext: CattyProviderContinuationContext;
+  continuationContext: MagiesTerminalProviderContinuationContext;
   preserveTerminalToolResults?: ReadonlySet<ToolResult>;
   fieldsByMessage: Map<ModelMessage, OpenAIChatAssistantFields | undefined>;
 }
 
-export function buildCattySdkMessages(input: BuildCattySdkMessagesInput): ModelMessage[] {
+export function buildMagiesTerminalSdkMessages(input: BuildMagiesTerminalSdkMessagesInput): ModelMessage[] {
   const {
     allMessages,
     includeCurrentUserMessage,
@@ -252,7 +252,7 @@ export function createContinuationContext(
   providerConfigId: string,
   providerType: string,
   modelId: string,
-): CattyProviderContinuationContext {
+): MagiesTerminalProviderContinuationContext {
   return {
     source: {
       providerConfigId,
@@ -263,4 +263,4 @@ export function createContinuationContext(
   };
 }
 
-export type { CattyProviderContinuationContext, ProviderContinuation };
+export type { MagiesTerminalProviderContinuationContext, ProviderContinuation };

@@ -4,7 +4,7 @@ import {
 } from './codingCliProviderMatch';
 
 export type AgentIconKey =
-  | 'catty'
+  | 'magiesTerminal'
   | 'copilot'
   | 'cursor'
   | 'openai'
@@ -31,8 +31,8 @@ export type AgentIconVisual = {
 };
 
 export const AGENT_ICON_VISUALS: Record<AgentIconKey, AgentIconVisual> = {
-  catty: {
-    src: '/ai/agents/catty.svg',
+  magiesTerminal: {
+    src: '/ai/agents/magiesTerminal.svg',
     badgeClassName: 'border-violet-500/20 bg-violet-500/10',
     imageClassName: 'object-contain dark:brightness-0 dark:invert opacity-90',
   },
@@ -146,7 +146,7 @@ export function resolveAgentIconKey(source: AgentIconSource | 'add-more'): Agent
   }
 
   if (source.type === 'builtin') {
-    return 'catty';
+    return 'magiesTerminal';
   }
 
   const commandCandidates = [source.command, source.name, source.id].filter(

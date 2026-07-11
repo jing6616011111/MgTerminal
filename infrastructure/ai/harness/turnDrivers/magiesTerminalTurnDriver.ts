@@ -5,37 +5,37 @@ import {
   estimateUnknownTokens,
   resolveContextWindow,
 } from '../../contextCompaction';
-import { buildSystemPrompt } from '../../cattyAgent/systemPrompt';
+import { buildSystemPrompt } from '../../magiesTerminalAgent/systemPrompt';
 import { isWebSearchReady, normalizeCommandTimeoutSeconds } from '../../types';
 import { createModelFromConfig } from '../../sdk/providers';
-import { createCattyToolsFromCatalog } from '../capabilityTools';
-import { createInitialCattyRuntimeContext } from '../cattyRuntimeContext';
+import { createMagiesTerminalToolsFromCatalog } from '../capabilityTools';
+import { createInitialMagiesTerminalRuntimeContext } from '../magiesTerminalRuntimeContext';
 import { prepareStepContext, extractLatestUserGoal } from '../contextManager';
 import {
-  compactCattyMessages,
-  prepareCattyMessagesForStream,
-} from '../cattyRuntime';
+  compactMagiesTerminalMessages,
+  prepareMagiesTerminalMessagesForStream,
+} from '../magiesTerminalRuntime';
 import { DEFAULT_MAX_OUTPUT_TOKENS } from '../contextBudget';
 import { clearChatSessionCancelled } from '../agentStop';
 import { isRequestTooLargeError } from '../../errorClassifier';
 import { getMagiesTerminalBridge, generateId, resolveUserSkillsContext } from '../../../../components/ai/hooks/aiChatStreamingSupport';
 import {
-  buildCattySdkMessages,
+  buildMagiesTerminalSdkMessages,
   collectOpenAIChatAssistantFieldsForMessages,
   collectToolResultsAfterMessage,
   createContinuationContext,
-} from './cattyMessageBuilder';
-import { hadToolProgressBeforeRequestTooLarge, processCattyStream } from './cattyStreamProcessor';
-import type { CattyTurnInput, TurnDriver, TurnDriverContext } from './types';
+} from './magiesTerminalMessageBuilder';
+import { hadToolProgressBeforeRequestTooLarge, processMagiesTerminalStream } from './magiesTerminalStreamProcessor';
+import type { MagiesTerminalTurnInput, TurnDriver, TurnDriverContext } from './types';
 
-export class CattyTurnDriver implements TurnDriver {
-  readonly backend = 'catty' as const;
+export class MagiesTerminalTurnDriver implements TurnDriver {
+  readonly backend = 'magiesTerminal' as const;
 
   async run(input: import('./types').TurnInput, ctx: TurnDriverContext): Promise<void> {
-    if (input.backend !== 'catty') {
-      throw new Error('CattyTurnDriver received non-catty input');
+    if (input.backend !== 'magiesTerminal') {
+      throw new Error('MagiesTerminalTurnDriver received non-magiesTerminal input');
     }
-    await runCattyTurn(input, ctx);
+    await runMagiesTerminalTurn(input, ctx);
   }
 
   abort(): void {
@@ -43,7 +43,7 @@ export class CattyTurnDriver implements TurnDriver {
   }
 }
 
-async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Promise<void> {
+async function runMagiesTerminalTurn(input: MagiesTerminalTurnInput, ctx: TurnDriverContext): Promise<void> {
   const {
     chatSessionId: sessionId,
     userText: trimmed,
@@ -75,7 +75,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
     workspaceId: context.scopeType === 'workspace' ? context.scopeTargetId : undefined,
     workspaceName: context.scopeType === 'workspace' ? context.scopeLabel : undefined,
   }));
-  const toolsBundle = createCattyToolsFromCatalog(
+  const toolsBundle = createMagiesTerminalToolsFromCatalog(
     magiesTerminalBridge,
     getExecutorContext,
     context.commandBlocklist,
@@ -117,7 +117,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
       allMessages: import('../../types').ChatMessage[],
       includeCurrentUserMessage: boolean,
       options: { preserveTerminalToolResults?: ReadonlySet<import('../../types').ToolResult> } = {},
-    ) => buildCattySdkMessages({
+    ) => buildMagiesTerminalSdkMessages({
       allMessages,
       includeCurrentUserMessage,
       trimmed,
@@ -139,7 +139,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
         },
       );
     } catch (e) {
-      console.error('[Catty] Model creation failed:', e);
+      console.error('[MagiesTerminal] Model creation failed:', e);
       ui.reportStreamError(sessionId, signal, `Model creation failed: ${e instanceof Error ? e.message : String(e)}`);
       return;
     }
@@ -159,7 +159,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
     }, providerId);
 
     const prepareMessagesForStream = (messages: ModelMessage[]): ModelMessage[] => {
-      const pruned = prepareCattyMessagesForStream(messages);
+      const pruned = prepareMagiesTerminalMessagesForStream(messages);
       continuationContext.openAIChatAssistantFields = collectOpenAIChatAssistantFieldsForMessages(
         pruned,
         openAIChatAssistantFieldsByMessage,
@@ -176,7 +176,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
     ): Promise<ModelMessage[]> => {
       const pendingHandles = ctx.toolOutputStore.listPendingHandles(sessionId);
       const sessionStateText = ctx.sessionStateStore.toReinjectionText(sessionId);
-      const result = await compactCattyMessages({
+      const result = await compactMagiesTerminalMessages({
         messages,
         sessionId,
         chatSessionId: sessionId,
@@ -195,7 +195,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
             type: 'compaction_start',
             sessionId,
             chatSessionId: sessionId,
-            backend: 'catty',
+            backend: 'magiesTerminal',
             timestamp: Date.now(),
             trigger,
           } as import('../types').AgentEvent);
@@ -207,7 +207,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
             trace,
           } as import('../types').AgentEvent);
           if (options.compressForRequestTooLargeRetry && trace.did413Fallback) {
-            console.warn('[Catty] Request content compressed after forced context compaction.');
+            console.warn('[MagiesTerminal] Request content compressed after forced context compaction.');
           }
         },
         reinjection: {
@@ -225,7 +225,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
     messagesForStream = await compactMessages(messagesForStream, {});
     messagesForStream = prepareMessagesForStream(messagesForStream);
 
-    const runtimeContext = createInitialCattyRuntimeContext({
+    const runtimeContext = createInitialMagiesTerminalRuntimeContext({
       chatSessionId: sessionId,
       turnId: ctx.turnId,
       providerId: context.activeProvider?.providerId,
@@ -245,7 +245,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
         : undefined;
 
     const runStream = async (streamMessages: ModelMessage[], streamAssistantMsgId: string) => {
-      await processCattyStream({
+      await processMagiesTerminalStream({
         streamSessionId: sessionId,
         model,
         systemPrompt,
@@ -294,7 +294,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
         throw streamErr;
       }
 
-      console.warn('[Catty] Request hit HTTP 413; forcing context compaction and retrying once.', streamErr);
+      console.warn('[MagiesTerminal] Request hit HTTP 413; forcing context compaction and retrying once.', streamErr);
       const hadToolProgress = hadToolProgressBeforeRequestTooLarge(streamErr);
       let retryBaseMessages = messagesForStream;
       let retryAssistantMsgId = assistantMsgId;
@@ -337,7 +337,7 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
       await runStream(retryMessages, retryAssistantMsgId);
     }
   } catch (err) {
-    console.error('[Catty] streamText error:', err);
+    console.error('[MagiesTerminal] streamText error:', err);
     ui.reportStreamError(sessionId, signal, err);
   } finally {
     ui.updateLastMessage(sessionId, msg => msg.statusText ? { ...msg, statusText: '' } : msg);
@@ -346,4 +346,4 @@ async function runCattyTurn(input: CattyTurnInput, ctx: TurnDriverContext): Prom
   }
 }
 
-export const cattyTurnDriver = new CattyTurnDriver();
+export const magiesTerminalTurnDriver = new MagiesTerminalTurnDriver();

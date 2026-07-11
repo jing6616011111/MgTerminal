@@ -13,7 +13,7 @@ import {
 } from '../shared/toolExecutors';
 
 /**
- * Bridge interface for Catty Agent to interact with the Electron main process.
+ * Bridge interface for MagiesTerminal Agent to interact with the Electron main process.
  * This mirrors the AI-related subset of window.magiesTerminal from electron/preload.cjs.
  */
 export interface MagiesTerminalBridge {
@@ -29,13 +29,13 @@ export interface MagiesTerminalBridge {
     error?: string;
   }>;
   /**
-   * Cancel any in-flight Catty Agent command execution scoped to the
+   * Cancel any in-flight MagiesTerminal Agent command execution scoped to the
    * given chat session. Idempotent — safe to call when nothing is
    * running. Used by tools to re-issue cancel during the IPC transit
    * window if the user clicks Stop after we've already dispatched
    * `aiExec` but before the main process has registered it.
    */
-  aiCattyCancelExec?(chatSessionId: string): Promise<unknown>;
+  aiMagiesTerminalCancelExec?(chatSessionId: string): Promise<unknown>;
   aiSetChatSessionCancelled?(chatSessionId: string, cancelled?: boolean): Promise<{ ok: boolean; error?: string }>;
   aiCapability?(
     rpcMethod: string,
@@ -93,7 +93,7 @@ function toToolResult(toolCallId: string, r: ToolExecResult): ToolResult {
 }
 
 /**
- * Create a tool executor function for the Catty Agent.
+ * Create a tool executor function for the MagiesTerminal Agent.
  * This bridges tool calls to the magiesTerminal Electron IPC layer.
  */
 export function createToolExecutor(

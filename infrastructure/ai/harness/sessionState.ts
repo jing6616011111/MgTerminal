@@ -1,7 +1,7 @@
 const MAX_DECISIONS = 15;
 const MAX_BLOCKERS = 10;
 
-export interface CattySessionState {
+export interface MagiesTerminalSessionState {
   userGoal?: string;
   decisions: string[];
   activeHosts: Record<string, { hostname?: string; lastCommand?: string }>;
@@ -9,7 +9,7 @@ export interface CattySessionState {
   updatedAt: number;
 }
 
-function emptyState(): CattySessionState {
+function emptyState(): MagiesTerminalSessionState {
   return {
     decisions: [],
     activeHosts: {},
@@ -25,9 +25,9 @@ function pushUnique(list: string[], value: string, cap: number): string[] {
 }
 
 export class SessionStateStore {
-  private readonly bySession = new Map<string, CattySessionState>();
+  private readonly bySession = new Map<string, MagiesTerminalSessionState>();
 
-  get(chatSessionId: string): CattySessionState {
+  get(chatSessionId: string): MagiesTerminalSessionState {
     return this.bySession.get(chatSessionId) ?? emptyState();
   }
 

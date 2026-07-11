@@ -1085,8 +1085,8 @@ function createPreloadApi(ctx) {
   aiExec: async (sessionId, command, chatSessionId) => {
     return ipcRenderer.invoke("magiesTerminal:ai:exec", { sessionId, command, chatSessionId });
   },
-  aiCattyCancelExec: async (chatSessionId) => {
-    return ipcRenderer.invoke("magiesTerminal:ai:catty:cancel", { chatSessionId });
+  aiMagiesTerminalCancelExec: async (chatSessionId) => {
+    return ipcRenderer.invoke("magiesTerminal:ai:magiesTerminal:cancel", { chatSessionId });
   },
   aiSetChatSessionCancelled: async (chatSessionId, cancelled = true) => {
     return ipcRenderer.invoke("magiesTerminal:ai:chat-session:set-cancelled", { chatSessionId, cancelled });

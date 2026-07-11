@@ -1,4 +1,4 @@
-import type { MagiesTerminalBridge } from '../../../infrastructure/ai/cattyAgent/executor';
+import type { MagiesTerminalBridge } from '../../../infrastructure/ai/magiesTerminalAgent/executor';
 import type {
   OpenAIChatAssistantFields,
   ProviderContinuationOptions,
@@ -161,7 +161,7 @@ export interface PanelBridge extends MagiesTerminalBridge {
     agentEnv?: Record<string, string>,
     agentCommand?: string,
   ) => Promise<{ ok: boolean; models?: Array<{ id: string; name: string; description?: string; thinkingLevels?: string[] }>; currentModelId?: string | null; error?: string }>;
-  aiCattyCancelExec?(chatSessionId: string): Promise<unknown>;
+  aiMagiesTerminalCancelExec?(chatSessionId: string): Promise<unknown>;
   aiSetChatSessionCancelled?(chatSessionId: string, cancelled?: boolean): Promise<{ ok: boolean; error?: string }>;
   aiMcpSyncPermissionGrants?(grants: Array<Record<string, unknown>>): Promise<{ ok: boolean; count?: number; error?: string }>;
   aiSdkAgentCancel?: (requestId: string, chatSessionId?: string) => Promise<{ ok: boolean; error?: string }>;
@@ -206,7 +206,7 @@ export interface DefaultTargetSessionHint extends TerminalSessionInfo {
   source: 'scope-target' | 'only-connected-in-scope';
 }
 
-export interface CattyProviderContinuationContext {
+export interface MagiesTerminalProviderContinuationContext {
   source: ProviderContinuationSource;
   openAIChatAssistantFields: Array<OpenAIChatAssistantFields | undefined>;
 }

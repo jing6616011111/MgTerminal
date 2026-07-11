@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { shouldEmitAgentEventsForStreamChunk } from './turnDrivers/cattyStreamProcessor';
+import { shouldEmitAgentEventsForStreamChunk } from './turnDrivers/magiesTerminalStreamProcessor';
 
 describe('shouldEmitAgentEventsForStreamChunk', () => {
   it('suppresses trace events for SDK internal stream-state errors', () => {

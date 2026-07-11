@@ -1,5 +1,5 @@
 /**
- * Shared tool execution logic used by both the Catty Agent executor (switch/case)
+ * Shared tool execution logic used by both the MagiesTerminal Agent executor (switch/case)
  * and the Vercel AI SDK tool wrappers.
  *
  * Each function encapsulates the core business logic for a tool — validation,
@@ -7,9 +7,9 @@
  * adapt the return value to their own response shape.
  */
 
-import type { MagiesTerminalBridge, ExecutorContext } from '../cattyAgent/executor';
+import type { MagiesTerminalBridge, ExecutorContext } from '../magiesTerminalAgent/executor';
 import type { AIPermissionMode, WebSearchConfig } from '../types';
-import { checkCommandSafety } from '../cattyAgent/safety';
+import { checkCommandSafety } from '../magiesTerminalAgent/safety';
 import { executeWebSearchProvider } from './webSearchProviders';
 
 // ---------------------------------------------------------------------------

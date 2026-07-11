@@ -16,7 +16,7 @@ import type {
   ProviderConfig,
   WebSearchConfig,
 } from '../../../infrastructure/ai/types';
-import type { ExecutorContext } from '../../../infrastructure/ai/cattyAgent/executor';
+import type { ExecutorContext } from '../../../infrastructure/ai/magiesTerminalAgent/executor';
 import { getAgentRuntime } from '../../../infrastructure/ai/harness/globalAgentRuntime';
 import { classifyError } from '../../../infrastructure/ai/errorClassifier';
 import { latestAISessionsSnapshot } from '../../../application/state/aiStateSnapshots';
@@ -62,14 +62,14 @@ export interface UseAIChatStreamingReturn {
   streamingSessionIds: Set<string>;
   setStreamingForScope: (key: string, val: boolean) => void;
   abortControllersRef: React.MutableRefObject<Map<string, AbortController>>;
-  sendToCattyAgent: (
+  sendToMagiesTerminalAgent: (
     sessionId: string,
     sendScopeKey: string,
     trimmed: string,
     abortController: AbortController,
     currentSession: AISession | undefined,
     assistantMsgId: string,
-    context: SendToCattyContext,
+    context: SendToMagiesTerminalContext,
     attachments?: ChatMessageAttachment[],
   ) => Promise<void>;
   sendToExternalAgent: (
@@ -84,7 +84,7 @@ export interface UseAIChatStreamingReturn {
   activeCompaction: import('./useAgentCompactionUi').ActiveCompactionUi | null;
 }
 
-export interface SendToCattyContext {
+export interface SendToMagiesTerminalContext {
   activeProvider: ProviderConfig | undefined;
   activeModelId: string;
   scopeType: 'terminal' | 'workspace';
@@ -204,20 +204,20 @@ export function useAIChatStreaming({
     });
   }, [uiCallbacks]);
 
-  const sendToCattyAgent = useCallback(async (
+  const sendToMagiesTerminalAgent = useCallback(async (
     sessionId: string,
     sendScopeKey: string,
     trimmed: string,
     abortController: AbortController,
     currentSession: AISession | undefined,
     assistantMsgId: string,
-    context: SendToCattyContext,
+    context: SendToMagiesTerminalContext,
     attachments?: ChatMessageAttachment[],
   ) => {
     const bridge = getMagiesTerminalBridge();
     try {
       await getAgentRuntime().runTurn({
-        backend: 'catty',
+        backend: 'magiesTerminal',
         chatSessionId: sessionId,
         sendScopeKey,
         userText: trimmed,
@@ -239,7 +239,7 @@ export function useAIChatStreaming({
     streamingSessionIds,
     setStreamingForScope,
     abortControllersRef,
-    sendToCattyAgent,
+    sendToMagiesTerminalAgent,
     sendToExternalAgent,
     reportStreamError,
     activeCompaction,

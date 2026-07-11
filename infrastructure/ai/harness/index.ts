@@ -39,7 +39,7 @@ export type { ToolOutputHandle, StoreToolOutputInput, ReadToolOutputInput } from
 export { ToolResultDedup, hashScopeKey, previewToolResult } from './toolResultDedup';
 export type { ToolResultDedupEntry } from './toolResultDedup';
 
-export { cattyTurnDriver } from './turnDrivers/cattyTurnDriver';
+export { magiesTerminalTurnDriver } from './turnDrivers/magiesTerminalTurnDriver';
 export { externalSdkTurnDriver } from './turnDrivers/externalSdkTurnDriver';
 export type {
   TurnInput,
@@ -47,7 +47,7 @@ export type {
   TurnDriver,
   TurnDriverContext,
   TurnUiCallbacks,
-  CattyTurnInput,
+  MagiesTerminalTurnInput,
   ExternalTurnInput,
 } from './turnDrivers/types';
 
@@ -67,12 +67,12 @@ export {
 } from './contextBudget';
 
 export { SessionStateStore, globalSessionStateStore } from './sessionState';
-export type { CattySessionState } from './sessionState';
+export type { MagiesTerminalSessionState } from './sessionState';
 
 export { pruneStaleToolContext } from './staleContextPruner';
 export { pruneUntilFitsCompaction } from './compactionPruner';
 
-export { CATTY_COMPACTION_STATUS_KEYS } from './compactionStatusKeys';
+export { MAGIES_TERMINAL_COMPACTION_STATUS_KEYS } from './compactionStatusKeys';
 
 export { buildExternalBridgeContextMessages } from './externalBridgeContext';
 
@@ -91,30 +91,30 @@ export {
 export type { SdkSessionIdentityPayload } from './sdkSessionIdentity';
 
 export {
-  mapCattyStreamChunkToAgentEvents,
+  mapMagiesTerminalStreamChunkToAgentEvents,
   mapSdkStreamEventToAgentEvents,
   createHarnessEventSink,
 } from './agentEventAdapter';
 export type { StreamEventContext } from './agentEventAdapter';
 
 export {
-  compactCattyMessages,
-  prepareCattyMessagesForStream,
-} from './cattyRuntime';
-export type { CompactCattyMessagesInput, CompactCattyMessagesResult } from './cattyRuntime';
+  compactMagiesTerminalMessages,
+  prepareMagiesTerminalMessagesForStream,
+} from './magiesTerminalRuntime';
+export type { CompactMagiesTerminalMessagesInput, CompactMagiesTerminalMessagesResult } from './magiesTerminalRuntime';
 
-export { createCattyToolsFromCatalog } from './capabilityTools';
-export type { CattyToolsBundle } from './capabilityTools';
+export { createMagiesTerminalToolsFromCatalog } from './capabilityTools';
+export type { MagiesTerminalToolsBundle } from './capabilityTools';
 
 export {
-  createInitialCattyRuntimeContext,
-  cattyRuntimeContextSchema,
-  cattyToolContextSchema,
-} from './cattyRuntimeContext';
-export type { CattyRuntimeContext, CattyToolContext } from './cattyRuntimeContext';
+  createInitialMagiesTerminalRuntimeContext,
+  magiesTerminalRuntimeContextSchema,
+  magiesTerminalToolContextSchema,
+} from './magiesTerminalRuntimeContext';
+export type { MagiesTerminalRuntimeContext, MagiesTerminalToolContext } from './magiesTerminalRuntimeContext';
 
-export { buildCattyStreamTimeouts, buildCattyCompactionTimeout } from './streamTimeouts';
-export { buildCattyToolApproval } from './cattyToolApproval';
+export { buildMagiesTerminalStreamTimeouts, buildMagiesTerminalCompactionTimeout } from './streamTimeouts';
+export { buildMagiesTerminalToolApproval } from './magiesTerminalToolApproval';
 
 export {
   PermissionGrantStore,

@@ -9,7 +9,7 @@ function loadFreshBridge() {
   return require("./mcpServerBridge.cjs");
 }
 
-test("MCP/Catty capability context uses scoped metadata when terminal sessions live in worker", async () => {
+test("MCP/MagiesTerminal capability context uses scoped metadata when terminal sessions live in worker", async () => {
   const bridge = loadFreshBridge();
   bridge.init({
     sessions: new Map(),
@@ -57,7 +57,7 @@ test("MCP/Catty capability context uses scoped metadata when terminal sessions l
   });
 });
 
-test("MCP/Catty terminal_execute proxies to worker when terminal sessions live in worker", async () => {
+test("MCP/MagiesTerminal terminal_execute proxies to worker when terminal sessions live in worker", async () => {
   const requests = [];
   const bridge = loadFreshBridge();
   bridge.init({
@@ -117,7 +117,7 @@ test("MCP/Catty terminal_execute proxies to worker when terminal sessions live i
   ]);
 });
 
-test("MCP/Catty SFTP tools proxy to worker when terminal sessions live in worker", async () => {
+test("MCP/MagiesTerminal SFTP tools proxy to worker when terminal sessions live in worker", async () => {
   const requests = [];
   const bridge = loadFreshBridge();
   bridge.init({
@@ -194,7 +194,7 @@ test("MCP/Catty SFTP tools proxy to worker when terminal sessions live in worker
   ]);
 });
 
-test("MCP/Catty terminal_start, poll, and stop proxy worker background jobs", async () => {
+test("MCP/MagiesTerminal terminal_start, poll, and stop proxy worker background jobs", async () => {
   const requests = [];
   const bridge = loadFreshBridge();
   bridge.init({
@@ -301,7 +301,7 @@ test("MCP/Catty terminal_start, poll, and stop proxy worker background jobs", as
   });
 });
 
-test("MCP/Catty chat cancellation forwards to worker background jobs", async () => {
+test("MCP/MagiesTerminal chat cancellation forwards to worker background jobs", async () => {
   const requests = [];
   const sends = [];
   const bridge = loadFreshBridge();
@@ -353,7 +353,7 @@ test("MCP/Catty chat cancellation forwards to worker background jobs", async () 
   });
   assert.deepEqual(sends, [
     {
-      channel: "magiesTerminal:ai:catty:cancel",
+      channel: "magiesTerminal:ai:magiesTerminal:cancel",
       payload: { chatSessionId: "chat-1" },
       options: {},
     },

@@ -179,7 +179,7 @@ export const enAiMessages: Messages = {
   // AI Default Agent
   'ai.defaultAgent': 'Default Agent',
   'ai.defaultAgent.description': 'Agent to use when starting a new AI session',
-  'ai.defaultAgent.catty': 'Catty (Built-in)',
+  'ai.defaultAgent.magiesTerminal': 'MagiesTerminal (Built-in)',
   'ai.toolAccess.title': 'Tool Access',
   'ai.toolAccess.mode': 'MagiesTerminal Access Mode',
   'ai.toolAccess.description': 'Choose how external agents access MagiesTerminal sessions. MCP exposes the built-in server, while Skills + CLI points agents to the local MagiesTerminal skill and CLI commands.',
@@ -322,7 +322,7 @@ export const enAiMessages: Messages = {
   'ai.chat.permAutoDesc': 'Execute freely',
   'ai.chat.emptyHint': 'Ask about your servers, run commands, or get help with configurations.',
   'ai.chat.placeholder': 'Message {agent} — @ to include context, / for commands',
-  'ai.chat.placeholderDefault': 'Message Catty Agent...',
+  'ai.chat.placeholderDefault': 'Message MagiesTerminal Agent...',
   'ai.chat.noModel': 'No model',
   'ai.chat.noProviderModel': 'No default model — set one in Settings → AI → Providers.',
   'ai.chat.selectProvider': 'Select provider',

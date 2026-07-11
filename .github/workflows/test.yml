@@ -38,10 +38,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Verify generated Catty tool specs
+      - name: Verify generated MagiesTerminal tool specs
         run: |
           npm run generate:capability-tools
-          git diff --exit-code infrastructure/ai/harness/generated/cattyToolSpecs.json
+          git diff --exit-code infrastructure/ai/harness/generated/magiesTerminalToolSpecs.json
 
       - name: Test
         run: npm test

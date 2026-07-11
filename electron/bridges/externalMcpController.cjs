@@ -176,7 +176,7 @@ function createExternalMcpController(options = {}) {
     }
     const port = await bridge.getOrCreateHost();
     // External MCP uses a dedicated token (rotated on enable) so disable can
-    // invalidate discovery without rotating the shared Catty/CLI TCP token.
+    // invalidate discovery without rotating the shared MagiesTerminal/CLI TCP token.
     const token = typeof bridge.issueExternalMcpAuthToken === "function"
       ? bridge.issueExternalMcpAuthToken()
       : (typeof bridge.getExternalMcpAuthToken === "function" ? bridge.getExternalMcpAuthToken() : "");
@@ -413,7 +413,7 @@ function createExternalMcpController(options = {}) {
 
   function onBridgeHostReady({ port }) {
     if (!isEnabled()) return;
-    // Host-ready reports the shared Catty/CLI TCP token — never write that into
+    // Host-ready reports the shared MagiesTerminal/CLI TCP token — never write that into
     // External discovery. Only refresh with an already-issued external token;
     // do not issue here or cold-start enable double-rotates before
     // resolveHostCredentials runs.

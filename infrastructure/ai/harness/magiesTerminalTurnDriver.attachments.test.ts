@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { CattyTurnDriver } from './turnDrivers/cattyTurnDriver';
+import { MagiesTerminalTurnDriver } from './turnDrivers/magiesTerminalTurnDriver';
 import type { TurnDriverContext, TurnInput } from './turnDrivers/types';
 
 const mcpServerBridge = await import('../../../electron/bridges/mcpServerBridge.cjs');
@@ -10,7 +10,7 @@ function createTurnContext(): TurnDriverContext {
     turnId: 'turn-1',
     chatSessionId: 'chat-1',
     sessionId: 'chat-1',
-    backend: 'catty',
+    backend: 'magiesTerminal',
     signal: new AbortController().signal,
     emit: () => {},
     toolOutputStore: {
@@ -36,7 +36,7 @@ function createTurnContext(): TurnDriverContext {
   } as TurnDriverContext;
 }
 
-test('Catty turn registers current message file attachments for attachment tools', async (t) => {
+test('MagiesTerminal turn registers current message file attachments for attachment tools', async (t) => {
   mcpServerBridge.cleanup();
   const csvText = 'label,hostname,username\nprod,prod.example.com,root\n';
   const bridge = {
@@ -54,7 +54,7 @@ test('Catty turn registers current message file attachments for attachment tools
 
   const controller = new AbortController();
   const input: TurnInput = {
-    backend: 'catty',
+    backend: 'magiesTerminal',
     chatSessionId: 'chat-1',
     sendScopeKey: 'chat-1',
     userText: '把这些主机都导入到 vault',
@@ -86,7 +86,7 @@ test('Catty turn registers current message file attachments for attachment tools
     },
   };
 
-  await new CattyTurnDriver().run(input, createTurnContext());
+  await new MagiesTerminalTurnDriver().run(input, createTurnContext());
 
   const listed = mcpServerBridge.handleListAttachments({ chatSessionId: 'chat-1' });
   assert.equal(listed.ok, true);

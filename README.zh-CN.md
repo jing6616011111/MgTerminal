@@ -44,12 +44,12 @@
 
 ---
 
-<a name="catty-agent"></a>
-# 🔥 Catty Agent — 你的 IT 运维 AI 搭档
+<a name="magiesTerminal-agent"></a>
+# 🔥 MagiesTerminal Agent — 你的 IT 运维 AI 搭档
 
-> 🚀 **用 AI 赋能你的日常 IT 运维工作。** Catty Agent 是内置的 AI 助手，能理解你的服务器环境、执行命令，并通过自然对话完成复杂的多主机操作。
+> 🚀 **用 AI 赋能你的日常 IT 运维工作。** MagiesTerminal Agent 是内置的 AI 助手，能理解你的服务器环境、执行命令，并通过自然对话完成复杂的多主机操作。
 
-### 🔥 Catty Agent 能做什么？
+### 🔥 MagiesTerminal Agent 能做什么？
 
 - 🚀 **自然语言管理服务器** —— 直接说出需求，不再需要记忆命令
 - 🔥 **实时服务器诊断** —— 通过对话检查状态、查看日志、监控资源
@@ -61,13 +61,13 @@
 
 #### 🔥 单主机 —— 智能服务器诊断
 
-让 Catty Agent 检查服务器健康状态，它会自动运行合适的命令、分析输出并给出清晰总结 —— 几秒内完成。
+让 MagiesTerminal Agent 检查服务器健康状态，它会自动运行合适的命令、分析输出并给出清晰总结 —— 几秒内完成。
 
 <img width="1510" height="870" alt="ai-single" src="https://github.com/user-attachments/assets/d3f34e53-8476-4fab-8634-394b931d1ff1" />
 
 #### 🚀 多主机 —— Docker Swarm 集群搭建
 
-看 Catty Agent 在一次对话中跨两台服务器编排 Docker Swarm 集群。它负责初始化、令牌交换和节点加入 —— 你只需说出想要的结果。
+看 MagiesTerminal Agent 在一次对话中跨两台服务器编排 Docker Swarm 集群。它负责初始化、令牌交换和节点加入 —— 你只需说出想要的结果。
 
 <img width="1515" height="870" alt="ai-muti" src="https://github.com/user-attachments/assets/ca166fc5-65d9-4d7b-951a-962c2ef230d8" />
 
@@ -75,7 +75,7 @@
 
 # 目录 <!-- omit in toc -->
 
-- [🔥 Catty Agent — AI 搭档](#catty-agent)
+- [🔥 MagiesTerminal Agent — AI 搭档](#magiesTerminal-agent)
 - [MagiesTerminal 是什么](#magiesTerminal-是什么)
 - [为什么是 MagiesTerminal](#为什么是-magiesTerminal)
 - [功能特性](#功能特性)

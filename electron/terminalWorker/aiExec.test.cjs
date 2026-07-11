@@ -204,7 +204,7 @@ test("worker chat cancellation stops matching background jobs", async () => {
   pty.emit("data", `${marker}_S\r\nrunning\r\n`);
   await nextTick();
 
-  ipcMain.listeners.get("magiesTerminal:ai:catty:cancel")(event, {
+  ipcMain.listeners.get("magiesTerminal:ai:magiesTerminal:cancel")(event, {
     chatSessionId: "chat-1",
   });
 
@@ -306,7 +306,7 @@ test("worker background job reserves the session while shellKind probe is pendin
 test("worker chat cancel during shellKind probe aborts job start before PTY write", async () => {
   // Codex P2 on #2061: first jobStart on an unprobed remote session awaits
   // ensureSessionShellKind with no backgroundJobs entry historically, so
-  // catty:cancel missed it and the command was still typed after the probe.
+  // magiesTerminal:cancel missed it and the command was still typed after the probe.
   const pty = new FakePty();
   const deferred = createDeferredShellProbeConn();
   const sessions = new Map([
@@ -329,7 +329,7 @@ test("worker chat cancel during shellKind probe aborts job start before PTY writ
   await nextTick();
 
   // Cancel while the shell probe is still in-flight.
-  ipcMain.listeners.get("magiesTerminal:ai:catty:cancel")(event, {
+  ipcMain.listeners.get("magiesTerminal:ai:magiesTerminal:cancel")(event, {
     chatSessionId: "chat-cancel-probe",
   });
 

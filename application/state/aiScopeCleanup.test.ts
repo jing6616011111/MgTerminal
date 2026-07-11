@@ -15,7 +15,7 @@ function createSession(id: string, scope: AISession["scope"], externalSessionId?
   return {
     id,
     title: id,
-    agentId: "catty",
+    agentId: "magiesTerminal",
     scope,
     messages: [],
     externalSessionId,
@@ -32,10 +32,10 @@ test("pruneInactiveScopedTransientState removes closed workspace and terminal sc
     "workspace:closed-workspace": "session-closed-workspace",
   };
   const draftsByScope = {
-    "terminal:open-terminal": createEmptyDraft("catty"),
-    "terminal:closed-terminal": createEmptyDraft("catty"),
-    "workspace:open-workspace": createEmptyDraft("catty"),
-    "workspace:closed-workspace": createEmptyDraft("catty"),
+    "terminal:open-terminal": createEmptyDraft("magiesTerminal"),
+    "terminal:closed-terminal": createEmptyDraft("magiesTerminal"),
+    "workspace:open-workspace": createEmptyDraft("magiesTerminal"),
+    "workspace:closed-workspace": createEmptyDraft("magiesTerminal"),
   };
   const panelViewByScope = {
     "terminal:open-terminal": { mode: "draft" },

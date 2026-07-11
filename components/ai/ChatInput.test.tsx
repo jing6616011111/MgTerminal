@@ -15,7 +15,7 @@ test('does not render a standalone slash command toolbar button', () => {
         onSend={() => {}}
         isStreaming={false}
         disabled={false}
-        agentName="Catty Agent"
+        agentName="MagiesTerminal Agent"
         quickMessages={[{
           id: 'qm-1',
           slug: 'hello',

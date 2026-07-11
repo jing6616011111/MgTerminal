@@ -629,7 +629,7 @@ function updateSessionMetadata(sessionList, chatSessionId) {
 /**
  * Merge session metadata into an existing chat scope without dropping
  * previously known sessions. Used for the app-wide External MCP scope so a
- * single Catty sidebar push cannot shrink the exposed host set.
+ * single MagiesTerminal sidebar push cannot shrink the exposed host set.
  */
 function mergeSessionMetadata(sessionList, chatSessionId) {
   if (!chatSessionId || !Array.isArray(sessionList)) return { ok: false, count: 0 };
@@ -982,11 +982,11 @@ async function handleMessage(socket, line) {
   // All other methods are rejected until the socket is authenticated.
   if (!authenticatedSockets.has(socket)) {
     const presentedToken = typeof params?.token === "string" ? params.token : "";
-    const isCattyToken = Boolean(presentedToken && authToken && presentedToken === authToken);
+    const isMagiesTerminalToken = Boolean(presentedToken && authToken && presentedToken === authToken);
     const isExternalToken = Boolean(
       presentedToken && externalAuthToken && presentedToken === externalAuthToken,
     );
-    if (method === "auth/verify" && (isCattyToken || isExternalToken)) {
+    if (method === "auth/verify" && (isMagiesTerminalToken || isExternalToken)) {
       if (isExternalToken && !externalMcpActivityHook?.isEnabled?.()) {
         const response = JSON.stringify({
           jsonrpc: "2.0",
@@ -1336,7 +1336,7 @@ function cancelWorkerBackgroundJobsForSession(chatSessionId) {
     }
   }
   try {
-    terminalWorkerManager?.send?.("magiesTerminal:ai:catty:cancel", { chatSessionId }, {});
+    terminalWorkerManager?.send?.("magiesTerminal:ai:magiesTerminal:cancel", { chatSessionId }, {});
   } catch {
     // Worker may already be gone while cancelling a torn-down chat/session.
   }

@@ -5,7 +5,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const { AGENT_KINDS, listAgentToolSpecs, listCattyToolSpecs } = require("../electron/capabilities/codegen/toolSurfaces.cjs");
+const { AGENT_KINDS, listAgentToolSpecs, listMagiesTerminalToolSpecs } = require("../electron/capabilities/codegen/toolSurfaces.cjs");
 
 const GENERATED_DIR = path.join(
   __dirname,
@@ -16,11 +16,11 @@ const GENERATED_DIR = path.join(
   "generated",
 );
 
-test("committed cattyToolSpecs.json matches listCattyToolSpecs()", () => {
+test("committed magiesTerminalToolSpecs.json matches listMagiesTerminalToolSpecs()", () => {
   const committed = JSON.parse(
-    fs.readFileSync(path.join(GENERATED_DIR, "cattyToolSpecs.json"), "utf8"),
+    fs.readFileSync(path.join(GENERATED_DIR, "magiesTerminalToolSpecs.json"), "utf8"),
   );
-  const fresh = listCattyToolSpecs();
+  const fresh = listMagiesTerminalToolSpecs();
   assert.deepEqual(committed, fresh);
 });
 

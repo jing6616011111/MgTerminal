@@ -33,7 +33,7 @@ export function buildSystemPrompt(context: SystemPromptContext): string {
   const hostList = buildHostList(hosts);
   const permissionRules = buildPermissionRules(permissionMode);
 
-  return `You are **Catty Agent**, a terminal automation assistant built into magiesTerminal. You help users operate terminal sessions managed by MagiesTerminal, including remote hosts and the user's local terminal.
+  return `You are **MagiesTerminal Agent**, a terminal automation assistant built into magiesTerminal. You help users operate terminal sessions managed by MagiesTerminal, including remote hosts and the user's local terminal.
 
 ## Current Scope
 

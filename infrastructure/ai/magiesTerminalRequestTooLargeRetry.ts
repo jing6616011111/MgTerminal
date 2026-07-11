@@ -1,21 +1,21 @@
-export type CattyRequestTooLargeRetryError = Error & {
-  cattyHadToolProgress?: boolean;
+export type MagiesTerminalRequestTooLargeRetryError = Error & {
+  magiesTerminalHadToolProgress?: boolean;
   statusCode?: number;
   status?: number;
   responseBody?: string;
 };
 
-export function createCattyRequestTooLargeRetryError(
+export function createMagiesTerminalRequestTooLargeRetryError(
   error: unknown,
   hadToolProgress: boolean,
-): CattyRequestTooLargeRetryError {
+): MagiesTerminalRequestTooLargeRetryError {
   const message = error instanceof Error
     ? error.message
     : String(error ?? 'Request too large');
-  const retryError = new Error(message) as CattyRequestTooLargeRetryError;
-  retryError.name = 'CattyRequestTooLargeRetryError';
+  const retryError = new Error(message) as MagiesTerminalRequestTooLargeRetryError;
+  retryError.name = 'MagiesTerminalRequestTooLargeRetryError';
   retryError.cause = error;
-  retryError.cattyHadToolProgress = hadToolProgress;
+  retryError.magiesTerminalHadToolProgress = hadToolProgress;
   retryError.statusCode = 413;
   if (error && typeof error === 'object') {
     const source = error as Record<string, unknown>;
@@ -29,6 +29,6 @@ export function hadToolProgressBeforeRequestTooLarge(error: unknown): boolean {
   return !!(
     error &&
     typeof error === 'object' &&
-    (error as { cattyHadToolProgress?: boolean }).cattyHadToolProgress
+    (error as { magiesTerminalHadToolProgress?: boolean }).magiesTerminalHadToolProgress
   );
 }

@@ -16,7 +16,7 @@ test('context replay compaction retains user goal and recent tail', async () => 
 
   const prepared = await prepareTurnContext({
     messages: [...fixtureMessages],
-    backend: 'catty',
+    backend: 'magiesTerminal',
     contextWindow: 500,
     reservedTokens: 100,
     trigger: 'force',

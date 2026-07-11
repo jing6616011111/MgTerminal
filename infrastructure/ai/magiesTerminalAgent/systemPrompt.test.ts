@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { buildSystemPrompt } from './systemPrompt';
 
-test('system prompt tells Catty how to import unknown attached host lists safely', () => {
+test('system prompt tells MagiesTerminal how to import unknown attached host lists safely', () => {
   const prompt = buildSystemPrompt({
     scopeType: 'terminal',
     hosts: [],

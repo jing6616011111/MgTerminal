@@ -12,7 +12,7 @@ import type {
   DiscoveredAgent,
   ExternalAgentConfig,
 } from '../infrastructure/ai/types';
-import type { ExecutorContext } from '../infrastructure/ai/cattyAgent/executor';
+import type { ExecutorContext } from '../infrastructure/ai/magiesTerminalAgent/executor';
 import { getAgentModelPresets } from '../infrastructure/ai/types';
 import { getExternalAgentSdkBackend, getManualAgentCommand, matchesManagedAgentConfig } from '../infrastructure/ai/managedAgents';
 import { useAgentDiscovery } from '../application/state/useAgentDiscovery';
@@ -299,7 +299,7 @@ const AIChatSidePanelActive: React.FC<AIChatSidePanelProps> = ({
     streamingSessionIds,
     setStreamingForScope,
     abortControllersRef,
-    sendToCattyAgent,
+    sendToMagiesTerminalAgent,
     sendToExternalAgent,
     reportStreamError,
     activeCompaction,
@@ -588,8 +588,8 @@ const AIChatSidePanelActive: React.FC<AIChatSidePanelProps> = ({
     [providers, activeProviderId],
   );
 
-  const cattyAgentProvider = useMemo(() => {
-    const overrideId = agentProviderMap['catty'];
+  const magiesTerminalAgentProvider = useMemo(() => {
+    const overrideId = agentProviderMap['magiesTerminal'];
     if (overrideId) {
       const p = providers.find((cfg) => cfg.id === overrideId);
       if (p) return p;
@@ -597,23 +597,23 @@ const AIChatSidePanelActive: React.FC<AIChatSidePanelProps> = ({
     return activeProvider;
   }, [agentProviderMap, providers, activeProvider]);
 
-  const cattyAgentModelId = useMemo(() => {
+  const magiesTerminalAgentModelId = useMemo(() => {
     const trim = (s: string | undefined | null): string => (s ?? '').trim();
-    const overrideId = agentProviderMap['catty'];
+    const overrideId = agentProviderMap['magiesTerminal'];
     const overrideProvider = overrideId
       ? providers.find((cfg) => cfg.id === overrideId)
       : undefined;
     if (overrideProvider) {
-      return trim(agentModelMap['catty']) || trim(overrideProvider.defaultModel);
+      return trim(agentModelMap['magiesTerminal']) || trim(overrideProvider.defaultModel);
     }
-    return trim(cattyAgentProvider?.defaultModel) || trim(activeModelId);
-  }, [agentModelMap, agentProviderMap, providers, cattyAgentProvider, activeModelId]);
+    return trim(magiesTerminalAgentProvider?.defaultModel) || trim(activeModelId);
+  }, [agentModelMap, agentProviderMap, providers, magiesTerminalAgentProvider, activeModelId]);
 
-  const effectiveActiveProvider = currentAgentId === 'catty' ? cattyAgentProvider : activeProvider;
-  const effectiveActiveModelId = currentAgentId === 'catty' ? cattyAgentModelId : activeModelId;
+  const effectiveActiveProvider = currentAgentId === 'magiesTerminal' ? magiesTerminalAgentProvider : activeProvider;
+  const effectiveActiveModelId = currentAgentId === 'magiesTerminal' ? magiesTerminalAgentModelId : activeModelId;
 
-  const cattyConfiguredProviders = useMemo(
-    () => (currentAgentId === 'catty' ? providers : []),
+  const magiesTerminalConfiguredProviders = useMemo(
+    () => (currentAgentId === 'magiesTerminal' ? providers : []),
     [currentAgentId, providers],
   );
 
@@ -629,7 +629,7 @@ const AIChatSidePanelActive: React.FC<AIChatSidePanelProps> = ({
   const modelDisplayName = effectiveActiveModelId || effectiveActiveProvider?.defaultModel || '';
 
   const currentAgentConfig = useMemo(
-    () => currentAgentId !== 'catty' ? externalAgents.find(a => a.id === currentAgentId) : undefined,
+    () => currentAgentId !== 'magiesTerminal' ? externalAgents.find(a => a.id === currentAgentId) : undefined,
     [currentAgentId, externalAgents],
   );
   const isCodexManagedAgent = useMemo(
@@ -979,8 +979,8 @@ const AIChatSidePanelActive: React.FC<AIChatSidePanelProps> = ({
     const hasTerminalSelectionAttachments = attachments.some(isTerminalSelectionAttachment);
     if ((!trimmed && !hasTerminalSelectionAttachments) || isStreaming) return;
     const sendAgentId = currentSessionView?.agentId ?? draft?.agentId ?? currentAgentId;
-    const agentConfig = sendAgentId !== 'catty' ? findEnabledExternalAgent(externalAgents, sendAgentId) : undefined;
-    if (sendAgentId !== 'catty' && !agentConfig) return;
+    const agentConfig = sendAgentId !== 'magiesTerminal' ? findEnabledExternalAgent(externalAgents, sendAgentId) : undefined;
+    if (sendAgentId !== 'magiesTerminal' && !agentConfig) return;
 
     const selectedSkillSlugs = draft?.selectedUserSkillSlugs ?? [];
     const modelPrompt = buildPromptWithTerminalSelectionAttachments(trimmed, attachments);
@@ -1008,7 +1008,7 @@ const AIChatSidePanelActive: React.FC<AIChatSidePanelProps> = ({
         return;
       }
 
-      const isExternalAgent = sendAgentId !== 'catty';
+      const isExternalAgent = sendAgentId !== 'magiesTerminal';
 
       const sendActiveProvider = isExternalAgent ? activeProvider : effectiveActiveProvider;
       const sendActiveModelId = isExternalAgent ? activeModelId : effectiveActiveModelId;
@@ -1096,7 +1096,7 @@ const AIChatSidePanelActive: React.FC<AIChatSidePanelProps> = ({
           targetId: scopeTargetId,
           label: scopeLabel,
         } as const;
-        await sendToCattyAgent(sessionId, sendScopeKey, modelPrompt, abortController, currentSession ?? undefined, assistantMsgId, {
+        await sendToMagiesTerminalAgent(sessionId, sendScopeKey, modelPrompt, abortController, currentSession ?? undefined, assistantMsgId, {
           activeProvider: sendActiveProvider,
           activeModelId: sendActiveModelId,
           scopeType,
@@ -1123,7 +1123,7 @@ const AIChatSidePanelActive: React.FC<AIChatSidePanelProps> = ({
     activeModelId, externalAgents,
     createSession, addMessageToSession, updateMessageById, updateLastMessage,
     setStreamingForScope,
-    sendToExternalAgent, sendToCattyAgent, reportStreamError, autoTitleSession, t,
+    sendToExternalAgent, sendToMagiesTerminalAgent, reportStreamError, autoTitleSession, t,
     abortControllersRef, terminalSessions, defaultTargetSession, providers, selectedAgentModel, updateSessionExternalSessionId,
     scopeType, scopeTargetId, scopeHostIds, scopeLabel, globalPermissionMode, commandBlocklist, commandTimeout, webSearchConfig, buildExecutorContextForScope,
     toolIntegrationMode,
@@ -1265,7 +1265,7 @@ const AIChatSidePanelActive: React.FC<AIChatSidePanelProps> = ({
         agentModelPresets={agentModelPresets}
         selectedAgentModel={selectedAgentModel}
         handleAgentModelSelect={handleAgentModelSelect}
-        cattyConfiguredProviders={cattyConfiguredProviders}
+        magiesTerminalConfiguredProviders={magiesTerminalConfiguredProviders}
         effectiveActiveProvider={effectiveActiveProvider}
         effectiveActiveModelId={effectiveActiveModelId}
         handleAgentProviderModelSelect={handleAgentProviderModelSelect}

@@ -1,6 +1,6 @@
 /**
  * Unified agent harness event protocol.
- * Catty (Vercel AI SDK) and external SDK drivers emit the same shapes.
+ * MagiesTerminal (Vercel AI SDK) and external SDK drivers emit the same shapes.
  */
 
 export type AgentEventType =
@@ -20,7 +20,7 @@ export type AgentEventType =
   | 'error'
   | 'turn_end';
 
-export type AgentBackend = 'catty' | 'external-sdk';
+export type AgentBackend = 'magiesTerminal' | 'external-sdk';
 
 export type ApprovalOutcome = 'approved' | 'denied' | 'timeout';
 

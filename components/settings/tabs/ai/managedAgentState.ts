@@ -57,7 +57,7 @@ export function buildManagedAgentState(
             apiKey: existingManaged.apiKey,
           },
         ],
-        defaultAgentId: existingManaged.id === defaultAgentId ? "catty" : defaultAgentId,
+        defaultAgentId: existingManaged.id === defaultAgentId ? "magiesTerminal" : defaultAgentId,
       };
     }
     if (agentKey === "codebuddy") {
@@ -73,14 +73,14 @@ export function buildManagedAgentState(
               enabled: false,
             },
           ],
-          defaultAgentId: existingManaged.id === defaultAgentId ? "catty" : defaultAgentId,
+          defaultAgentId: existingManaged.id === defaultAgentId ? "magiesTerminal" : defaultAgentId,
         };
       }
     }
     return {
       agents: otherAgents,
       defaultAgentId: managedAgents.some((agent) => agent.id === defaultAgentId)
-        ? "catty"
+        ? "magiesTerminal"
         : defaultAgentId,
     };
   }

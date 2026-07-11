@@ -9,7 +9,7 @@ import type {
   ProviderConfig,
   WebSearchConfig,
 } from '../../types';
-import type { ExecutorContext } from '../../cattyAgent/executor';
+import type { ExecutorContext } from '../../magiesTerminalAgent/executor';
 import type { AgentBackend, AgentEvent, AgentEventListener } from '../types';
 import type { ToolOutputStore } from '../toolOutputStore';
 import type { ToolResultDedup } from '../toolResultDedup';
@@ -47,7 +47,7 @@ export interface TurnUiCallbacks {
   getLatestSession?: (sessionId: string) => AISession | undefined;
 }
 
-export interface CattyTurnContext {
+export interface MagiesTerminalTurnContext {
   activeProvider: ProviderConfig | undefined;
   activeModelId: string;
   scopeType: 'terminal' | 'workspace';
@@ -77,15 +77,15 @@ export interface ExternalTurnContext {
   selectedUserSkillSlugs?: string[];
 }
 
-export interface CattyTurnInput {
-  backend: 'catty';
+export interface MagiesTerminalTurnInput {
+  backend: 'magiesTerminal';
   chatSessionId: string;
   sendScopeKey: string;
   userText: string;
   signal: AbortSignal;
   currentSession: AISession | undefined;
   assistantMsgId: string;
-  context: CattyTurnContext;
+  context: MagiesTerminalTurnContext;
   attachments?: ChatMessageAttachment[];
   maxIterations: number;
   bridge?: AgentStopBridge | null;
@@ -104,7 +104,7 @@ export interface ExternalTurnInput {
   ui: TurnUiCallbacks;
 }
 
-export type TurnInput = CattyTurnInput | ExternalTurnInput;
+export type TurnInput = MagiesTerminalTurnInput | ExternalTurnInput;
 
 export interface TurnResult {
   turnId: string;
@@ -142,6 +142,6 @@ export interface PrepareStepContextInput {
   maxOutputTokens?: number;
   protectRecentMessages?: number;
   toolOutputStore?: ToolOutputStore;
-  runtimeContext: import('../cattyRuntimeContext').CattyRuntimeContext;
+  runtimeContext: import('../magiesTerminalRuntimeContext').MagiesTerminalRuntimeContext;
   onEvent?: AgentEventListener;
 }

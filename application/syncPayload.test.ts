@@ -150,7 +150,7 @@ test("buildSyncPayload includes AI configuration settings", () => {
   localStorage.setItem(storageKeys.STORAGE_KEY_AI_COMMAND_TIMEOUT, "120");
   localStorage.setItem(storageKeys.STORAGE_KEY_AI_MAX_ITERATIONS, "10");
   localStorage.setItem(storageKeys.STORAGE_KEY_AI_AGENT_MODEL_MAP, JSON.stringify({ codex: "gpt-test" }));
-  localStorage.setItem(storageKeys.STORAGE_KEY_AI_AGENT_PROVIDER_MAP, JSON.stringify({ catty: "openai-main" }));
+  localStorage.setItem(storageKeys.STORAGE_KEY_AI_AGENT_PROVIDER_MAP, JSON.stringify({ magiesTerminal: "openai-main" }));
   localStorage.setItem(storageKeys.STORAGE_KEY_AI_WEB_SEARCH, JSON.stringify(webSearch));
   localStorage.setItem(storageKeys.STORAGE_KEY_AI_SHOW_TERMINAL_SELECTION_ACTION, "false");
 
@@ -167,7 +167,7 @@ test("buildSyncPayload includes AI configuration settings", () => {
     commandTimeout: 120,
     maxIterations: 10,
     agentModelMap: { codex: "gpt-test" },
-    agentProviderMap: { catty: "openai-main" },
+    agentProviderMap: { magiesTerminal: "openai-main" },
     webSearchConfig: webSearch,
     showTerminalSelectionAction: false,
   });
@@ -325,7 +325,7 @@ test("applySyncPayload restores AI configuration settings", async () => {
         commandTimeout: 30,
         maxIterations: 5,
         agentModelMap: { claude: "claude-test" },
-        agentProviderMap: { catty: "anthropic-main" },
+        agentProviderMap: { magiesTerminal: "anthropic-main" },
         webSearchConfig: webSearch,
         showTerminalSelectionAction: false,
       },
@@ -345,7 +345,7 @@ test("applySyncPayload restores AI configuration settings", async () => {
   assert.equal(localStorage.getItem(storageKeys.STORAGE_KEY_AI_COMMAND_TIMEOUT), "30");
   assert.equal(localStorage.getItem(storageKeys.STORAGE_KEY_AI_MAX_ITERATIONS), "5");
   assert.deepEqual(JSON.parse(localStorage.getItem(storageKeys.STORAGE_KEY_AI_AGENT_MODEL_MAP)!), { claude: "claude-test" });
-  assert.deepEqual(JSON.parse(localStorage.getItem(storageKeys.STORAGE_KEY_AI_AGENT_PROVIDER_MAP)!), { catty: "anthropic-main" });
+  assert.deepEqual(JSON.parse(localStorage.getItem(storageKeys.STORAGE_KEY_AI_AGENT_PROVIDER_MAP)!), { magiesTerminal: "anthropic-main" });
   assert.deepEqual(JSON.parse(localStorage.getItem(storageKeys.STORAGE_KEY_AI_WEB_SEARCH)!), webSearch);
   assert.equal(localStorage.getItem(storageKeys.STORAGE_KEY_AI_SHOW_TERMINAL_SELECTION_ACTION), "false");
 });
@@ -426,8 +426,8 @@ test("applySyncPayload dispatches a same-window AI-state-changed event so the op
   };
   Object.defineProperty(globalThis, "window", { value: fakeWindow, configurable: true });
   try {
-    localStorage.setItem(storageKeys.STORAGE_KEY_AI_AGENT_PROVIDER_MAP, JSON.stringify({ catty: "deepseek-local" }));
-    localStorage.setItem(storageKeys.STORAGE_KEY_AI_AGENT_MODEL_MAP, JSON.stringify({ catty: "deepseek-v4-flash" }));
+    localStorage.setItem(storageKeys.STORAGE_KEY_AI_AGENT_PROVIDER_MAP, JSON.stringify({ magiesTerminal: "deepseek-local" }));
+    localStorage.setItem(storageKeys.STORAGE_KEY_AI_AGENT_MODEL_MAP, JSON.stringify({ magiesTerminal: "deepseek-v4-flash" }));
 
     const payload: SyncPayload = {
       hosts: [],
@@ -456,16 +456,16 @@ test("applySyncPayload dispatches a same-window AI-state-changed event so the op
 });
 
 test("applySyncPayload prunes per-agent bindings that reference providers absent from the synced set", async () => {
-  // Local state has Catty bound to a provider the incoming sync no longer
+  // Local state has MagiesTerminal bound to a provider the incoming sync no longer
   // ships — both the per-agent provider override and the saved model should
   // be cleared so we don't dispatch a ghost provider id (or its now-orphan
   // model name) to the wrong endpoint.
   localStorage.setItem(storageKeys.STORAGE_KEY_AI_AGENT_PROVIDER_MAP, JSON.stringify({
-    catty: "deepseek-local",
+    magiesTerminal: "deepseek-local",
     codex: "openai-main",
   }));
   localStorage.setItem(storageKeys.STORAGE_KEY_AI_AGENT_MODEL_MAP, JSON.stringify({
-    catty: "deepseek-v4-flash",
+    magiesTerminal: "deepseek-v4-flash",
     codex: "gpt-test",
   }));
 
@@ -494,7 +494,7 @@ test("applySyncPayload prunes per-agent bindings that reference providers absent
     JSON.parse(localStorage.getItem(storageKeys.STORAGE_KEY_AI_AGENT_PROVIDER_MAP)!),
     { codex: "openai-main" },
   );
-  // Catty's saved model belonged to the now-missing deepseek-local — drop it.
+  // MagiesTerminal's saved model belonged to the now-missing deepseek-local — drop it.
   // Codex's binding stays, so its saved model stays.
   assert.deepEqual(
     JSON.parse(localStorage.getItem(storageKeys.STORAGE_KEY_AI_AGENT_MODEL_MAP)!),

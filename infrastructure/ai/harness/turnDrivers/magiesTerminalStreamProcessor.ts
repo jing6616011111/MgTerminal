@@ -3,17 +3,17 @@ import { classifyError } from '../../errorClassifier';
 import { isRequestTooLargeError } from '../../errorClassifier';
 import { isSdkStreamStateError } from '../../shared/streamStateErrors';
 import {
-  createCattyRequestTooLargeRetryError,
+  createMagiesTerminalRequestTooLargeRetryError,
   hadToolProgressBeforeRequestTooLarge,
-} from '../../cattyRequestTooLargeRetry';
-import { mapCattyStreamChunkToAgentEvents } from '../agentEventAdapter';
+} from '../../magiesTerminalRequestTooLargeRetry';
+import { mapMagiesTerminalStreamChunkToAgentEvents } from '../agentEventAdapter';
 import type { AgentEvent } from '../types';
 import type { ProviderAdvancedParams } from '../../types';
 import { createModelFromConfig } from '../../sdk/providers';
-import type { CattyToolsBundle } from '../capabilityTools';
-import { buildCattyToolApproval } from '../cattyToolApproval';
-import type { CattyRuntimeContext } from '../cattyRuntimeContext';
-import { buildCattyStreamTimeouts } from '../streamTimeouts';
+import type { MagiesTerminalToolsBundle } from '../capabilityTools';
+import { buildMagiesTerminalToolApproval } from '../magiesTerminalToolApproval';
+import type { MagiesTerminalRuntimeContext } from '../magiesTerminalRuntimeContext';
+import { buildMagiesTerminalStreamTimeouts } from '../streamTimeouts';
 import {
   extractProviderContinuationFromRawChunk,
   mergeProviderContinuation,
@@ -26,7 +26,7 @@ import {
   generateId,
   isToolResultError,
   resolveStreamChunkToolCallId,
-  type CattyProviderContinuationContext,
+  type MagiesTerminalProviderContinuationContext,
   type ErrorChunk,
   type RawChunk,
   type ReasoningChunk,
@@ -40,37 +40,37 @@ import {
 } from '../../../../components/ai/hooks/aiChatStreamingSupport';
 import type { ChatMessage } from '../../types';
 
-export type CattyModel = ReturnType<typeof createModelFromConfig>;
+export type MagiesTerminalModel = ReturnType<typeof createModelFromConfig>;
 
-export interface CattyStreamUiSink {
+export interface MagiesTerminalStreamUiSink {
   addMessageToSession: (sessionId: string, message: ChatMessage) => void;
   updateMessageById: (sessionId: string, messageId: string, updater: (msg: ChatMessage) => ChatMessage) => void;
 }
 
-export interface ProcessCattyStreamInput {
+export interface ProcessMagiesTerminalStreamInput {
   streamSessionId: string;
-  model: CattyModel;
+  model: MagiesTerminalModel;
   systemPrompt: string;
-  toolsBundle: CattyToolsBundle;
+  toolsBundle: MagiesTerminalToolsBundle;
   sdkMessages: ModelMessage[];
   signal: AbortSignal;
   currentAssistantMsgId: string;
   maxIterations: number;
   advancedParams?: ProviderAdvancedParams;
-  continuationContext?: CattyProviderContinuationContext;
+  continuationContext?: MagiesTerminalProviderContinuationContext;
   turnId?: string;
   commandTimeoutMs?: number;
-  runtimeContext: CattyRuntimeContext;
+  runtimeContext: MagiesTerminalRuntimeContext;
   onAgentEvent?: (event: AgentEvent) => void;
   prepareStep?: (args: {
     stepNumber: number;
     messages: ModelMessage[];
-    runtimeContext: CattyRuntimeContext;
-  }) => Promise<{ messages: ModelMessage[]; runtimeContext?: CattyRuntimeContext } | undefined>;
-  ui: CattyStreamUiSink;
+    runtimeContext: MagiesTerminalRuntimeContext;
+  }) => Promise<{ messages: ModelMessage[]; runtimeContext?: MagiesTerminalRuntimeContext } | undefined>;
+  ui: MagiesTerminalStreamUiSink;
 }
 
-export interface ProcessCattyStreamResult {
+export interface ProcessMagiesTerminalStreamResult {
   usage?: {
     promptTokens?: number;
     completionTokens?: number;
@@ -89,7 +89,7 @@ export function shouldEmitAgentEventsForStreamChunk(chunk: StreamChunk): boolean
   return !isSdkStreamStateError((chunk as ErrorChunk).error);
 }
 
-export async function processCattyStream(input: ProcessCattyStreamInput): Promise<ProcessCattyStreamResult> {
+export async function processMagiesTerminalStream(input: ProcessMagiesTerminalStreamInput): Promise<ProcessMagiesTerminalStreamResult> {
   const {
     streamSessionId,
     model,
@@ -119,20 +119,20 @@ export async function processCattyStream(input: ProcessCattyStreamInput): Promis
     tools,
     toolsContext,
     runtimeContext,
-    toolApproval: buildCattyToolApproval({
+    toolApproval: buildMagiesTerminalToolApproval({
       permissionMode: runtimeContext.permissionMode,
       chatSessionId: runtimeContext.chatSessionId,
     }),
     stopWhen: isStepCount(maxIterations),
     abortSignal: signal,
     include: { rawChunks: true },
-    timeout: buildCattyStreamTimeouts({
+    timeout: buildMagiesTerminalStreamTimeouts({
       permissionMode: runtimeContext.permissionMode,
       commandTimeoutMs,
       maxIterations,
     }),
     telemetry: {
-      functionId: `catty-${runtimeContext.agentKind}`,
+      functionId: `magiesTerminal-${runtimeContext.agentKind}`,
       metadata: {
         chatSessionId: runtimeContext.chatSessionId,
         turnId: runtimeContext.turnId,
@@ -144,7 +144,7 @@ export async function processCattyStream(input: ProcessCattyStreamInput): Promis
         type: 'model_call_start',
         sessionId: streamSessionId,
         chatSessionId: startContext.chatSessionId,
-        backend: 'catty',
+        backend: 'magiesTerminal',
         timestamp: Date.now(),
         turnId,
         callId,
@@ -159,7 +159,7 @@ export async function processCattyStream(input: ProcessCattyStreamInput): Promis
         type: 'step_end',
         sessionId: streamSessionId,
         chatSessionId: step.runtimeContext.chatSessionId,
-        backend: 'catty',
+        backend: 'magiesTerminal',
         timestamp: Date.now(),
         turnId,
         callId: step.callId,
@@ -178,7 +178,7 @@ export async function processCattyStream(input: ProcessCattyStreamInput): Promis
           type: 'usage',
           sessionId: streamSessionId,
           chatSessionId: endContext.chatSessionId,
-          backend: 'catty',
+          backend: 'magiesTerminal',
           timestamp: Date.now(),
           turnId,
           promptTokens: usage.inputTokens ?? 0,
@@ -193,7 +193,7 @@ export async function processCattyStream(input: ProcessCattyStreamInput): Promis
         const prepared = await prepareStep({
           stepNumber,
           messages,
-          runtimeContext: stepRuntimeContext as CattyRuntimeContext,
+          runtimeContext: stepRuntimeContext as MagiesTerminalRuntimeContext,
         });
         if (prepared?.runtimeContext) {
           runtimeContext = prepared.runtimeContext;
@@ -335,7 +335,7 @@ export async function processCattyStream(input: ProcessCattyStreamInput): Promis
         readResult = await reader.read();
       } catch (readErr) {
         if (isRequestTooLargeError(readErr)) {
-          throw createCattyRequestTooLargeRetryError(readErr, hadToolProgress);
+          throw createMagiesTerminalRequestTooLargeRetryError(readErr, hadToolProgress);
         }
         throw readErr;
       }
@@ -343,7 +343,7 @@ export async function processCattyStream(input: ProcessCattyStreamInput): Promis
       if (done) break;
       const chunk = value as StreamChunk;
       if (shouldEmitAgentEventsForStreamChunk(chunk)) {
-        for (const agentEvent of mapCattyStreamChunkToAgentEvents(chunk, {
+        for (const agentEvent of mapMagiesTerminalStreamChunkToAgentEvents(chunk, {
           sessionId: streamSessionId,
           chatSessionId: streamSessionId,
           turnId,
@@ -474,13 +474,13 @@ export async function processCattyStream(input: ProcessCattyStreamInput): Promis
         case 'error': {
           const typedChunk = chunk as ErrorChunk;
           if (isSdkStreamStateError(typedChunk.error)) {
-            console.warn('[Catty] suppressed SDK stream state error:', typedChunk.error);
+            console.warn('[MagiesTerminal] suppressed SDK stream state error:', typedChunk.error);
             break;
           }
           if (isRequestTooLargeError(typedChunk.error)) {
             cancelPendingFlush();
             flushText();
-            throw createCattyRequestTooLargeRetryError(
+            throw createMagiesTerminalRequestTooLargeRetryError(
               typedChunk.error,
               hadToolProgress,
             );
@@ -521,7 +521,7 @@ export async function processCattyStream(input: ProcessCattyStreamInput): Promis
       type: 'performance',
       sessionId: streamSessionId,
       chatSessionId: runtimeContext.chatSessionId,
-      backend: 'catty',
+      backend: 'magiesTerminal',
       timestamp: Date.now(),
       turnId,
       responseTimeMs: performance.responseTimeMs,

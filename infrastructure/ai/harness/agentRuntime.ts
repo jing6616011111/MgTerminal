@@ -103,7 +103,7 @@ export class AgentRuntime {
     toolResultDedup.beginTurn();
     const sessionStateStore = this.sessionStateStore;
 
-    if (input.backend === 'catty') {
+    if (input.backend === 'magiesTerminal') {
       sessionStateStore.mergeFromUserGoal(chatSessionId, input.userText);
     }
 
@@ -164,7 +164,7 @@ export class AgentRuntime {
       type: 'turn_start',
       backendLabel: input.backend === 'external-sdk'
         ? ('agentConfig' in input ? input.agentConfig.name : undefined)
-        : 'catty',
+        : 'magiesTerminal',
     } as AgentEvent);
 
     let reason: TurnResult['reason'] = 'completed';
@@ -211,7 +211,7 @@ export class AgentRuntime {
     await stopAgentTurn({
       chatSessionId,
       reason,
-      backend: active?.backend ?? 'catty',
+      backend: active?.backend ?? 'magiesTerminal',
     });
     await this.waitForActiveTurn(chatSessionId);
   }

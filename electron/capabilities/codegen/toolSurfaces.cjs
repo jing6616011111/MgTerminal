@@ -22,13 +22,13 @@ function getMcpToolName(capability) {
     || null;
 }
 
-function getCattyToolName(capability) {
-  return capability.surfaces?.[CAPABILITY_SURFACES.CATTY]?.toolName
+function getMagiesTerminalToolName(capability) {
+  return capability.surfaces?.[CAPABILITY_SURFACES.MAGIES_TERMINAL]?.toolName
     || getMcpToolName(capability)
     || capability.id.replace(/\./g, "_");
 }
 
-function getCattyRpcMethod(capability) {
+function getMagiesTerminalRpcMethod(capability) {
   return capability.surfaces?.builtin?.rpcMethod
     || capability.surfaces?.global?.rpcMethod
     || capability.surfaces?.public?.rpcMethod
@@ -41,11 +41,11 @@ function getAgentToolName(capability, agentKind) {
       || getMcpToolName(capability)
       || capability.id.replace(/\./g, "_");
   }
-  return getCattyToolName(capability);
+  return getMagiesTerminalToolName(capability);
 }
 
 function getAgentRpcMethod(capability) {
-  return getCattyRpcMethod(capability);
+  return getMagiesTerminalRpcMethod(capability);
 }
 
 function buildToolDescription(capability) {
@@ -58,7 +58,7 @@ function listToolSurfaces(options = {}) {
   const {
     surface = CAPABILITY_SURFACES.PUBLIC,
     status = CAPABILITY_STATUS.IMPLEMENTED,
-    includeCatty = true,
+    includeMagiesTerminal = true,
   } = options;
 
   const tools = [];
@@ -69,22 +69,22 @@ function listToolSurfaces(options = {}) {
     if (!binding) continue;
 
     const mcpTool = getMcpToolName(capability);
-    const cattyToolName = getCattyToolName(capability);
-    if (!includeCatty && !mcpTool) continue;
+    const magiesTerminalToolName = getMagiesTerminalToolName(capability);
+    if (!includeMagiesTerminal && !mcpTool) continue;
 
     const builtinRpc = capability.surfaces?.builtin?.rpcMethod || binding.rpcMethod || null;
 
     tools.push({
       capabilityId: capability.id,
       domain: capability.domain,
-      toolName: cattyToolName,
+      toolName: magiesTerminalToolName,
       mcpTool,
       rpcMethod: builtinRpc,
       publicRpcMethod: capability.surfaces?.public?.rpcMethod || null,
       description: buildToolDescription(capability),
       policy: capability.policy,
       inputShape: buildZodShape(TOOL_INPUT_FIELDS[capability.id]),
-      cattyEnabled: includeCatty && Boolean(TOOL_INPUT_FIELDS[capability.id] != null || mcpTool),
+      magiesTerminalEnabled: includeMagiesTerminal && Boolean(TOOL_INPUT_FIELDS[capability.id] != null || mcpTool),
     });
   }
 
@@ -92,19 +92,19 @@ function listToolSurfaces(options = {}) {
 }
 
 function listMcpTools() {
-  return listToolSurfaces({ surface: CAPABILITY_SURFACES.PUBLIC, includeCatty: false })
+  return listToolSurfaces({ surface: CAPABILITY_SURFACES.PUBLIC, includeMagiesTerminal: false })
     .filter((tool) => tool.mcpTool);
 }
 
-/** Capabilities excluded from Catty even when implemented (CLI-only / meta). */
-const CATTY_CAPABILITY_DENYLIST = new Set([
+/** Capabilities excluded from MagiesTerminal even when implemented (CLI-only / meta). */
+const MAGIES_TERMINAL_CAPABILITY_DENYLIST = new Set([
   "meta.status",
   "session.cancel",
   "session.resume",
   "session.get",
 ]);
 
-function isCattyOnlyCapability(capability) {
+function isMagiesTerminalOnlyCapability(capability) {
   return isAgentLocalOnlyCapability(capability, AGENT_KINDS.SIDEBAR);
 }
 
@@ -114,7 +114,7 @@ function isAgentLocalOnlyCapability(capability, agentKind) {
       && !getAgentRpcMethod(capability)
       && !getMcpToolName(capability);
   }
-  return Boolean(capability.surfaces?.[CAPABILITY_SURFACES.CATTY]?.toolName)
+  return Boolean(capability.surfaces?.[CAPABILITY_SURFACES.MAGIES_TERMINAL]?.toolName)
     && !getAgentRpcMethod(capability)
     && !getMcpToolName(capability);
 }
@@ -122,7 +122,7 @@ function isAgentLocalOnlyCapability(capability, agentKind) {
 /**
  * Resolve which agents may use a capability when agentKinds is not set explicitly.
  * - surfaces.globalAgent only → global agent
- * - surfaces.catty only (harness) → sidebar agent
+ * - surfaces.magiesTerminal only (harness) → sidebar agent
  * - RPC/MCP-backed tools → both agents (shared infrastructure)
  */
 function resolveAgentKinds(capability) {
@@ -143,7 +143,7 @@ function resolveAgentKinds(capability) {
 
 function isAgentEligibleForKind(capability, agentKind, options = {}) {
   if (capability.status !== CAPABILITY_STATUS.IMPLEMENTED) return false;
-  if (CATTY_CAPABILITY_DENYLIST.has(capability.id)) return false;
+  if (MAGIES_TERMINAL_CAPABILITY_DENYLIST.has(capability.id)) return false;
   if (!options.skipAgentKindCheck && !resolveAgentKinds(capability).includes(agentKind)) {
     return false;
   }
@@ -155,7 +155,7 @@ function isAgentEligibleForKind(capability, agentKind, options = {}) {
   return hasBuiltinRpc || hasGlobalRpc || Boolean(getMcpToolName(capability));
 }
 
-function isCattyEligible(capability) {
+function isMagiesTerminalEligible(capability) {
   return isAgentEligibleForKind(capability, AGENT_KINDS.SIDEBAR);
 }
 
@@ -179,7 +179,7 @@ function listAgentToolSpecs(agentKind = AGENT_KINDS.SIDEBAR) {
     });
 }
 
-function listCattyToolSpecs() {
+function listMagiesTerminalToolSpecs() {
   return listAgentToolSpecs(AGENT_KINDS.SIDEBAR);
 }
 
@@ -187,18 +187,18 @@ module.exports = {
   AGENT_KINDS,
   buildZodShape,
   buildToolDescription,
-  CATTY_CAPABILITY_DENYLIST,
+  MAGIES_TERMINAL_CAPABILITY_DENYLIST,
   getAgentRpcMethod,
   getAgentToolName,
-  getCattyToolName,
-  getCattyRpcMethod,
+  getMagiesTerminalToolName,
+  getMagiesTerminalRpcMethod,
   isAgentEligibleForKind,
   isAgentLocalOnlyCapability,
-  isCattyEligible,
-  isCattyOnlyCapability,
+  isMagiesTerminalEligible,
+  isMagiesTerminalOnlyCapability,
   listAgentToolSpecs,
   listToolSurfaces,
   listMcpTools,
-  listCattyToolSpecs,
+  listMagiesTerminalToolSpecs,
   resolveAgentKinds,
 };

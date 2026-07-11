@@ -1,6 +1,6 @@
 "use strict";
 
-/** @typedef {'builtin' | 'public' | 'cli' | 'global' | 'catty' | 'globalAgent'} CapabilitySurface */
+/** @typedef {'builtin' | 'public' | 'cli' | 'global' | 'magiesTerminal' | 'globalAgent'} CapabilitySurface */
 /** @typedef {'implemented' | 'planned'} CapabilityStatus */
 /** @typedef {'observer' | 'confirm' | 'auto'} PermissionMode */
 /** @typedef {'sidebar' | 'global'} AgentKind */
@@ -10,15 +10,15 @@ const CAPABILITY_SURFACES = Object.freeze({
   PUBLIC: "public",
   CLI: "cli",
   GLOBAL: "global",
-  /** Renderer-local sidebar (Catty) harness tools (no MCP/CLI exposure). */
-  CATTY: "catty",
+  /** Renderer-local sidebar (MagiesTerminal) harness tools (no MCP/CLI exposure). */
+  MAGIES_TERMINAL: "magiesTerminal",
   /** Renderer-local global agent tools (no MCP/CLI exposure). */
   GLOBAL_AGENT: "globalAgent",
 });
 
 /** Where in the app an agent runs — orthogonal to RPC/MCP/CLI capability surfaces. */
 const AGENT_KINDS = Object.freeze({
-  /** Chat side panel (Catty). */
+  /** Chat side panel (MagiesTerminal). */
   SIDEBAR: "sidebar",
   /** Future app-wide agent (cross-window / proactive). */
   GLOBAL: "global",

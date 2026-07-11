@@ -1,13 +1,13 @@
 import { z } from 'zod';
-import type { MagiesTerminalBridge } from '../cattyAgent/executor';
-import type { ExecutorContext } from '../cattyAgent/executor';
+import type { MagiesTerminalBridge } from '../magiesTerminalAgent/executor';
+import type { ExecutorContext } from '../magiesTerminalAgent/executor';
 import type { AIPermissionMode, WebSearchConfig } from '../types';
 import type { ToolOutputStore } from './toolOutputStore';
 import type { ToolResultDedup } from './toolResultDedup';
 import type { CompactionTrace } from './types';
 import type { AgentKind } from '../agentKinds';
 
-export const cattyRuntimeContextSchema = z.object({
+export const magiesTerminalRuntimeContextSchema = z.object({
   chatSessionId: z.string(),
   turnId: z.string(),
   agentKind: z.enum(['sidebar', 'global']),
@@ -21,9 +21,9 @@ export const cattyRuntimeContextSchema = z.object({
   lastStepAdjusted: z.boolean().optional(),
 });
 
-export type CattyRuntimeContext = z.infer<typeof cattyRuntimeContextSchema>;
+export type MagiesTerminalRuntimeContext = z.infer<typeof magiesTerminalRuntimeContextSchema>;
 
-export const cattyToolContextSchema = z.object({
+export const magiesTerminalToolContextSchema = z.object({
   bridge: z.custom<MagiesTerminalBridge>(),
   chatSessionId: z.string().optional(),
   permissionMode: z.enum(['observer', 'confirm', 'auto']),
@@ -34,9 +34,9 @@ export const cattyToolContextSchema = z.object({
   toolResultDedup: z.custom<ToolResultDedup>().optional(),
 });
 
-export type CattyToolContext = z.infer<typeof cattyToolContextSchema>;
+export type MagiesTerminalToolContext = z.infer<typeof magiesTerminalToolContextSchema>;
 
-export function createInitialCattyRuntimeContext(input: {
+export function createInitialMagiesTerminalRuntimeContext(input: {
   chatSessionId: string;
   turnId: string;
   agentKind?: AgentKind;
@@ -46,7 +46,7 @@ export function createInitialCattyRuntimeContext(input: {
   permissionMode: AIPermissionMode;
   scopeType: 'terminal' | 'workspace';
   scopeLabel?: string;
-}): CattyRuntimeContext {
+}): MagiesTerminalRuntimeContext {
   return {
     chatSessionId: input.chatSessionId,
     turnId: input.turnId,
@@ -60,7 +60,7 @@ export function createInitialCattyRuntimeContext(input: {
   };
 }
 
-export function toolDepsFromContext(context: CattyToolContext): import('../shared/toolExecutors').ToolDeps {
+export function toolDepsFromContext(context: MagiesTerminalToolContext): import('../shared/toolExecutors').ToolDeps {
   return {
     bridge: context.bridge,
     context: context.getExecutorContext,

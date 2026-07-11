@@ -5,7 +5,7 @@ import type { AgentBackend } from './types';
 export type StopAgentTurnReason = 'user' | 'slash';
 
 export interface AgentStopBridge {
-  aiCattyCancelExec?(chatSessionId: string): Promise<unknown>;
+  aiMagiesTerminalCancelExec?(chatSessionId: string): Promise<unknown>;
   aiSdkAgentCancel?(requestId: string, chatSessionId?: string): Promise<{ ok: boolean; error?: string }>;
   aiSetChatSessionCancelled?(chatSessionId: string, cancelled?: boolean): Promise<{ ok: boolean; error?: string }>;
 }
@@ -26,21 +26,21 @@ function nextStopEventId(): string {
 }
 
 /**
- * Unified stop entry for Catty, external SDK, and MCP tool surfaces.
+ * Unified stop entry for MagiesTerminal, external SDK, and MCP tool surfaces.
  */
 export async function stopAgentTurn({
   chatSessionId,
   abortController,
   bridge,
   reason = 'user',
-  backend = 'catty',
+  backend = 'magiesTerminal',
 }: StopAgentTurnParams): Promise<void> {
   abortController?.abort();
   clearAllPendingApprovals(chatSessionId);
 
   const tasks: Array<Promise<unknown>> = [];
-  if (bridge?.aiCattyCancelExec) {
-    tasks.push(bridge.aiCattyCancelExec(chatSessionId).catch(() => {}));
+  if (bridge?.aiMagiesTerminalCancelExec) {
+    tasks.push(bridge.aiMagiesTerminalCancelExec(chatSessionId).catch(() => {}));
   }
   if (bridge?.aiSdkAgentCancel) {
     tasks.push(bridge.aiSdkAgentCancel('', chatSessionId).catch(() => {}));

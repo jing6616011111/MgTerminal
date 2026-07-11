@@ -4,7 +4,10 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const repositoryRoot = path.resolve(__dirname, '..');
-const legacyBrand = ['net', 'catty'].join('');
+const legacyAgentBrand = ['cat', 'ty'].join('');
+const legacyBrand = `net${legacyAgentBrand}`;
+// 匹配独立的旧 Agent 品牌词，但放行外部依赖 MoshCatty（binaricat/MoshCatty 及其 moshcatty-* 发布件）
+const legacyAgentBrandPattern = new RegExp(`(?<!mosh)${legacyAgentBrand}`, 'i');
 const ignoredDirectories = new Set(['.git', 'dist', 'node_modules', 'release']);
 
 function listFiles(directory, relativeDirectory = '') {
@@ -25,8 +28,10 @@ function listFiles(directory, relativeDirectory = '') {
 test('tracked files use the MagiesTerminal brand', () => {
   const trackedFiles = listFiles(repositoryRoot);
 
-  const legacyPaths = trackedFiles.filter((file) =>
-    file.toLowerCase().includes(legacyBrand),
+  const legacyPaths = trackedFiles.filter(
+    (file) =>
+      file.toLowerCase().includes(legacyBrand) ||
+      legacyAgentBrandPattern.test(file),
   );
   const legacyContent = [];
 
@@ -34,7 +39,11 @@ test('tracked files use the MagiesTerminal brand', () => {
     const content = fs.readFileSync(path.join(repositoryRoot, file));
     if (content.includes(0)) continue;
 
-    if (content.toString('utf8').toLowerCase().includes(legacyBrand)) {
+    const text = content.toString('utf8');
+    if (
+      text.toLowerCase().includes(legacyBrand) ||
+      legacyAgentBrandPattern.test(text)
+    ) {
       legacyContent.push(file);
     }
   }

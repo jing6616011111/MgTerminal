@@ -2,7 +2,7 @@ import { createRequire } from "node:module";
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { checkCommandSafety } from "./cattyAgent/safety";
+import { checkCommandSafety } from "./magiesTerminalAgent/safety";
 import { DEFAULT_COMMAND_BLOCKLIST } from "./types";
 
 const require = createRequire(import.meta.url);

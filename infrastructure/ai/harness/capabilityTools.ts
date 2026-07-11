@@ -1,6 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import type { MagiesTerminalBridge } from '../cattyAgent/executor';
+import type { MagiesTerminalBridge } from '../magiesTerminalAgent/executor';
 import type { TerminalContextReadRange } from '../../../domain/terminalContextRead';
 import type { AIPermissionMode } from '../types';
 import type { WebSearchConfig } from '../types';
@@ -23,12 +23,12 @@ import {
   previewToolResult,
   type ToolResultDedup,
 } from './toolResultDedup';
-import cattyToolSpecs from './generated/cattyToolSpecs.json';
+import magiesTerminalToolSpecs from './generated/magiesTerminalToolSpecs.json';
 import {
-  cattyToolContextSchema,
+  magiesTerminalToolContextSchema,
   toolDepsFromContext,
-  type CattyToolContext,
-} from './cattyRuntimeContext';
+  type MagiesTerminalToolContext,
+} from './magiesTerminalRuntimeContext';
 
 type FieldShape = {
   type: string;
@@ -36,7 +36,7 @@ type FieldShape = {
   description?: string;
 };
 
-type CattyToolSpec = {
+type MagiesTerminalToolSpec = {
   capabilityId: string;
   toolName: string;
   rpcMethod: string | null;
@@ -49,9 +49,9 @@ type CattyToolSpec = {
   };
 };
 
-export type CattyToolsBundle = {
+export type MagiesTerminalToolsBundle = {
   tools: Record<string, ReturnType<typeof tool>>;
-  toolsContext: Record<string, CattyToolContext>;
+  toolsContext: Record<string, MagiesTerminalToolContext>;
 };
 
 function buildZodObject(shape: Record<string, FieldShape>): z.ZodObject<Record<string, z.ZodTypeAny>> {
@@ -125,7 +125,7 @@ function applyToolDedup(
 
 function fitCapabilityResultForModel(
   result: unknown,
-  spec: CattyToolSpec,
+  spec: MagiesTerminalToolSpec,
   chatSessionId?: string,
   toolOutputStore?: ToolOutputStore,
 ): unknown {
@@ -143,14 +143,14 @@ function fitCapabilityResultForModel(
 
 interface LocalExecutionContext {
   deps: ToolDeps;
-  spec: CattyToolSpec;
+  spec: MagiesTerminalToolSpec;
   args: Record<string, unknown>;
   toolOutputStore?: ToolOutputStore;
   toolResultDedup?: ToolResultDedup;
   chatSessionId?: string;
 }
 
-async function executeLocalCattyCapability(ctx: LocalExecutionContext): Promise<unknown> {
+async function executeLocalMagiesTerminalCapability(ctx: LocalExecutionContext): Promise<unknown> {
   const { deps, spec, args, toolOutputStore, toolResultDedup, chatSessionId } = ctx;
   const resolveContext = () => (typeof deps.context === 'function' ? deps.context() : deps.context);
 
@@ -276,7 +276,7 @@ async function executeLocalCattyCapability(ctx: LocalExecutionContext): Promise<
 }
 
 function resolveSessionQueueKey(
-  spec: CattyToolSpec,
+  spec: MagiesTerminalToolSpec,
   args: Record<string, unknown>,
   chatSessionId?: string,
 ): string | null {
@@ -292,22 +292,22 @@ function resolveSessionQueueKey(
 }
 
 export function resolveSessionQueueKeyForTests(
-  spec: Pick<CattyToolSpec, 'capabilityId' | 'toolName' | 'policy'>,
+  spec: Pick<MagiesTerminalToolSpec, 'capabilityId' | 'toolName' | 'policy'>,
   args: Record<string, unknown>,
   chatSessionId?: string,
 ): string | null {
-  return resolveSessionQueueKey(spec as CattyToolSpec, args, chatSessionId);
+  return resolveSessionQueueKey(spec as MagiesTerminalToolSpec, args, chatSessionId);
 }
 
-function createCatalogTool(spec: CattyToolSpec) {
+function createCatalogTool(spec: MagiesTerminalToolSpec) {
   const inputSchema = buildZodObject(spec.inputShape);
 
   return tool({
     description: spec.description,
     inputSchema,
-    contextSchema: cattyToolContextSchema,
+    contextSchema: magiesTerminalToolContextSchema,
     execute: async (args, { toolCallId: _toolCallId, abortSignal, context }) => {
-      const toolContext = context as CattyToolContext;
+      const toolContext = context as MagiesTerminalToolContext;
       const deps = toolDepsFromContext(toolContext);
       const { toolOutputStore, toolResultDedup } = toolContext;
 
@@ -329,7 +329,7 @@ function createCatalogTool(spec: CattyToolSpec) {
           const { sessionId: sid, command } = args as { sessionId: string; command: string };
           const cancelOnAbort = () => {
             if (deps.chatSessionId) {
-              void deps.bridge.aiCattyCancelExec?.(deps.chatSessionId);
+              void deps.bridge.aiMagiesTerminalCancelExec?.(deps.chatSessionId);
             }
           };
           abortSignal?.addEventListener('abort', cancelOnAbort, { once: true });
@@ -350,7 +350,7 @@ function createCatalogTool(spec: CattyToolSpec) {
         }
 
         if (spec.localExecution || spec.capabilityId.startsWith('harness.')) {
-          const result = await executeLocalCattyCapability({
+          const result = await executeLocalMagiesTerminalCapability({
             deps,
             spec,
             args: args as Record<string, unknown>,
@@ -439,7 +439,7 @@ function createCatalogTool(spec: CattyToolSpec) {
   });
 }
 
-export function buildCattyToolContext(input: {
+export function buildMagiesTerminalToolContext(input: {
   bridge: MagiesTerminalBridge;
   context: ToolDeps['context'];
   commandBlocklist?: string[];
@@ -448,7 +448,7 @@ export function buildCattyToolContext(input: {
   chatSessionId?: string;
   toolOutputStore?: ToolOutputStore;
   toolResultDedup?: ToolResultDedup;
-}): CattyToolContext {
+}): MagiesTerminalToolContext {
   return {
     bridge: input.bridge,
     chatSessionId: input.chatSessionId,
@@ -463,7 +463,7 @@ export function buildCattyToolContext(input: {
   };
 }
 
-export function createCattyToolsFromCatalog(
+export function createMagiesTerminalToolsFromCatalog(
   bridge: MagiesTerminalBridge,
   context: ToolDeps['context'],
   commandBlocklist?: string[],
@@ -472,8 +472,8 @@ export function createCattyToolsFromCatalog(
   chatSessionId?: string,
   toolOutputStore?: ToolOutputStore,
   toolResultDedup?: ToolResultDedup,
-): CattyToolsBundle {
-  const sharedContext = buildCattyToolContext({
+): MagiesTerminalToolsBundle {
+  const sharedContext = buildMagiesTerminalToolContext({
     bridge,
     context,
     commandBlocklist,
@@ -485,9 +485,9 @@ export function createCattyToolsFromCatalog(
   });
 
   const catalogTools: Record<string, ReturnType<typeof tool>> = {};
-  const toolsContext: Record<string, CattyToolContext> = {};
+  const toolsContext: Record<string, MagiesTerminalToolContext> = {};
 
-  for (const rawSpec of cattyToolSpecs as CattyToolSpec[]) {
+  for (const rawSpec of magiesTerminalToolSpecs as MagiesTerminalToolSpec[]) {
     if (rawSpec.capabilityId === 'harness.web.search' && !isWebSearchReady(webSearchConfig)) {
       continue;
     }
@@ -499,9 +499,9 @@ export function createCattyToolsFromCatalog(
 }
 
 /** Test helper: attach shared context when calling tool.execute directly. */
-export function withCattyToolContext<T extends { execute: (...args: never[]) => unknown }>(
+export function withMagiesTerminalToolContext<T extends { execute: (...args: never[]) => unknown }>(
   toolInstance: T,
-  context: CattyToolContext,
+  context: MagiesTerminalToolContext,
   toolCallId = 'test-call',
 ): T {
   const original = toolInstance.execute.bind(toolInstance);

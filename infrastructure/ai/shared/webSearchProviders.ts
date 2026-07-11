@@ -9,7 +9,7 @@
  * renderer process.
  */
 
-import type { MagiesTerminalBridge } from '../cattyAgent/executor';
+import type { MagiesTerminalBridge } from '../magiesTerminalAgent/executor';
 import type { WebSearchConfig } from '../types';
 import { WEB_SEARCH_PROVIDER_PRESETS } from '../types';
 

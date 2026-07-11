@@ -1,10 +1,10 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { isStepHandleNoticeMessage, mapCattyStreamChunkToAgentEvents } from './agentEventAdapter';
+import { isStepHandleNoticeMessage, mapMagiesTerminalStreamChunkToAgentEvents } from './agentEventAdapter';
 
 describe('agentEventAdapter', () => {
   it('maps tool-output-denied chunks to approval_resolved denied and tool_result', () => {
-    const events = mapCattyStreamChunkToAgentEvents(
+    const events = mapMagiesTerminalStreamChunkToAgentEvents(
       {
         type: 'tool-output-denied',
         toolCallId: 'call-1',
@@ -20,7 +20,7 @@ describe('agentEventAdapter', () => {
   });
 
   it('maps tool-error chunks to tool_result with isError', () => {
-    const events = mapCattyStreamChunkToAgentEvents(
+    const events = mapMagiesTerminalStreamChunkToAgentEvents(
       {
         type: 'tool-error',
         toolCallId: 'call-2',
@@ -36,7 +36,7 @@ describe('agentEventAdapter', () => {
   });
 
   it('maps denied tool-approval-response with nested toolCall to tool_result', () => {
-    const events = mapCattyStreamChunkToAgentEvents(
+    const events = mapMagiesTerminalStreamChunkToAgentEvents(
       {
         type: 'tool-approval-response',
         approvalId: 'approval-1',

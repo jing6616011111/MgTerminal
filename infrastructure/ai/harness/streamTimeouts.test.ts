@@ -1,12 +1,12 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildCattyStreamTimeouts } from './streamTimeouts';
-import { CATTY_APPROVAL_TIMEOUT_MS } from '../shared/approvalConstants';
+import { buildMagiesTerminalStreamTimeouts } from './streamTimeouts';
+import { MAGIES_TERMINAL_APPROVAL_TIMEOUT_MS } from '../shared/approvalConstants';
 
-describe('buildCattyStreamTimeouts', () => {
+describe('buildMagiesTerminalStreamTimeouts', () => {
   it('keeps stream budgets from undercutting the configured command timeout', () => {
     const oneDayMs = 86_400 * 1000;
-    const timeouts = buildCattyStreamTimeouts({
+    const timeouts = buildMagiesTerminalStreamTimeouts({
       commandTimeoutMs: oneDayMs,
     });
 
@@ -18,8 +18,8 @@ describe('buildCattyStreamTimeouts', () => {
 
   it('includes confirm-mode approval time in long command stream budgets', () => {
     const commandTimeoutMs = 60 * 1000;
-    const expectedMinimum = commandTimeoutMs + CATTY_APPROVAL_TIMEOUT_MS + (90 * 1000);
-    const timeouts = buildCattyStreamTimeouts({
+    const expectedMinimum = commandTimeoutMs + MAGIES_TERMINAL_APPROVAL_TIMEOUT_MS + (90 * 1000);
+    const timeouts = buildMagiesTerminalStreamTimeouts({
       permissionMode: 'confirm',
       commandTimeoutMs,
     });
@@ -32,8 +32,8 @@ describe('buildCattyStreamTimeouts', () => {
 
   it('scales the total stream budget for multi-step long command turns', () => {
     const commandTimeoutMs = 10 * 60 * 1000;
-    const singleStepBudgetMs = commandTimeoutMs + CATTY_APPROVAL_TIMEOUT_MS + (90 * 1000);
-    const timeouts = buildCattyStreamTimeouts({
+    const singleStepBudgetMs = commandTimeoutMs + MAGIES_TERMINAL_APPROVAL_TIMEOUT_MS + (90 * 1000);
+    const timeouts = buildMagiesTerminalStreamTimeouts({
       permissionMode: 'confirm',
       commandTimeoutMs,
       maxIterations: 2,
@@ -47,7 +47,7 @@ describe('buildCattyStreamTimeouts', () => {
   });
 
   it('omits total timeout when the multi-step budget exceeds timer limits', () => {
-    const timeouts = buildCattyStreamTimeouts({
+    const timeouts = buildMagiesTerminalStreamTimeouts({
       commandTimeoutMs: 86_400 * 1000,
       maxIterations: 100,
     });

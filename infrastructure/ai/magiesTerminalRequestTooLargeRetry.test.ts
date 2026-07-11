@@ -2,17 +2,17 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  createCattyRequestTooLargeRetryError,
+  createMagiesTerminalRequestTooLargeRetryError,
   hadToolProgressBeforeRequestTooLarge,
-} from "./cattyRequestTooLargeRetry.ts";
+} from "./magiesTerminalRequestTooLargeRetry.ts";
 
-test("createCattyRequestTooLargeRetryError marks 413 retry errors after tool progress", () => {
+test("createMagiesTerminalRequestTooLargeRetryError marks 413 retry errors after tool progress", () => {
   const source = Object.assign(new Error("HTTP 413 Request Entity Too Large"), {
     status: 413,
     responseBody: "<html>too large</html>",
   });
 
-  const retryError = createCattyRequestTooLargeRetryError(source, true);
+  const retryError = createMagiesTerminalRequestTooLargeRetryError(source, true);
 
   assert.equal(retryError.statusCode, 413);
   assert.equal(retryError.status, 413);
@@ -22,7 +22,7 @@ test("createCattyRequestTooLargeRetryError marks 413 retry errors after tool pro
 });
 
 test("hadToolProgressBeforeRequestTooLarge is false when no tool progress was recorded", () => {
-  const retryError = createCattyRequestTooLargeRetryError("HTTP 413", false);
+  const retryError = createMagiesTerminalRequestTooLargeRetryError("HTTP 413", false);
 
   assert.equal(hadToolProgressBeforeRequestTooLarge(retryError), false);
   assert.equal(hadToolProgressBeforeRequestTooLarge(new Error("HTTP 413")), false);

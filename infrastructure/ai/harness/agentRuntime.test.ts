@@ -6,7 +6,7 @@ import { SessionStateStore } from './sessionState';
 import type { TurnDriver, TurnDriverContext, TurnInput } from './turnDrivers/types';
 
 class MockTurnDriver implements TurnDriver {
-  readonly backend = 'catty' as const;
+  readonly backend = 'magiesTerminal' as const;
   readonly runs: TurnInput[] = [];
 
   async run(input: TurnInput, ctx: TurnDriverContext): Promise<void> {
@@ -31,7 +31,7 @@ test('AgentRuntime runTurn emits turn lifecycle and records trace', async () => 
 
   const controller = new AbortController();
   const result = await runtime.runTurn({
-    backend: 'catty',
+    backend: 'magiesTerminal',
     chatSessionId: 'chat-1',
     sendScopeKey: 'chat-1',
     userText: 'hi',
@@ -64,7 +64,7 @@ test('AgentRuntime runTurn emits turn lifecycle and records trace', async () => 
 
 test('AgentRuntime records session state from tool call and result events', async () => {
   class ToolTurnDriver implements TurnDriver {
-    readonly backend = 'catty' as const;
+    readonly backend = 'magiesTerminal' as const;
     async run(_input: TurnInput, ctx: TurnDriverContext): Promise<void> {
       ctx.emit({
         id: 'tool-call-1',
@@ -87,7 +87,7 @@ test('AgentRuntime records session state from tool call and result events', asyn
   const sessionStateStore = new SessionStateStore();
   const runtime = new AgentRuntime({ drivers: [new ToolTurnDriver()], sessionStateStore });
   await runtime.runTurn({
-    backend: 'catty',
+    backend: 'magiesTerminal',
     chatSessionId: 'chat-tool',
     sendScopeKey: 'chat-tool',
     userText: 'check uptime',

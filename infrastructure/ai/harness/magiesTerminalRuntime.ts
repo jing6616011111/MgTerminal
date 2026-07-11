@@ -12,7 +12,7 @@ import {
   prepareTurnContext,
 } from './contextManager';
 import type { AgentEventListener, CompactionTrace } from './types';
-import { buildCattyCompactionTimeout } from './streamTimeouts';
+import { buildMagiesTerminalCompactionTimeout } from './streamTimeouts';
 import {
   COMPACTION_PROMPT_RESERVE,
   COMPACTION_SUMMARY_MAX_OUTPUT_TOKENS,
@@ -21,7 +21,7 @@ import {
 } from './contextBudget';
 import { pruneUntilFitsCompaction } from './compactionPruner';
 
-export interface CompactCattyMessagesInput {
+export interface CompactMagiesTerminalMessagesInput {
   messages: ModelMessage[];
   sessionId: string;
   chatSessionId?: string;
@@ -43,13 +43,13 @@ export interface CompactCattyMessagesInput {
   };
 }
 
-export interface CompactCattyMessagesResult {
+export interface CompactMagiesTerminalMessagesResult {
   messages: ModelMessage[];
   trace?: CompactionTrace;
 }
 
 function createEventListener(
-  input: CompactCattyMessagesInput,
+  input: CompactMagiesTerminalMessagesInput,
 ): AgentEventListener | undefined {
   if (!input.onCompaction) return undefined;
   return (event) => {
@@ -59,9 +59,9 @@ function createEventListener(
   };
 }
 
-export async function compactCattyMessages(
-  input: CompactCattyMessagesInput,
-): Promise<CompactCattyMessagesResult> {
+export async function compactMagiesTerminalMessages(
+  input: CompactMagiesTerminalMessagesInput,
+): Promise<CompactMagiesTerminalMessagesResult> {
   const contextWindow = resolveContextWindow({
     provider: input.provider,
     modelId: input.modelId,
@@ -102,7 +102,7 @@ export async function compactCattyMessages(
       abortSignal: input.abortSignal,
       maxOutputTokens: COMPACTION_SUMMARY_MAX_OUTPUT_TOKENS,
       temperature: 0,
-      timeout: buildCattyCompactionTimeout(),
+      timeout: buildMagiesTerminalCompactionTimeout(),
     });
     return result.text;
   };
@@ -112,7 +112,7 @@ export async function compactCattyMessages(
   try {
     const prepared = await prepareTurnContext({
       messages: input.messages,
-      backend: 'catty',
+      backend: 'magiesTerminal',
       contextWindow,
       reservedTokens: input.reservedTokens?.() ?? 0,
       maxOutputTokens,
@@ -136,7 +136,7 @@ export async function compactCattyMessages(
     console.warn('[Harness] Context compaction failed; falling back to recent messages only:', err);
     const fallback = await prepareTurnContext({
       messages: input.messages,
-      backend: 'catty',
+      backend: 'magiesTerminal',
       contextWindow,
       trigger: 'force',
       force: true,
@@ -150,7 +150,7 @@ export async function compactCattyMessages(
   }
 }
 
-export function prepareCattyMessagesForStream(messages: ModelMessage[]): ModelMessage[] {
+export function prepareMagiesTerminalMessagesForStream(messages: ModelMessage[]): ModelMessage[] {
   return pruneMessages({
     messages,
     reasoning: 'all',

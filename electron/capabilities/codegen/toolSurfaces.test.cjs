@@ -7,14 +7,14 @@ const { ALL_CAPABILITIES } = require("../catalog/index.cjs");
 const { TOOL_INPUT_FIELDS } = require("../schemas/toolInputs.cjs");
 const {
   listMcpTools,
-  listCattyToolSpecs,
-  CATTY_CAPABILITY_DENYLIST,
-  isCattyEligible,
+  listMagiesTerminalToolSpecs,
+  MAGIES_TERMINAL_CAPABILITY_DENYLIST,
+  isMagiesTerminalEligible,
 } = require("./toolSurfaces.cjs");
 const { registerMcpTools, buildZodShapeObject } = require("./mcpToolRegistry.cjs");
 
-test("listCattyToolSpecs includes terminal long-running tools", () => {
-  const specs = listCattyToolSpecs();
+test("listMagiesTerminalToolSpecs includes terminal long-running tools", () => {
+  const specs = listMagiesTerminalToolSpecs();
   const names = specs.map((spec) => spec.toolName);
   assert.ok(names.includes("terminal_execute"));
   assert.ok(names.includes("terminal_start"));
@@ -22,8 +22,8 @@ test("listCattyToolSpecs includes terminal long-running tools", () => {
   assert.ok(names.includes("terminal_stop"));
 });
 
-test("listCattyToolSpecs includes SFTP write tools and attachments", () => {
-  const capabilityIds = listCattyToolSpecs().map((spec) => spec.capabilityId);
+test("listMagiesTerminalToolSpecs includes SFTP write tools and attachments", () => {
+  const capabilityIds = listMagiesTerminalToolSpecs().map((spec) => spec.capabilityId);
   assert.ok(capabilityIds.includes("attachment.list"));
   assert.ok(capabilityIds.includes("attachment.read"));
   assert.ok(capabilityIds.includes("sftp.write"));
@@ -35,8 +35,8 @@ test("listCattyToolSpecs includes SFTP write tools and attachments", () => {
   assert.ok(!capabilityIds.includes("session.cancel"));
 });
 
-test("listCattyToolSpecs includes vault host tools and SFTP transfer", () => {
-  const capabilityIds = listCattyToolSpecs().map((spec) => spec.capabilityId);
+test("listMagiesTerminalToolSpecs includes vault host tools and SFTP transfer", () => {
+  const capabilityIds = listMagiesTerminalToolSpecs().map((spec) => spec.capabilityId);
   assert.ok(capabilityIds.includes("vault.host.get"));
   assert.ok(capabilityIds.includes("vault.host.list"));
   assert.ok(capabilityIds.includes("vault.host.open"));
@@ -57,7 +57,7 @@ test("listMcpTools includes host_open for external MCP clients", () => {
 });
 
 test("vault host import tool description routes unknown attached host text to host creation", () => {
-  const importSpec = listCattyToolSpecs().find((spec) => spec.capabilityId === "vault.host.import");
+  const importSpec = listMagiesTerminalToolSpecs().find((spec) => spec.capabilityId === "vault.host.import");
   assert.ok(importSpec);
   assert.match(importSpec.description, /known export formats/i);
   assert.match(importSpec.description, /unknown/i);
@@ -65,16 +65,16 @@ test("vault host import tool description routes unknown attached host text to ho
   assert.match(importSpec.description, /vault_hosts_create/i);
 });
 
-test("listCattyToolSpecs binds vault note tools to global RPC methods", () => {
-  const specs = listCattyToolSpecs();
+test("listMagiesTerminalToolSpecs binds vault note tools to global RPC methods", () => {
+  const specs = listMagiesTerminalToolSpecs();
   const noteCreate = specs.find((spec) => spec.capabilityId === "vault.note.create");
   assert.equal(noteCreate?.rpcMethod, "vault/notes/create");
   const noteList = specs.find((spec) => spec.capabilityId === "vault.note.list");
   assert.equal(noteList?.rpcMethod, "vault/notes/list");
 });
 
-test("listCattyToolSpecs binds vault and portforward tools to global RPC methods", () => {
-  const specs = listCattyToolSpecs();
+test("listMagiesTerminalToolSpecs binds vault and portforward tools to global RPC methods", () => {
+  const specs = listMagiesTerminalToolSpecs();
   const hostNotesSet = specs.find((spec) => spec.capabilityId === "vault.host.notes.set");
   assert.equal(hostNotesSet?.rpcMethod, "vault/host/notes/set");
   const portforwardStart = specs.find((spec) => spec.capabilityId === "portforward.start");
@@ -96,8 +96,8 @@ test("listAgentToolSpecs splits sidebar harness tools from shared RPC tools", ()
   assert.ok(globalIds.every((id) => sidebarIds.includes(id) || id.startsWith("harness.") === false));
 });
 
-test("listCattyToolSpecs includes harness catty-only tools with local execution", () => {
-  const specs = listCattyToolSpecs();
+test("listMagiesTerminalToolSpecs includes harness magiesTerminal-only tools with local execution", () => {
+  const specs = listMagiesTerminalToolSpecs();
   assert.ok(specs.length >= 40);
   const harness = specs.filter((spec) => spec.capabilityId.startsWith("harness."));
   assert.equal(harness.length, 6);
@@ -129,20 +129,20 @@ test("listMcpTools descriptions stay aligned with catalog capability ids", () =>
   }
 });
 
-test("catty and mcp terminal tools share capability ids", () => {
-  const catty = listCattyToolSpecs().find((spec) => spec.toolName === "terminal_execute");
+test("magiesTerminal and mcp terminal tools share capability ids", () => {
+  const magiesTerminal = listMagiesTerminalToolSpecs().find((spec) => spec.toolName === "terminal_execute");
   const mcp = listMcpTools().find((tool) => tool.mcpTool === "terminal_execute");
-  assert.equal(catty?.capabilityId, "terminal.execute");
+  assert.equal(magiesTerminal?.capabilityId, "terminal.execute");
   assert.equal(mcp?.capabilityId, "terminal.execute");
 });
 
-test("implemented catalog tools with inputs are catty-eligible unless denylisted", () => {
+test("implemented catalog tools with inputs are magiesTerminal-eligible unless denylisted", () => {
   const implemented = ALL_CAPABILITIES.filter((cap) => cap.status === CAPABILITY_STATUS.IMPLEMENTED);
   for (const capability of implemented) {
     const hasInputs = Object.prototype.hasOwnProperty.call(TOOL_INPUT_FIELDS, capability.id);
     if (!hasInputs) continue;
-    if (CATTY_CAPABILITY_DENYLIST.has(capability.id)) {
-      assert.equal(isCattyEligible(capability), false);
+    if (MAGIES_TERMINAL_CAPABILITY_DENYLIST.has(capability.id)) {
+      assert.equal(isMagiesTerminalEligible(capability), false);
       continue;
     }
     const hasRpc = Boolean(
@@ -150,7 +150,7 @@ test("implemented catalog tools with inputs are catty-eligible unless denylisted
       || capability.surfaces?.public?.mcpTool,
     );
     if (hasRpc) {
-      assert.equal(isCattyEligible(capability), true);
+      assert.equal(isMagiesTerminalEligible(capability), true);
     }
   }
 });

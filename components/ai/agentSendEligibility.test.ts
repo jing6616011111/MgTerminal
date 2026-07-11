@@ -35,8 +35,8 @@ const agents: ExternalAgentConfig[] = [
   },
 ];
 
-test('canSendWithAgent allows Catty and enabled external agents', () => {
-  assert.equal(canSendWithAgent('catty', agents), true);
+test('canSendWithAgent allows MagiesTerminal and enabled external agents', () => {
+  assert.equal(canSendWithAgent('magiesTerminal', agents), true);
   assert.equal(canSendWithAgent('enabled-agent', agents), true);
 });
 

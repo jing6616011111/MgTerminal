@@ -15,7 +15,7 @@ describe('stopAgentTurn', () => {
       chatSessionId: sessionId,
       abortController: controller,
       bridge: {
-        aiCattyCancelExec: async (id) => { calls.push(`catty:${id}`); },
+        aiMagiesTerminalCancelExec: async (id) => { calls.push(`magiesTerminal:${id}`); },
         aiSdkAgentCancel: async (_req, id) => { calls.push(`sdk:${id}`); return { ok: true }; },
         aiSetChatSessionCancelled: async (id, cancelled) => {
           calls.push(`cancelled:${id}:${cancelled}`);
@@ -23,12 +23,12 @@ describe('stopAgentTurn', () => {
         },
       },
       reason: 'slash',
-      backend: 'catty',
+      backend: 'magiesTerminal',
     });
 
     assert.equal(controller.signal.aborted, true);
     assert.deepEqual(calls, [
-      `catty:${sessionId}`,
+      `magiesTerminal:${sessionId}`,
       `sdk:${sessionId}`,
       `cancelled:${sessionId}:true`,
     ]);

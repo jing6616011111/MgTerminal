@@ -1,7 +1,7 @@
 /**
  * approvalGate — Promise-based approval system for tool execution.
  *
- * Catty write tools are gated by `streamText({ toolApproval })` (see cattyToolApproval.ts).
+ * MagiesTerminal write tools are gated by `streamText({ toolApproval })` (see magiesTerminalToolApproval.ts).
  * MCP/external agents use main-process approval via `setupMcpApprovalBridge()`.
  * `requestApproval()` is the shared renderer Promise used by both paths.
  * a Promise that resolves when the user approves/rejects from the UI, or after
@@ -17,7 +17,7 @@
  * interference when stopping or cancelling sessions.
  */
 
-import { CATTY_APPROVAL_TIMEOUT_MS } from './approvalConstants';
+import { MAGIES_TERMINAL_APPROVAL_TIMEOUT_MS } from './approvalConstants';
 import { localStorageAdapter } from '../../persistence/localStorageAdapter';
 import { STORAGE_KEY_AI_PERMISSION_GRANTS } from '../../config/storageKeys';
 import { globalTraceStore } from '../harness/traceStore';
@@ -110,7 +110,7 @@ function emitApprovalEvent(
   const base = {
     sessionId,
     chatSessionId: request.chatSessionId,
-    backend: 'catty' as const,
+    backend: 'magiesTerminal' as const,
     timestamp: Date.now(),
     toolCallId: request.toolCallId,
     toolName: request.toolName,
@@ -159,7 +159,7 @@ export function requestApproval(
   toolName: string,
   args: Record<string, unknown>,
   chatSessionId?: string,
-  timeoutMs: number = CATTY_APPROVAL_TIMEOUT_MS,
+  timeoutMs: number = MAGIES_TERMINAL_APPROVAL_TIMEOUT_MS,
   capabilityId?: string,
 ): Promise<boolean> {
   const request: ApprovalRequest = {

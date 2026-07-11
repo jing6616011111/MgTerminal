@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-// Module-level require on purpose: code inside registerCattyExecHandlers
+// Module-level require on purpose: code inside registerMagiesTerminalExecHandlers
 // runs under `with (ctx)` where bare `require` resolves to ctx.require
 // (based in electron/bridges/). Requiring here keeps the path unambiguous.
 const { formatSyntheticEcho } = require("../ai/shellUtils.cjs");
@@ -15,7 +15,7 @@ function isNetworkDeviceLike(meta) {
   return (meta?.deviceType === "network" && isSshOrSerial) || protocol === "serial";
 }
 
-async function proxyCattyExecToWorker({
+async function proxyMagiesTerminalExecToWorker({
   event,
   terminalWorkerManager,
   mcpServerBridge,
@@ -64,7 +64,7 @@ async function proxyCattyExecToWorker({
   }
 }
 
-function registerCattyExecHandlers(ctx) {
+function registerMagiesTerminalExecHandlers(ctx) {
   with (ctx) {
   ipcMain.handle("magiesTerminal:ai:exec", async (event, { sessionId, command, chatSessionId }) => {
     // Validate IPC sender (Issue #17)
@@ -77,7 +77,7 @@ function registerCattyExecHandlers(ctx) {
     }
     const session = sessions?.get(sessionId);
     if (!session) {
-      return proxyCattyExecToWorker({
+      return proxyMagiesTerminalExecToWorker({
         event,
         terminalWorkerManager,
         mcpServerBridge,
@@ -185,7 +185,7 @@ function registerCattyExecHandlers(ctx) {
                 syntheticEcho: true,
               });
             },
-            // Catty Agent has no terminal_start fallback for long-running
+            // MagiesTerminal Agent has no terminal_start fallback for long-running
             // commands, so do NOT enforce a hard wall-clock timeout here.
             // The inactivity timeout still applies, so genuinely hung
             // processes are still terminated.
@@ -235,8 +235,8 @@ function registerCattyExecHandlers(ctx) {
     }
   });
 
-  // Cancel in-flight Catty Agent command executions for a chat session
-  ipcMain.handle("magiesTerminal:ai:catty:cancel", async (event, { chatSessionId }) => {
+  // Cancel in-flight MagiesTerminal Agent command executions for a chat session
+  ipcMain.handle("magiesTerminal:ai:magiesTerminal:cancel", async (event, { chatSessionId }) => {
     if (!validateSender(event)) {
       return { ok: false, error: "Unauthorized IPC sender" };
     }
@@ -246,7 +246,7 @@ function registerCattyExecHandlers(ctx) {
       mcpServerBridge.cancelWorkerBackgroundJobsForSession(chatSessionId);
     } else {
       try {
-        terminalWorkerManager?.send?.("magiesTerminal:ai:catty:cancel", { chatSessionId }, {
+        terminalWorkerManager?.send?.("magiesTerminal:ai:magiesTerminal:cancel", { chatSessionId }, {
           webContentsId: event?.sender?.id,
         });
       } catch {
@@ -285,4 +285,4 @@ function registerCattyExecHandlers(ctx) {
   }
 }
 
-module.exports = { registerCattyExecHandlers };
+module.exports = { registerMagiesTerminalExecHandlers };

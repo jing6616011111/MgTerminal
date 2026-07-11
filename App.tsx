@@ -1438,7 +1438,7 @@ function AppWithProviders() {
 
   // Keep MCP/SDK approval IPC alive for the whole app lifetime — including the
   // ~5s before TerminalLayer lazy-mounts, and when External MCP is used without
-  // opening the Catty AI panel.
+  // opening the MagiesTerminal AI panel.
   useEffect(() => {
     return setupMcpApprovalBridge();
   }, []);

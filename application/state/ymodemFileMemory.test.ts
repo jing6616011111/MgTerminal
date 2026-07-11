@@ -70,10 +70,10 @@ test("keeps POSIX backslashes as part of the selected file name", () => {
 test("remembers Windows-style YMODEM send directories", () => {
   const { store, values } = createStore();
 
-  assert.equal(rememberYmodemSendFilePath("C:\\Users\\catty\\device.bin", store), true);
+  assert.equal(rememberYmodemSendFilePath("C:\\Users\\magiesTerminal\\device.bin", store), true);
   assert.equal(
     values.get(storageKeys.STORAGE_KEY_TERMINAL_YMODEM_SEND_DIR),
-    "C:\\Users\\catty",
+    "C:\\Users\\magiesTerminal",
   );
 });
 

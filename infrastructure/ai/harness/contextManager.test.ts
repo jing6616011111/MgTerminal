@@ -4,7 +4,7 @@ import type { ModelMessage } from 'ai';
 import { prepareTurnContext, prepareStepContext } from './contextManager.ts';
 import { TraceStore } from './traceStore.ts';
 import { ToolOutputStore } from './toolOutputStore.ts';
-import { createInitialCattyRuntimeContext } from './cattyRuntimeContext.ts';
+import { createInitialMagiesTerminalRuntimeContext } from './magiesTerminalRuntimeContext.ts';
 
 test('prepareTurnContext applies typed compression before LLM summarize threshold', async () => {
   const longOutput = 'line\n'.repeat(20_000);
@@ -44,7 +44,7 @@ test('prepareTurnContext applies typed compression before LLM summarize threshol
   const traces: string[] = [];
   const prepared = await prepareTurnContext({
     messages,
-    backend: 'catty',
+    backend: 'magiesTerminal',
     contextWindow: 128_000,
     trigger: 'pre-turn',
     sessionId: 'chat-1',
@@ -73,7 +73,7 @@ test('prepareTurnContext skips reinjection when no compaction occurred', async (
   const events: string[] = [];
   const prepared = await prepareTurnContext({
     messages,
-    backend: 'catty',
+    backend: 'magiesTerminal',
     contextWindow: 128_000,
     trigger: 'pre-turn',
     sessionId: 'chat-no-compact',
@@ -103,7 +103,7 @@ test('prepareTurnContext force trigger retains recent user goal in replay', asyn
 
   const prepared = await prepareTurnContext({
     messages,
-    backend: 'catty',
+    backend: 'magiesTerminal',
     contextWindow: 128_000,
     trigger: 'force',
     force: true,
@@ -119,7 +119,7 @@ test('TraceStore records compaction events for export', async () => {
   const store = new TraceStore();
   await prepareTurnContext({
     messages: [{ role: 'user', content: 'x'.repeat(500_000) }],
-    backend: 'catty',
+    backend: 'magiesTerminal',
     contextWindow: 1000,
     trigger: 'force',
     force: true,
@@ -139,7 +139,7 @@ test('prepareStepContext replaces prior step handle notices under v7 carry-forwa
     capabilityId: 'sftp.read',
     content: 'large payload',
   });
-  const runtimeContext = createInitialCattyRuntimeContext({
+  const runtimeContext = createInitialMagiesTerminalRuntimeContext({
     chatSessionId: 'chat-4',
     turnId: 'turn-1',
     permissionMode: 'confirm',
@@ -184,7 +184,7 @@ test('prepareStepContext emits step compaction trace when over budget', async ()
     reservedTokens: 500,
     maxOutputTokens: 512,
     providerId: 'anthropic',
-    runtimeContext: createInitialCattyRuntimeContext({
+    runtimeContext: createInitialMagiesTerminalRuntimeContext({
       chatSessionId: 'chat-5',
       turnId: 'turn-2',
       permissionMode: 'confirm',
@@ -221,7 +221,7 @@ test('prepareStepContext retains handle notice after step budget guard', async (
     reservedTokens: 500,
     maxOutputTokens: 512,
     toolOutputStore: store,
-    runtimeContext: createInitialCattyRuntimeContext({
+    runtimeContext: createInitialMagiesTerminalRuntimeContext({
       chatSessionId: 'chat-handle',
       turnId: 'turn-handle',
       permissionMode: 'confirm',
@@ -247,7 +247,7 @@ test('prepareTurnContext calls summarize when over dynamic threshold', async () 
 
   const prepared = await prepareTurnContext({
     messages,
-    backend: 'catty',
+    backend: 'magiesTerminal',
     contextWindow: 8_000,
     maxOutputTokens: 512,
     trigger: 'pre-turn',

@@ -58,7 +58,7 @@ interface AIChatPanelContentProps {
   agentModelPresets: AgentModelPreset[];
   selectedAgentModel: string;
   handleAgentModelSelect: (modelId: string) => void;
-  cattyConfiguredProviders: ProviderConfig[];
+  magiesTerminalConfiguredProviders: ProviderConfig[];
   effectiveActiveProvider?: ProviderConfig;
   effectiveActiveModelId?: string;
   handleAgentProviderModelSelect: (providerId: string, modelId: string) => void;
@@ -112,7 +112,7 @@ export const AIChatPanelContent: React.FC<AIChatPanelContentProps> = ({
   agentModelPresets,
   selectedAgentModel,
   handleAgentModelSelect,
-  cattyConfiguredProviders,
+  magiesTerminalConfiguredProviders,
   effectiveActiveProvider,
   effectiveActiveModelId,
   handleAgentProviderModelSelect,
@@ -265,14 +265,14 @@ export const AIChatPanelContent: React.FC<AIChatPanelContentProps> = ({
                 disabled={!canSendCurrentAgent}
                 providerName={providerDisplayName}
                 modelName={modelDisplayName}
-                agentName={currentAgentId === 'catty' ? 'Catty Agent' : externalAgents.find(a => a.id === currentAgentId)?.name}
+                agentName={currentAgentId === 'magiesTerminal' ? 'MagiesTerminal Agent' : externalAgents.find(a => a.id === currentAgentId)?.name}
                 modelPresets={agentModelPresets}
                 selectedModelId={selectedAgentModel}
                 onModelSelect={handleAgentModelSelect}
                 providerSwitcher={
-                  currentAgentId === 'catty' && cattyConfiguredProviders.length > 0
+                  currentAgentId === 'magiesTerminal' && magiesTerminalConfiguredProviders.length > 0
                     ? {
-                        providers: cattyConfiguredProviders,
+                        providers: magiesTerminalConfiguredProviders,
                         selectedProviderId: effectiveActiveProvider?.id,
                         selectedModelId: effectiveActiveModelId || undefined,
                         onSelect: handleAgentProviderModelSelect,

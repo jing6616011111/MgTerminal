@@ -2,7 +2,7 @@
 
 const { CAPABILITY_STATUS } = require("../constants.cjs");
 
-/** Catty-only harness tools (sidebar agent; renderer-local; not MCP/CLI). */
+/** MagiesTerminal-only harness tools (sidebar agent; renderer-local; not MCP/CLI). */
 /** @type {import("../types.cjs").CapabilityDefinition[]} */
 const HARNESS_CAPABILITIES = [
   {
@@ -20,7 +20,7 @@ const HARNESS_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      catty: { toolName: "tool_output_read" },
+      magiesTerminal: { toolName: "tool_output_read" },
     },
   },
   {
@@ -38,7 +38,7 @@ const HARNESS_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      catty: { toolName: "workspace_get_info" },
+      magiesTerminal: { toolName: "workspace_get_info" },
     },
   },
   {
@@ -56,7 +56,7 @@ const HARNESS_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      catty: { toolName: "workspace_get_session_info" },
+      magiesTerminal: { toolName: "workspace_get_session_info" },
     },
   },
   {
@@ -74,7 +74,7 @@ const HARNESS_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      catty: { toolName: "terminal_read_context" },
+      magiesTerminal: { toolName: "terminal_read_context" },
     },
   },
   {
@@ -92,7 +92,7 @@ const HARNESS_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      catty: { toolName: "web_search" },
+      magiesTerminal: { toolName: "web_search" },
     },
   },
   {
@@ -110,7 +110,7 @@ const HARNESS_CAPABILITIES = [
       bypassesChatCancel: true,
     },
     surfaces: {
-      catty: { toolName: "url_fetch" },
+      magiesTerminal: { toolName: "url_fetch" },
     },
   },
 ];

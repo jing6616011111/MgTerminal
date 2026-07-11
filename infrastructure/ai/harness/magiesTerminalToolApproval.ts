@@ -2,9 +2,9 @@ import type { ToolApprovalConfiguration } from 'ai';
 import type { AIPermissionMode } from '../types';
 import { requestApproval as defaultRequestApproval } from '../shared/approvalGate';
 import { resolveCapabilityId } from './permissionGrants';
-import cattyToolSpecs from './generated/cattyToolSpecs.json';
+import magiesTerminalToolSpecs from './generated/magiesTerminalToolSpecs.json';
 
-type CattyToolPolicySpec = {
+type MagiesTerminalToolPolicySpec = {
   toolName: string;
   capabilityId: string;
   policy: {
@@ -14,8 +14,8 @@ type CattyToolPolicySpec = {
   };
 };
 
-const policyByToolName = new Map<string, CattyToolPolicySpec>(
-  (cattyToolSpecs as CattyToolPolicySpec[]).map((spec) => [spec.toolName, spec]),
+const policyByToolName = new Map<string, MagiesTerminalToolPolicySpec>(
+  (magiesTerminalToolSpecs as MagiesTerminalToolPolicySpec[]).map((spec) => [spec.toolName, spec]),
 );
 
 function needsUserApproval(
@@ -28,11 +28,11 @@ function needsUserApproval(
   return spec.policy.write && !spec.policy.bypassesApproval;
 }
 
-export function buildCattyToolApproval(input: {
+export function buildMagiesTerminalToolApproval(input: {
   permissionMode: AIPermissionMode;
   chatSessionId?: string;
   requestApproval?: typeof defaultRequestApproval;
-}): ToolApprovalConfiguration<Record<string, never>, import('./cattyRuntimeContext').CattyRuntimeContext> {
+}): ToolApprovalConfiguration<Record<string, never>, import('./magiesTerminalRuntimeContext').MagiesTerminalRuntimeContext> {
   const { permissionMode, chatSessionId, requestApproval = defaultRequestApproval } = input;
 
   return async ({ toolCall }) => {

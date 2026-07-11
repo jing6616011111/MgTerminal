@@ -12,7 +12,7 @@ function createSession(
   return {
     id,
     title: id,
-    agentId: "catty",
+    agentId: "magiesTerminal",
     scope,
     messages: [],
     createdAt: updatedAt,

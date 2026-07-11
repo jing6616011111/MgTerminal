@@ -1,9 +1,9 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  createCattyToolsFromCatalog,
+  createMagiesTerminalToolsFromCatalog,
   resolveSessionQueueKeyForTests,
-  withCattyToolContext,
+  withMagiesTerminalToolContext,
 } from './capabilityTools';
 import { ToolOutputStore } from './toolOutputStore';
 
@@ -39,7 +39,7 @@ describe('capabilityTools result fitting', () => {
   it('truncates large vault note content and stores the full note body behind a handle', async () => {
     const store = new ToolOutputStore();
     const body = `${'note line\n'.repeat(1000)}important ending`;
-    const { tools, toolsContext } = createCattyToolsFromCatalog(
+    const { tools, toolsContext } = createMagiesTerminalToolsFromCatalog(
       {
         aiCapability: async () => ({
           ok: true,
@@ -58,7 +58,7 @@ describe('capabilityTools result fitting', () => {
       store,
     );
 
-    const result = await withCattyToolContext(
+    const result = await withMagiesTerminalToolContext(
       tools.vault_notes_get,
       toolsContext.vault_notes_get,
       'call-1',
@@ -81,7 +81,7 @@ describe('capabilityTools result fitting', () => {
       capabilityId: 'vault.notes.get',
       content: body,
     });
-    const { tools, toolsContext } = createCattyToolsFromCatalog(
+    const { tools, toolsContext } = createMagiesTerminalToolsFromCatalog(
       {},
       { sessions: [] },
       [],
@@ -91,7 +91,7 @@ describe('capabilityTools result fitting', () => {
       store,
     );
 
-    const result = await withCattyToolContext(
+    const result = await withMagiesTerminalToolContext(
       tools.tool_output_read,
       toolsContext.tool_output_read,
       'call-1',
@@ -105,7 +105,7 @@ describe('capabilityTools result fitting', () => {
 
 describe('capabilityTools terminal context reader', () => {
   it('reads terminal context from the only scoped terminal when sessionId is omitted', async () => {
-    const { tools, toolsContext } = createCattyToolsFromCatalog(
+    const { tools, toolsContext } = createMagiesTerminalToolsFromCatalog(
       {},
       {
         sessions: [{
@@ -136,7 +136,7 @@ describe('capabilityTools terminal context reader', () => {
       'chat-1',
     );
 
-    const result = await withCattyToolContext(
+    const result = await withMagiesTerminalToolContext(
       tools.terminal_read_context,
       toolsContext.terminal_read_context,
       'call-1',
@@ -152,7 +152,7 @@ describe('capabilityTools terminal context reader', () => {
   it('fits large terminal context reads through the shared tool output store', async () => {
     const store = new ToolOutputStore();
     const body = `${'terminal line output '.repeat(900)}important ending`;
-    const { tools, toolsContext } = createCattyToolsFromCatalog(
+    const { tools, toolsContext } = createMagiesTerminalToolsFromCatalog(
       {},
       {
         sessions: [{
@@ -184,7 +184,7 @@ describe('capabilityTools terminal context reader', () => {
       store,
     );
 
-    const result = await withCattyToolContext(
+    const result = await withMagiesTerminalToolContext(
       tools.terminal_read_context,
       toolsContext.terminal_read_context,
       'call-1',
@@ -200,7 +200,7 @@ describe('capabilityTools terminal context reader', () => {
   });
 
   it('asks for sessionId when multiple scoped terminals are available', async () => {
-    const { tools, toolsContext } = createCattyToolsFromCatalog(
+    const { tools, toolsContext } = createMagiesTerminalToolsFromCatalog(
       {},
       {
         sessions: [
@@ -214,7 +214,7 @@ describe('capabilityTools terminal context reader', () => {
       'chat-1',
     );
 
-    const result = await withCattyToolContext(
+    const result = await withMagiesTerminalToolContext(
       tools.terminal_read_context,
       toolsContext.terminal_read_context,
       'call-1',
