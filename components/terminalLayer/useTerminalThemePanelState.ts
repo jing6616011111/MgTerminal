@@ -43,7 +43,7 @@ interface UseTerminalThemePanelStateOptions {
   onUpdateTerminalThemeId?: (themeId: string) => void;
   onUpdateSessionFontSize?: (sessionId: string, fontSize: number) => void;
   onClearSessionFontSizeOverride?: (sessionId: string) => void;
-  pickTheme: (themeId: string) => void;
+  pickTheme: (themeId: string, options?: { followApp?: boolean; scopeHostId?: string | null }) => void;
   resolveFocusedAppearance: (hostScope: TerminalAppearanceHostScope) => ResolvedAppearance;
   sessionHostsMap: Map<string, Host>;
   terminalFontFamilyId: string;
@@ -168,17 +168,21 @@ export function useTerminalThemePanelState({
 
   const handleThemeChangeForFocusedSession = useCallback((themeId: string) => {
     if (themeId === listSelectedThemeId) return;
-    if (!focusedHost && !followAppTerminalTheme) return;
 
     if (followAppTerminalTheme) {
       pickTheme(themeId);
       return;
     }
 
+    // Allow picking even when no host is focused (updates global / intent preview).
     pickTheme(themeId, {
       followApp: false,
       scopeHostId: rawFocusedHost?.id ?? focusedHost?.id ?? null,
     });
+    if (!focusedHost) {
+      onUpdateTerminalThemeId?.(themeId);
+      return;
+    }
     if (isFocusedHostEphemeral) {
       onUpdateTerminalThemeId?.(themeId);
     } else if (rawFocusedHost) {

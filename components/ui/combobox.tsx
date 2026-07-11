@@ -23,6 +23,8 @@ interface ComboboxProps {
     className?: string;
     triggerClassName?: string;
     disabled?: boolean;
+    /** Open the options list on mount (e.g. right after choosing Key). */
+    defaultOpen?: boolean;
 }
 
 export const comboboxWheelDeltaToPixels = (deltaY: number, deltaMode: number): number => {
@@ -81,8 +83,9 @@ export function Combobox({
     className,
     triggerClassName,
     disabled = false,
+    defaultOpen = false,
 }: ComboboxProps) {
-    const [open, setOpen] = React.useState(false)
+    const [open, setOpen] = React.useState(defaultOpen)
     const [inputValue, setInputValue] = React.useState("")
     // Track if user is actively searching (typed something after opening)
     const [isSearching, setIsSearching] = React.useState(false)

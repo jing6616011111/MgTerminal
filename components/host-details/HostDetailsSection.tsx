@@ -50,7 +50,7 @@ export function HostDetailsSection({
   action?: React.ReactNode;
 }) {
   return (
-    <Card className={cn("p-3 space-y-3 bg-card border-border/80 shadow-sm", className)}>
+    <Card className={cn("space-y-3.5 border-border/80 bg-card p-3.5 shadow-sm", className)}>
       <div className="flex min-h-5 items-center gap-1.5">
         <span className="flex h-5 w-4 shrink-0 items-center justify-center text-muted-foreground [&>img]:block [&>img]:h-4 [&>img]:w-4 [&>img]:object-contain [&>svg]:block [&>svg]:h-4 [&>svg]:w-4">
           {icon}

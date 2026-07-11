@@ -39,7 +39,11 @@ const ThemeItem = memo(({
   <div
     role="button"
     tabIndex={0}
-    onClick={() => onSelect(theme.id)}
+    onPointerDown={(e) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      onSelect(theme.id);
+    }}
     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(theme.id); } }}
     className={cn(
       'w-full flex items-center gap-2.5 px-3 py-2 text-left group cursor-pointer'

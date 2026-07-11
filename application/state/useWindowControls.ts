@@ -27,7 +27,13 @@ export const useWindowControls = () => {
 
   const openSettingsWindow = useCallback(async () => {
     const bridge = magiesTerminalBridge.get();
-    return bridge?.openSettingsWindow?.();
+    if (!bridge?.openSettingsWindow) return false;
+    try {
+      return Boolean(await bridge.openSettingsWindow());
+    } catch (error) {
+      console.error("[MagiesTerminal] Failed to open settings window:", error);
+      return false;
+    }
   }, []);
 
   const minimize = useCallback(async () => {

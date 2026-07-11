@@ -188,7 +188,12 @@ function createSettingsWindowApi(ctx) {
       }
       const isAllowedTopLevelUrl = (targetUrl) => {
         try {
-          return allowedOrigins.has(new URL(String(targetUrl)).origin);
+          const parsedUrl = new URL(String(targetUrl));
+          // app:// is a privileged custom scheme. Chromium/Node report its
+          // WHATWG origin as the string "null", so matching `app://magiesTerminal`
+          // via `.origin` fails in packaged builds and blocks settings navigation.
+          if (parsedUrl.protocol === "app:" && parsedUrl.host === "magiesTerminal") return true;
+          return allowedOrigins.has(parsedUrl.origin);
         } catch {
           return false;
         }
@@ -264,22 +269,31 @@ function createSettingsWindowApi(ctx) {
       // Load the settings page
       const settingsPath = '/#/settings';
     
-      if (isDev) {
-        try {
-          const baseUrl = getDevRendererBaseUrl(devServerUrl);
-          await win.loadURL(`${baseUrl}${settingsPath}`);
-          if (showOnLoad) { showAndFocusWindow(win); }
-          return win;
-        } catch (e) {
-          console.warn("Dev server not reachable for settings window", e);
+      try {
+        if (isDev) {
+          try {
+            const baseUrl = getDevRendererBaseUrl(devServerUrl);
+            await win.loadURL(`${baseUrl}${settingsPath}`);
+            if (showOnLoad) { showAndFocusWindow(win); }
+            return win;
+          } catch (e) {
+            console.warn("Dev server not reachable for settings window", e);
+          }
         }
+    
+        // Production mode - load via custom protocol.
+        await win.loadURL("app://magiesTerminal/index.html#/settings");
+        if (showOnLoad) { showAndFocusWindow(win); }
+        return win;
+      } catch (err) {
+        try {
+          if (!win.isDestroyed()) win.destroy();
+        } catch {
+          // ignore
+        }
+        if (settingsWindow === win) settingsWindow = null;
+        throw err;
       }
-    
-      // Production mode - load via custom protocol.
-      await win.loadURL("app://magiesTerminal/index.html#/settings");
-      if (showOnLoad) { showAndFocusWindow(win); }
-    
-      return win;
     }
     
     /**

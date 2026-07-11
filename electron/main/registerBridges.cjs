@@ -774,37 +774,39 @@ function createBridgeRegistrar(context) {
     });
   
     // Select a file and return the selected path
-    ipcMain.handle("magiesTerminal:selectFile", async (_event, { title, defaultPath, filters }) => {
-      const { dialog } = electronModule;
-  
-      const result = await dialog.showOpenDialog({
+    ipcMain.handle("magiesTerminal:selectFile", async (event, { title, defaultPath, filters }) => {
+      const { dialog, BrowserWindow } = electronModule;
+      const owner = BrowserWindow.fromWebContents(event.sender) || undefined;
+
+      const result = await dialog.showOpenDialog(owner, {
         title: title || "Select File",
         defaultPath: defaultPath || os.homedir(),
         filters: filters || [{ name: "All Files", extensions: ["*"] }],
         properties: ["openFile", "showHiddenFiles"],
       });
-  
+
       if (result.canceled || !result.filePaths.length) {
         return null;
       }
-  
+
       return result.filePaths[0];
     });
-  
+
     // Select a directory and return the selected path
-    ipcMain.handle("magiesTerminal:selectDirectory", async (_event, { title, defaultPath }) => {
-      const { dialog } = electronModule;
-  
-      const result = await dialog.showOpenDialog({
+    ipcMain.handle("magiesTerminal:selectDirectory", async (event, { title, defaultPath }) => {
+      const { dialog, BrowserWindow } = electronModule;
+      const owner = BrowserWindow.fromWebContents(event.sender) || undefined;
+
+      const result = await dialog.showOpenDialog(owner, {
         title: title || "Select Directory",
-        defaultPath,
+        defaultPath: defaultPath || os.homedir(),
         properties: ["openDirectory", "createDirectory"],
       });
-  
+
       if (result.canceled || !result.filePaths.length) {
         return null;
       }
-  
+
       return result.filePaths[0];
     });
   

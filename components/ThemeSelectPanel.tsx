@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
     AsidePanel,
-    AsidePanelContent,
     type AsidePanelLayout,
     type AsidePanelResizeProps,
 } from './ui/aside-panel';
@@ -32,6 +31,11 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelPropsWithResize> = ({
     persistWidthStorageKey,
     resizeAriaLabel,
 }) => {
+    // Select on pointerdown so macOS/Electron overlay scrollbars cannot swallow the click.
+    const handleSelect = useCallback((themeId: string) => {
+        onSelect(themeId);
+    }, [onSelect]);
+
     return (
         <AsidePanel
             open={open}
@@ -44,16 +48,15 @@ const ThemeSelectPanel: React.FC<ThemeSelectPanelPropsWithResize> = ({
             persistWidthStorageKey={persistWidthStorageKey}
             resizeAriaLabel={resizeAriaLabel}
         >
-            <AsidePanelContent className="p-0">
-                <ScrollArea className="h-full">
-                    <div className="py-2">
-                        <ThemeList
-                            selectedThemeId={selectedThemeId || ''}
-                            onSelect={onSelect}
-                        />
-                    </div>
-                </ScrollArea>
-            </AsidePanelContent>
+            {/* Single ScrollArea only — avoid nesting another scroller that ate clicks. */}
+            <ScrollArea className="min-h-0 min-w-0 flex-1">
+                <div className="py-2">
+                    <ThemeList
+                        selectedThemeId={selectedThemeId || ''}
+                        onSelect={handleSelect}
+                    />
+                </div>
+            </ScrollArea>
         </AsidePanel>
     );
 };

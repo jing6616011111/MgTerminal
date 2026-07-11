@@ -61,7 +61,6 @@ export const HostDetailsConnectionSections: React.FC<HostDetailsConnectionSectio
         <HostDetailsSection
           icon={<KeyRound size={14} className="text-muted-foreground" />}
           title={t("hostDetails.section.portCredentials")}
-          className="overflow-hidden"
         >
           <div className="flex items-center gap-2">
             <div className="flex-1 min-w-0 h-10 flex items-center gap-2 bg-secondary/70 border border-border/70 rounded-md px-3">
@@ -468,7 +467,35 @@ export const HostDetailsConnectionSections: React.FC<HostDetailsConnectionSectio
                     emptyText={t("hostDetails.keys.empty")}
                     icon={<Key size={14} className="text-muted-foreground" />}
                     className="flex-1"
+                    defaultOpen
                   />
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        className="h-8 w-8 shrink-0"
+                        onClick={async () => {
+                          const bridge = (window as unknown as { magiesTerminal?: MagiesTerminalBridge }).magiesTerminal;
+                          if (!bridge?.selectFile) return;
+                          const homeDir = await bridge.getHomeDir?.().catch(() => null);
+                          const sshDir = homeDir ? `${homeDir}/.ssh` : undefined;
+                          const filePath = await bridge.selectFile(
+                            t("hostDetails.credential.browseKeyFile"),
+                            sshDir,
+                            [{ name: "All Files", extensions: ["*"] }],
+                          );
+                          if (filePath) {
+                            addLocalKeyFilePath(filePath);
+                            setSelectedCredentialType(null);
+                          }
+                        }}
+                      >
+                        <FolderOpen size={14} />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t("hostDetails.credential.browseKeyFile")}</TooltipContent>
+                  </Tooltip>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -507,6 +534,7 @@ export const HostDetailsConnectionSections: React.FC<HostDetailsConnectionSectio
                       <Shield size={14} className="text-muted-foreground" />
                     }
                     className="flex-1"
+                    defaultOpen
                   />
                   <Button
                     variant="ghost"
@@ -547,10 +575,12 @@ export const HostDetailsConnectionSections: React.FC<HostDetailsConnectionSectio
                           onClick={async () => {
                             const bridge = (window as unknown as { magiesTerminal?: MagiesTerminalBridge }).magiesTerminal;
                             if (!bridge?.selectFile) return;
+                            const homeDir = await bridge.getHomeDir?.().catch(() => null);
+                            const sshDir = homeDir ? `${homeDir}/.ssh` : undefined;
                             const filePath = await bridge.selectFile(
-                              "Select SSH Private Key",
-                              undefined,
-                              [{ name: "All Files", extensions: ["*"] }]
+                              t("hostDetails.credential.browseKeyFile"),
+                              sshDir,
+                              [{ name: "All Files", extensions: ["*"] }],
                             );
                             if (filePath) {
                               addLocalKeyFilePath(filePath);

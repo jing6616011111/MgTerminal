@@ -21,7 +21,19 @@ const ThemeItem = memo(({
     onSelect: (id: string) => void;
 }) => (
     <button
-        onClick={() => onSelect(theme.id)}
+        type="button"
+        onPointerDown={(event) => {
+            if (event.button !== 0) return;
+            // Prevent the follow-up click; overlay scrollbars in Electron often swallow clicks.
+            event.preventDefault();
+            onSelect(theme.id);
+        }}
+        onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                onSelect(theme.id);
+            }
+        }}
         className={cn(
             'w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all',
             isSelected
@@ -95,7 +107,18 @@ export const ThemeList: React.FC<ThemeListProps> = ({ selectedThemeId, onSelect,
         <>
             {showAutoOption && (
                 <button
-                    onClick={() => onSelect(TERMINAL_THEME_AUTO)}
+                    type="button"
+                    onPointerDown={(event) => {
+                        if (event.button !== 0) return;
+                        event.preventDefault();
+                        onSelect(TERMINAL_THEME_AUTO);
+                    }}
+                    onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            onSelect(TERMINAL_THEME_AUTO);
+                        }
+                    }}
                     className={cn(
                         'w-full flex items-center gap-3 px-3 py-2.5 mb-3 rounded-md text-left transition-all',
                         isAutoSelected ? 'bg-primary/10' : 'hover:bg-muted',

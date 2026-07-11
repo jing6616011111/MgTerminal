@@ -147,8 +147,8 @@ export const AsidePanelContent: React.FC<{ children: ReactNode; className?: stri
     className,
 }) => {
     return (
-        <ScrollArea className={cn("flex-1 min-w-0 [&>[data-radix-scroll-area-viewport]>div]:!block [&>[data-radix-scroll-area-viewport]>div]:!min-w-0", className)}>
-            <div className="p-4 space-y-4 min-w-0 overflow-hidden">
+        <ScrollArea className={cn("min-h-0 flex-1 min-w-0 [&>[data-radix-scroll-area-viewport]>div]:!block [&>[data-radix-scroll-area-viewport]>div]:!min-w-0", className)}>
+            <div className="space-y-4 min-w-0 overflow-x-hidden p-4 pb-5">
                 {children}
             </div>
         </ScrollArea>
