@@ -753,8 +753,11 @@ jobs:
       - name: Verify update metadata files
         run: |
           missing=0
-          # macOS/Windows builds are disabled; only check Linux update ymls.
-          for f in latest.yml latest-linux.yml latest-linux-arm64.yml; do
+          # macOS/Windows builds are disabled.
+          # latest.yml = Windows updater (not built).
+          # latest-mac.yml = macOS updater (not built).
+          # Only require the two Linux update ymls.
+          for f in latest-linux.yml latest-linux-arm64.yml; do
             if [ ! -f "artifacts/$f" ]; then
               echo "::warning::Missing $f in merged artifacts, attempting recovery..."
               missing=1
@@ -766,7 +769,7 @@ jobs:
               tmpdir="/tmp/artifact-${name}"
               gh run download ${{ github.run_id }} --name "${name}" --dir "${tmpdir}" 2>/dev/null || true
               if [ -d "${tmpdir}" ]; then
-                for yml in "${tmpdir}"/latest*.yml; do
+                for yml in "${tmpdir}"/latest-linux*.yml; do
                   [ -f "$yml" ] && cp -v "$yml" artifacts/
                 done
               fi
@@ -774,8 +777,8 @@ jobs:
             echo "After recovery:"
             ls -la artifacts/*.yml 2>/dev/null || echo "(no yml files found)"
           fi
-          # Final check — fail if Linux update ymls are still missing
-          for f in latest.yml latest-linux.yml latest-linux-arm64.yml; do
+          # Final check — only Linux update ymls required.
+          for f in latest-linux.yml latest-linux-arm64.yml; do
             if [ ! -f "artifacts/$f" ]; then
               echo "::error::$f is still missing after recovery attempt"
               exit 1
