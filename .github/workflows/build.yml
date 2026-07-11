@@ -334,7 +334,17 @@ jobs:
           APPLE_ID: ${{ matrix.name == 'macos' && secrets.APPLE_ID || '' }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ matrix.name == 'macos' && secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
           APPLE_TEAM_ID: ${{ matrix.name == 'macos' && secrets.APPLE_TEAM_ID || '' }}
-        run: npm run ${{ matrix.pack_script }}
+        shell: bash
+        # Empty CSC_LINK makes electron-builder resolve the cert path to the
+        # project directory and fail with "not a file" on non-PR builds, so
+        # unset signing vars when the secrets are absent (fork/secondary dev).
+        run: |
+          for signing_var in CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID; do
+            if [ -z "${!signing_var}" ]; then
+              unset "$signing_var"
+            fi
+          done
+          npm run ${{ matrix.pack_script }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

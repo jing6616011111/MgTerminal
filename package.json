@@ -5,7 +5,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "author": "binaricat and MagiesTerminal contributors",
+  "author": {
+    "name": "binaricat and MagiesTerminal contributors",
+    "email": "470059464@qq.com"
+  },
   "license": "GPL-3.0-or-later",
   "engines": {
     "node": ">=22"
