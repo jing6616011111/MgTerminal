@@ -242,12 +242,71 @@ async function connectToHostFromSystemMenu(hostId) {
   await sendToMainWindow("magiesTerminal:trayPanel:connectToHost", hostId);
 }
 
+/**
+ * Match main.cjs: never treat a packaged app as "dev" even if VITE_DEV_SERVER_URL
+ * is set in the process environment. Otherwise a packaged tray panel could load a
+ * remote URL with the privileged preload bridge.
+ */
+function getTrayPanelDevServerUrl() {
+  const packaged = electronModule?.app?.isPackaged === true;
+  const raw = process.env.VITE_DEV_SERVER_URL;
+  if (packaged || typeof raw !== "string" || raw.length === 0) {
+    return undefined;
+  }
+  return raw;
+}
+
 function getTrayPanelUrl() {
-  const devServerUrl = process.env.VITE_DEV_SERVER_URL;
+  const devServerUrl = getTrayPanelDevServerUrl();
   if (devServerUrl) {
     return `${devServerUrl.replace(/\/$/, "")}/#/tray`;
   }
   return "app://magiesTerminal/index.html#/tray";
+}
+
+function getTrayPanelAllowedOrigins() {
+  const allowedOrigins = new Set(["app://magiesterminal"]);
+  const devServerUrl = getTrayPanelDevServerUrl();
+  if (!devServerUrl) return allowedOrigins;
+  try {
+    allowedOrigins.add(new URL(devServerUrl).origin.toLowerCase());
+  } catch {
+    // ignore invalid dev server URL
+  }
+  return allowedOrigins;
+}
+
+function isAllowedTrayPanelUrl(targetUrl, allowedOrigins = getTrayPanelAllowedOrigins()) {
+  try {
+    const parsedUrl = new URL(String(targetUrl));
+    if (parsedUrl.protocol === "app:" && parsedUrl.host.toLowerCase() === "magiesterminal") {
+      return true;
+    }
+    return allowedOrigins.has(parsedUrl.origin.toLowerCase());
+  } catch {
+    return false;
+  }
+}
+
+function attachTrayPanelNavigationGuards(win) {
+  if (!win?.webContents) return;
+  const allowedOrigins = getTrayPanelAllowedOrigins();
+  const blockUntrustedNavigation = (event, targetUrl) => {
+    if (isAllowedTrayPanelUrl(targetUrl, allowedOrigins)) return;
+    try {
+      event.preventDefault();
+    } catch {
+      // ignore
+    }
+    console.warn("[TrayPanel] Blocked navigation to untrusted origin:", targetUrl);
+  };
+  win.webContents.on("will-navigate", blockUntrustedNavigation);
+  win.webContents.on("will-redirect", blockUntrustedNavigation);
+  // Tray panel must never spawn child windows; deny all window.open / target=_blank.
+  win.webContents.setWindowOpenHandler?.((details) => {
+    console.warn("[TrayPanel] Blocked window open:", details?.url);
+    return { action: "deny" };
+  });
 }
 
 function ensureTrayPanelWindow() {
@@ -288,6 +347,8 @@ function ensureTrayPanelWindow() {
       // ignore
     }
   });
+
+  attachTrayPanelNavigationGuards(trayPanelWindow);
 
   const url = getTrayPanelUrl();
   console.log("[TrayPanel] loadURL", url);
@@ -1059,4 +1120,9 @@ module.exports = {
   clearPendingFullscreenHide,
   cleanup,
   getTray: () => tray,
+  // Exported for unit tests
+  getTrayPanelDevServerUrl,
+  getTrayPanelUrl,
+  isAllowedTrayPanelUrl,
+  attachTrayPanelNavigationGuards,
 };

@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.6] - 2026-07-12
+
+### 安全
+- 打包版托盘窗口忽略 `VITE_DEV_SERVER_URL`，并拦截导航 / 新窗口
+- preload 在 `app.asar` 环境下不再把开发服务器加入可信来源
+- 覆盖升级 DOMPurify 3.3.2、undici 6.23.0，修复可达 XSS / 解压链 DoS
+- afterPack 修复 ASAR 文件完整性哈希并同步 Info.plist，避免 macOS 启动即崩溃
+
+### 修复
+- Telnet 自动登录集成测试改为等待命令提示符后再断言完成事件
+
 ## [0.2.5] - 2026-07-12
 
 ### 修复

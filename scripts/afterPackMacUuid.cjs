@@ -253,6 +253,146 @@ function pruneAsarHeaderEntries(asarPath, entryPaths) {
   return removed;
 }
 
+function sha256Hex(buf) {
+  return crypto.createHash("sha256").update(buf).digest("hex");
+}
+
+/**
+ * electron-builder / @electron/asar can embed per-file integrity hashes that
+ * don't match the bytes actually packed (notably transformed package.json).
+ * With enableEmbeddedAsarIntegrityValidation the app then exits at launch.
+ * Recompute hashes from the packed payload after any afterPack mutations.
+ */
+function repairAsarFileIntegrity(asarPath) {
+  if (!fs.existsSync(asarPath)) return { fixed: 0 };
+
+  const { header, headerSize } = readAsarHeader(asarPath);
+  const fd = fs.openSync(asarPath, "r");
+  let fixed = 0;
+  try {
+    const sizeBuf = Buffer.alloc(8);
+    fs.readSync(fd, sizeBuf, 0, 8, 0);
+    const headerSizeOnDisk = sizeBuf.readUInt32LE(4);
+    const base = 8 + headerSizeOnDisk;
+
+    const fixNode = (node) => {
+      if (node.files) {
+        for (const child of Object.values(node.files)) fixNode(child);
+        return;
+      }
+      if (node.unpacked || node.offset == null || !node.integrity) return;
+      const offset = Number(node.offset);
+      const size = Number(node.size) || 0;
+      const content = Buffer.alloc(size);
+      if (size > 0) fs.readSync(fd, content, 0, size, base + offset);
+      const blockSize = Number(node.integrity.blockSize) || 4 * 1024 * 1024;
+      const blocks = [];
+      for (let i = 0; i < size; i += blockSize) {
+        blocks.push(sha256Hex(content.subarray(i, i + blockSize)));
+      }
+      const next = {
+        algorithm: "SHA256",
+        hash: sha256Hex(content),
+        blockSize,
+        blocks,
+      };
+      if (JSON.stringify(next) !== JSON.stringify(node.integrity)) {
+        node.integrity = next;
+        fixed += 1;
+      }
+    };
+    fixNode(header);
+  } finally {
+    fs.closeSync(fd);
+  }
+
+  if (fixed > 0) {
+    rewriteAsarHeader(asarPath, header, headerSize);
+  }
+  return { fixed };
+}
+
+/**
+ * Prefer in-place rewrite when the new header fits the existing budget (keeps
+ * payload offsets stable). Otherwise rebuild the archive with a larger header.
+ */
+function rewriteAsarHeader(asarPath, header, originalHeaderSize) {
+  const headerString = JSON.stringify(header);
+  const headerStringLength = Buffer.byteLength(headerString);
+  const fixedPrefixSize = 8;
+  if (fixedPrefixSize + headerStringLength <= originalHeaderSize) {
+    writeAsarHeaderPreservingDataOffset(asarPath, header, originalHeaderSize);
+    return originalHeaderSize;
+  }
+
+  const headerPayloadSize = 4 + align4(headerStringLength);
+  const newHeaderSize = 4 + headerPayloadSize;
+  const sizeBuf = Buffer.alloc(8);
+  sizeBuf.writeUInt32LE(4, 0);
+  sizeBuf.writeUInt32LE(newHeaderSize, 4);
+
+  const headerBuf = Buffer.alloc(newHeaderSize);
+  headerBuf.writeUInt32LE(headerPayloadSize, 0);
+  headerBuf.writeInt32LE(headerStringLength, 4);
+  headerBuf.write(headerString, fixedPrefixSize, headerStringLength, "utf8");
+
+  const fd = fs.openSync(asarPath, "r");
+  let payload;
+  try {
+    const oldSizeBuf = Buffer.alloc(8);
+    fs.readSync(fd, oldSizeBuf, 0, 8, 0);
+    const oldHeaderSize = oldSizeBuf.readUInt32LE(4);
+    const stat = fs.fstatSync(fd);
+    const payloadSize = stat.size - 8 - oldHeaderSize;
+    payload = Buffer.alloc(payloadSize);
+    if (payloadSize > 0) fs.readSync(fd, payload, 0, payloadSize, 8 + oldHeaderSize);
+  } finally {
+    fs.closeSync(fd);
+  }
+
+  fs.writeFileSync(asarPath, Buffer.concat([sizeBuf, headerBuf, payload]));
+  return newHeaderSize;
+}
+
+function align4(value) {
+  return value + ((4 - (value % 4)) % 4);
+}
+
+function readAsarHeaderString(asarPath) {
+  const fd = fs.openSync(asarPath, "r");
+  try {
+    const sizeBuf = Buffer.alloc(8);
+    fs.readSync(fd, sizeBuf, 0, 8, 0);
+    const headerSize = sizeBuf.readUInt32LE(4);
+    const headerBuf = Buffer.alloc(headerSize);
+    fs.readSync(fd, headerBuf, 0, headerSize, 8);
+    const payloadSize = headerBuf.readUInt32LE(0);
+    const payload = headerBuf.subarray(4, 4 + payloadSize);
+    const strlen = payload.readInt32LE(0);
+    return payload.subarray(4, 4 + strlen);
+  } finally {
+    fs.closeSync(fd);
+  }
+}
+
+/**
+ * macOS Electron validates the ASAR *header JSON* against ElectronAsarIntegrity
+ * in Info.plist. Update that hash after any afterPack header rewrite.
+ */
+function updateMacAsarIntegrityPlist(appPath, asarPath) {
+  const plistPath = path.join(appPath, "Contents", "Info.plist");
+  if (!fs.existsSync(plistPath) || !fs.existsSync(asarPath)) return null;
+
+  const headerHash = sha256Hex(readAsarHeaderString(asarPath));
+  const integrityJson = JSON.stringify({
+    "Resources/app.asar": { algorithm: "SHA256", hash: headerHash },
+  });
+  execFileSync("plutil", ["-replace", "ElectronAsarIntegrity", "-json", integrityJson, plistPath], {
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  return headerHash;
+}
+
 function pruneCursorSdkPlatformPackages(context) {
   const platform = context.electronPlatformName;
   const candidates = cursorPlatformPackageBases(platform);
@@ -299,6 +439,12 @@ async function afterPack(context) {
     );
   }
 
+  const appAsar = path.join(appResourcesDir(context), "app.asar");
+  const { fixed } = repairAsarFileIntegrity(appAsar);
+  if (fixed > 0) {
+    console.log(`[afterPack] Repaired ${fixed} ASAR file integrity hash(es)`);
+  }
+
   if (context.electronPlatformName !== "darwin") return;
 
   const appId = context.packager.appInfo.id || "top.magies.terminal";
@@ -313,6 +459,11 @@ async function afterPack(context) {
 
   if (!fs.existsSync(exePath)) {
     throw new Error(`[afterPack] macOS executable not found: ${exePath}`);
+  }
+
+  const headerHash = updateMacAsarIntegrityPlist(appPath, appAsar);
+  if (headerHash) {
+    console.log(`[afterPack] Updated Info.plist ElectronAsarIntegrity hash=${headerHash}`);
   }
 
   const uuid = deriveUuid(appId);
@@ -348,5 +499,9 @@ module.exports.patchMachOBuffer = patchMachOBuffer;
 module.exports.patchMachOFile = patchMachOFile;
 module.exports.adHocSignAppBundle = adHocSignAppBundle;
 module.exports.readAsarHeader = readAsarHeader;
+module.exports.writeAsarHeaderPreservingDataOffset = writeAsarHeaderPreservingDataOffset;
 module.exports.pruneAsarHeaderEntries = pruneAsarHeaderEntries;
 module.exports.pruneCursorSdkPlatformPackages = pruneCursorSdkPlatformPackages;
+module.exports.repairAsarFileIntegrity = repairAsarFileIntegrity;
+module.exports.readAsarHeaderString = readAsarHeaderString;
+module.exports.updateMacAsarIntegrityPlist = updateMacAsarIntegrityPlist;

@@ -54,3 +54,32 @@ test('incoming SSH links require explicit user confirmation before connecting', 
   assert.match(handler, /globalThis\.confirm/);
   assert.match(handler, /deepLink\.ssh\.confirm/);
 });
+
+test('packaged tray panel and preload ignore VITE_DEV_SERVER_URL', () => {
+  const trayBridge = fs.readFileSync(
+    path.join(root, 'electron/bridges/globalShortcutBridge.cjs'),
+    'utf8',
+  );
+  const preload = fs.readFileSync(path.join(root, 'electron/preload.cjs'), 'utf8');
+
+  assert.match(trayBridge, /getTrayPanelDevServerUrl/);
+  assert.match(trayBridge, /app\?\.isPackaged === true/);
+  assert.match(trayBridge, /will-navigate/);
+  assert.match(trayBridge, /will-redirect/);
+  assert.match(trayBridge, /setWindowOpenHandler/);
+  assert.match(preload, /isPackagedPreloadHost/);
+  assert.match(preload, /app\.asar/);
+});
+
+test('dependency overrides pin reachable XSS and undici DoS fixes', () => {
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+  assert.equal(pkg.overrides.dompurify, '3.3.2');
+  assert.equal(pkg.overrides.undici, '6.23.0');
+});
+
+test('afterPack repairs ASAR integrity before macOS signing', () => {
+  const source = fs.readFileSync(path.join(root, 'scripts/afterPackMacUuid.cjs'), 'utf8');
+  assert.match(source, /repairAsarFileIntegrity/);
+  assert.match(source, /updateMacAsarIntegrityPlist/);
+  assert.match(source, /ElectronAsarIntegrity/);
+});

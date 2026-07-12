@@ -846,9 +846,18 @@ const figSpecApi = {
 // Merge with existing magiesTerminal (if any) to avoid stale objects on hot reload
 const existing = (typeof window !== "undefined" && window.magiesTerminal) ? window.magiesTerminal : {};
 
+function isPackagedPreloadHost() {
+  // Packaged preload scripts are loaded from inside app.asar. Never trust a
+  // process-env VITE_DEV_SERVER_URL in that case (matches electron/main.cjs).
+  return typeof __dirname === "string" && /[/\\]app\.asar[/\\]/.test(__dirname);
+}
+
 function getAllowedRendererOrigins() {
   const origins = new Set(["app://magiesterminal"]);
   const devServerUrl = process.env.VITE_DEV_SERVER_URL;
+  if (isPackagedPreloadHost()) {
+    return origins;
+  }
   if (typeof devServerUrl === "string" && devServerUrl.length > 0) {
     try {
       const u = new URL(devServerUrl);

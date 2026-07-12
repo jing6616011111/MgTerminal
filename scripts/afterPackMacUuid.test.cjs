@@ -338,3 +338,52 @@ test("pruneCursorSdkPlatformPackages keeps only the target Linux arch package", 
   assert.ok(!fs.existsSync(path.join(cursorRoot, "sdk-linux-arm64")));
   assert.ok(fs.existsSync(path.join(cursorRoot, "sdk-linux-x64")));
 });
+
+test("repairAsarFileIntegrity rewrites mismatched per-file hashes", (t) => {
+  const fs = require("node:fs");
+  const os = require("node:os");
+  const path = require("node:path");
+  const crypto = require("node:crypto");
+  const {
+    repairAsarFileIntegrity,
+    readAsarHeader,
+    writeAsarHeaderPreservingDataOffset,
+  } = require("./afterPackMacUuid.cjs");
+
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "magiesTerminal-repair-asar-"));
+  t.after(() => fs.rmSync(tempDir, { recursive: true, force: true }));
+
+  const asarPath = path.join(tempDir, "app.asar");
+  const payload = Buffer.from("hello-integrity-payload");
+  const wrongHash = "0".repeat(64);
+  const headerSize = writeFakeAsar(
+    asarPath,
+    {
+      files: {
+        "packed.txt": {
+          size: payload.length,
+          offset: "0",
+          integrity: {
+            algorithm: "SHA256",
+            hash: wrongHash,
+            blockSize: 4194304,
+            blocks: [wrongHash],
+          },
+        },
+      },
+    },
+    payload,
+  );
+
+  const { fixed } = repairAsarFileIntegrity(asarPath);
+  assert.equal(fixed, 1);
+
+  const { header, headerSize: updatedHeaderSize } = readAsarHeader(asarPath);
+  assert.equal(updatedHeaderSize, headerSize);
+  const expected = crypto.createHash("sha256").update(payload).digest("hex");
+  assert.equal(header.files["packed.txt"].integrity.hash, expected);
+  assert.deepEqual(header.files["packed.txt"].integrity.blocks, [expected]);
+
+  // Ensure rewrite still fits the original header budget.
+  writeAsarHeaderPreservingDataOffset(asarPath, header, headerSize);
+});
