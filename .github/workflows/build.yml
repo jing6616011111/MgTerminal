@@ -816,7 +816,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify downloaded Linux amd64 deb artifact
+      - name: Verify downloaded Linux amd64 deb artifact metadata
+        env:
+          # Load checks already ran in build-linux-x64; this job has no
+          # node_modules Electron binary (and runAsNode fuse is disabled on
+          # the packaged binary).
+          VERIFY_LOAD: "0"
         run: |
           deb_file="$(find artifacts -maxdepth 1 -type f -name '*-linux-amd64.deb' -print | sort | head -n 1)"
           if [ -z "${deb_file}" ]; then
