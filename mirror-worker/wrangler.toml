@@ -1,0 +1,12 @@
+# Cloudflare Worker for the mainland-China download/update mirror.
+# Deploy with: npx wrangler deploy
+name = "mgterminal-mirror"
+main = "src/worker.js"
+compatibility_date = "2026-07-01"
+
+# dl.magies.top already resolves through a proxied wildcard DNS record, so a
+# route (which attaches to existing proxied records) is used instead of a
+# custom domain (which refuses to override existing records).
+routes = [
+  { pattern = "dl.magies.top/*", zone_name = "magies.top" },
+]

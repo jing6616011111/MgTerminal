@@ -800,3 +800,68 @@ test("install handler installs directly when no main window is reachable", async
     global.setTimeout = originalSetTimeout;
   }
 });
+
+test("mainland-China locale or timezone prefers the mirror update feed", async () => {
+  await withMocks({}, async ({ bridge }) => {
+    assert.equal(bridge.shouldPreferMirrorFeed({ locale: "zh-CN", timeZone: "America/New_York" }), true);
+    assert.equal(bridge.shouldPreferMirrorFeed({ locale: "en-US", timeZone: "Asia/Shanghai" }), true);
+    assert.equal(bridge.shouldPreferMirrorFeed({ locale: "en-US", timeZone: "Europe/Berlin" }), false);
+    assert.equal(bridge.shouldPreferMirrorFeed({ locale: "zh-TW", timeZone: "Asia/Taipei" }), false);
+    assert.equal(bridge.shouldPreferMirrorFeed({}), false);
+  });
+});
+
+test("update check falls back to the mirror feed when GitHub is unreachable", async () => {
+  const feeds = [];
+  const autoUpdater = {
+    autoDownload: true,
+    autoInstallOnAppQuit: false,
+    logger: undefined,
+    on() {},
+    setFeedURL(options) {
+      feeds.push(options);
+    },
+    async checkForUpdates() {
+      const active = feeds.at(-1);
+      if (!active || active.provider === "github") {
+        throw new Error("net::ERR_CONNECTION_TIMED_OUT");
+      }
+      return { updateInfo: { version: "9.9.9" } };
+    },
+  };
+
+  await withMocks({ autoUpdater }, async ({ bridge }) => {
+    const result = await bridge.checkForUpdatesWithFallback(autoUpdater, "github");
+
+    assert.equal(result.updateInfo.version, "9.9.9");
+    assert.equal(feeds.at(-1).provider, "generic");
+    assert.match(feeds.at(-1).url, /dl\.magies\.top/);
+  });
+});
+
+test("mirror-first update check falls back to GitHub when the mirror fails", async () => {
+  const feeds = [];
+  const autoUpdater = {
+    autoDownload: true,
+    autoInstallOnAppQuit: false,
+    logger: undefined,
+    on() {},
+    setFeedURL(options) {
+      feeds.push(options);
+    },
+    async checkForUpdates() {
+      const active = feeds.at(-1);
+      if (active && active.provider === "generic") {
+        throw new Error("net::ERR_NAME_NOT_RESOLVED");
+      }
+      return { updateInfo: { version: "9.9.9" } };
+    },
+  };
+
+  await withMocks({ autoUpdater }, async ({ bridge }) => {
+    const result = await bridge.checkForUpdatesWithFallback(autoUpdater, "mirror");
+
+    assert.equal(result.updateInfo.version, "9.9.9");
+    assert.equal(feeds.at(-1).provider, "github");
+  });
+});

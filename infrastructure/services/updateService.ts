@@ -7,6 +7,12 @@
  */
 
 import { magiesTerminalBridge } from "./magiesTerminalBridge";
+import {
+  MIRROR_MANIFEST_URL,
+  detectPreferMirror,
+  manifestToReleaseInfo,
+  type MirrorManifest,
+} from "./updateMirror";
 
 // ================================
 // Part 1: GitHub API Version Check
@@ -69,48 +75,67 @@ export function compareVersions(a: string, b: string): number {
   return 0;
 }
 
+const RELEASE_FETCH_TIMEOUT_MS = 8000;
+
+async function fetchWithTimeout(url: string, headers?: Record<string, string>): Promise<Response> {
+  const response = await fetch(url, { headers, signal: AbortSignal.timeout(RELEASE_FETCH_TIMEOUT_MS) });
+  if (!response.ok) {
+    throw new Error(`${url} returned ${response.status}`);
+  }
+  return response;
+}
+
+async function fetchGithubRelease(): Promise<ReleaseInfo> {
+  const response = await fetchWithTimeout(GITHUB_API_URL, { Accept: 'application/vnd.github.v3+json' });
+  const data = await response.json();
+  return {
+    version: (data.tag_name as string).replace(/^v/i, ''),
+    tagName: data.tag_name,
+    name: data.name || data.tag_name,
+    body: data.body || '',
+    htmlUrl: data.html_url,
+    publishedAt: data.published_at,
+    assets: (data.assets || []).map((a: { name: string; browser_download_url: string; size: number }) => ({
+      name: a.name,
+      browserDownloadUrl: a.browser_download_url,
+      size: a.size,
+    })),
+  };
+}
+
+async function fetchMirrorRelease(): Promise<ReleaseInfo> {
+  const response = await fetchWithTimeout(MIRROR_MANIFEST_URL);
+  return manifestToReleaseInfo((await response.json()) as MirrorManifest);
+}
+
 /**
- * Check for updates via GitHub API (compares version strings).
- * Used by useUpdateCheck for the notification banner.
+ * Check for updates by version-string comparison; used by useUpdateCheck for
+ * the notification banner. Mainland-China clients (detected via locale /
+ * timezone) query the R2 mirror first, everyone else GitHub first; either
+ * source falls back to the other on failure.
  */
 export async function checkForUpdates(currentVersion: string): Promise<UpdateCheckResult> {
-  try {
-    const response = await fetch(GITHUB_API_URL, {
-      headers: { Accept: 'application/vnd.github.v3+json' },
-    });
+  const sources = detectPreferMirror()
+    ? [fetchMirrorRelease, fetchGithubRelease]
+    : [fetchGithubRelease, fetchMirrorRelease];
 
-    if (!response.ok) {
-      throw new Error(`GitHub API returned ${response.status}`);
+  let lastError: unknown = null;
+  for (const fetchRelease of sources) {
+    try {
+      const latestRelease = await fetchRelease();
+      const hasUpdate = compareVersions(latestRelease.version, currentVersion) > 0;
+      return { hasUpdate, currentVersion, latestRelease };
+    } catch (error) {
+      lastError = error;
     }
-
-    const data = await response.json();
-    const latestVersion = (data.tag_name as string).replace(/^v/i, '');
-
-    const latestRelease: ReleaseInfo = {
-      version: latestVersion,
-      tagName: data.tag_name,
-      name: data.name || data.tag_name,
-      body: data.body || '',
-      htmlUrl: data.html_url,
-      publishedAt: data.published_at,
-      assets: (data.assets || []).map((a: { name: string; browser_download_url: string; size: number }) => ({
-        name: a.name,
-        browserDownloadUrl: a.browser_download_url,
-        size: a.size,
-      })),
-    };
-
-    const hasUpdate = compareVersions(latestVersion, currentVersion) > 0;
-
-    return { hasUpdate, currentVersion, latestRelease };
-  } catch (error) {
-    return {
-      hasUpdate: false,
-      currentVersion,
-      latestRelease: null,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
   }
+
+  return {
+    hasUpdate: false,
+    currentVersion,
+    latestRelease: null,
+    error: lastError instanceof Error ? lastError.message : 'Unknown error',
+  };
 }
 
 /**

@@ -108,6 +108,63 @@ let _isChecking = false;
  * @type {{ status: 'idle' | 'available' | 'downloading' | 'ready' | 'installing' | 'error', percent: number, error: string | null, version: string | null, isChecking: boolean }}
  */
 let _lastStatus = { status: 'idle', percent: 0, error: null, version: null, isChecking: false };
+/**
+ * R2 download mirror feed (dl.magies.top) for mainland-China users, who cannot
+ * reach github.com. CI mirrors every release there (build.yml "Sync release
+ * to R2"), including the latest*.yml metadata electron-updater needs, so the
+ * generic provider works as a drop-in feed.
+ */
+const MIRROR_FEED_URL = "https://dl.magies.top/stable";
+const GITHUB_FEED = { provider: "github", owner: "JasonZhangDad", repo: "MgTerminal" };
+const CN_TIMEZONES = new Set(["Asia/Shanghai", "Asia/Urumqi", "Asia/Chongqing", "Asia/Harbin"]);
+
+/** Region heuristic mirroring updateMirror.ts: zh-CN locale or CN timezone. */
+function shouldPreferMirrorFeed({ locale, timeZone } = {}) {
+  if (locale && /^zh-CN/i.test(locale)) return true;
+  if (timeZone && CN_TIMEZONES.has(timeZone)) return true;
+  return false;
+}
+
+function detectPreferredFeed() {
+  try {
+    const { app } = _deps?.electronModule || {};
+    const preferMirror = shouldPreferMirrorFeed({
+      locale: app?.getLocale?.(),
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    });
+    return preferMirror ? "mirror" : "github";
+  } catch {
+    return "github";
+  }
+}
+
+function applyFeed(updater, feed) {
+  if (feed === "mirror") {
+    updater.setFeedURL({ provider: "generic", url: MIRROR_FEED_URL });
+  } else {
+    updater.setFeedURL(GITHUB_FEED);
+  }
+}
+
+/**
+ * checkForUpdates on the region-preferred feed, retrying once on the other
+ * feed when the preferred one fails (GitHub unreachable from mainland China;
+ * the mirror could equally be down for everyone else).
+ */
+async function checkForUpdatesWithFallback(updater, preferredFeed = detectPreferredFeed()) {
+  applyFeed(updater, preferredFeed);
+  try {
+    return await updater.checkForUpdates();
+  } catch (err) {
+    const fallbackFeed = preferredFeed === "mirror" ? "github" : "mirror";
+    console.warn(
+      `[AutoUpdate] ${preferredFeed} feed check failed (${err?.message || err}); retrying via ${fallbackFeed} feed`,
+    );
+    applyFeed(updater, fallbackFeed);
+    return await updater.checkForUpdates();
+  }
+}
+
 function getAutoUpdater() {
   if (_autoUpdater) return _autoUpdater;
   try {
@@ -233,7 +290,7 @@ function startAutoCheck(delayMs = 5000) {
     _lastStatus = { ..._lastStatus, isChecking: true };
     try {
       console.log("[AutoUpdate] Starting automatic update check...");
-      await updater.checkForUpdates();
+      await checkForUpdatesWithFallback(updater);
     } catch (err) {
       _isChecking = false;
       _lastStatus = { ..._lastStatus, isChecking: false };
@@ -469,7 +526,7 @@ function registerHandlers(ipcMain) {
     try {
       _isChecking = true;
       _lastStatus = { ..._lastStatus, isChecking: true };
-      const result = await updater.checkForUpdates();
+      const result = await checkForUpdatesWithFallback(updater);
       if (!result || !result.updateInfo) {
         return { available: false, supported: true };
       }
@@ -710,4 +767,6 @@ module.exports = {
   isAutoUpdateSupported,
   isPlatformAutoUpdateSupported,
   startAutoCheck,
+  shouldPreferMirrorFeed,
+  checkForUpdatesWithFallback,
 };
