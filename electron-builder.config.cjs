@@ -288,8 +288,10 @@ module.exports = {
     },
     publish: [
         {
-            provider: 'generic',
-            url: 'https://shell.magies.top/releases/latest'
+            provider: 'github',
+            owner: 'JasonZhangDad',
+            repo: 'MgTerminal',
+            releaseType: 'release'
         }
     ]
 };

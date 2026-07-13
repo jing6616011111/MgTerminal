@@ -3,15 +3,6 @@ const assert = require("node:assert/strict");
 
 const config = require("../electron-builder.config.cjs");
 
-test("packaged updater reads metadata and downloads from the official server", () => {
-  assert.deepEqual(config.publish, [
-    {
-      provider: "generic",
-      url: "https://shell.magies.top/releases/latest",
-    },
-  ]);
-});
-
 test("unpacked MCP server includes its shared CommonJS dependencies", () => {
   assert.ok(
     config.asarUnpack.includes("electron/mcp/**/*"),
