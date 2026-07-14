@@ -1,10 +1,11 @@
 import "@xterm/xterm/css/xterm.css";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
+import { WebglAddon } from "@xterm/addon-webgl";
 import "./style.css";
 
 const app = document.querySelector("#app");
-const state = { hosts: [], selectedHost: null, ws: null, terminal: null, fit: null, pendingFingerprint: null };
+const state = { hosts: [], selectedHost: null, ws: null, terminal: null, fit: null, resizeObserver: null, resizeFrame: null, pendingFingerprint: null };
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
@@ -135,16 +136,33 @@ async function renderConsole() {
 
 function setupTerminal() {
   const container = document.querySelector("#terminal");
+  state.resizeObserver?.disconnect();
+  if (state.resizeFrame) cancelAnimationFrame(state.resizeFrame);
   state.terminal?.dispose();
   state.terminal = new Terminal({ cursorBlink: true, convertEol: false, fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", monospace', fontSize: 14, lineHeight: 1.2, theme: { background: "#07101d", foreground: "#d9e7f3", cursor: "#57d6a7", selectionBackground: "#315b6c88", black: "#07101d", brightBlack: "#516479", green: "#57d6a7", cyan: "#50c5dc" }, scrollback: 10000 });
   state.fit = new FitAddon();
   state.terminal.loadAddon(state.fit);
   state.terminal.open(container);
-  state.fit.fit();
+  try {
+    const webgl = new WebglAddon();
+    webgl.onContextLoss(() => webgl.dispose());
+    state.terminal.loadAddon(webgl);
+  } catch {
+    // xterm automatically keeps its built-in renderer when WebGL is unavailable.
+  }
+  const scheduleFit = () => {
+    if (state.resizeFrame) cancelAnimationFrame(state.resizeFrame);
+    state.resizeFrame = requestAnimationFrame(() => {
+      state.resizeFrame = null;
+      state.fit?.fit();
+    });
+  };
+  state.resizeObserver = new ResizeObserver(scheduleFit);
+  state.resizeObserver.observe(container);
+  scheduleFit();
   state.terminal.writeln("\x1b[38;2;87;214;167mMgTerminal Web\x1b[0m — 选择服务器并点击连接\r\n");
   state.terminal.onData((data) => sendWs({ type: "input", data }));
   state.terminal.onResize(({ cols, rows }) => sendWs({ type: "resize", cols, rows }));
-  window.addEventListener("resize", () => state.fit?.fit(), { passive: true });
 }
 
 function setConnectionStatus(text, connected = false) {
@@ -152,11 +170,6 @@ function setConnectionStatus(text, connected = false) {
   if (!node) return;
   node.classList.toggle("connected", connected);
   node.innerHTML = `<span></span> ${escapeHtml(text)}`;
-}
-
-function decodeBase64(value) {
-  const bytes = Uint8Array.from(atob(value), (char) => char.charCodeAt(0));
-  return new TextDecoder().decode(bytes);
 }
 
 function sendWs(message) {
@@ -168,14 +181,22 @@ function connectSelectedHost() {
   state.ws?.close();
   const protocol = location.protocol === "https:" ? "wss:" : "ws:";
   const ws = new WebSocket(`${protocol}//${location.host}/ws/terminal`);
+  ws.binaryType = "arraybuffer";
   state.ws = ws;
   state.terminal.clear();
   state.terminal.writeln(`\x1b[90m正在连接 ${state.selectedHost.username}@${state.selectedHost.hostname}:${state.selectedHost.port} ...\x1b[0m\r\n`);
   setConnectionStatus("连接中");
   ws.addEventListener("open", () => ws.send(JSON.stringify({ type: "connect", hostId: state.selectedHost.id })));
   ws.addEventListener("message", (event) => {
+    if (state.ws !== ws) return;
+    if (event.data instanceof ArrayBuffer) {
+      const bytes = new Uint8Array(event.data);
+      state.terminal.write(bytes, () => {
+        if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: "ack", bytes: bytes.byteLength }));
+      });
+      return;
+    }
     const message = JSON.parse(event.data);
-    if (message.type === "data") state.terminal.write(decodeBase64(message.data));
     if (message.type === "ready") { setConnectionStatus("已连接", true); document.querySelector("#connect-host").textContent = "断开"; state.fit.fit(); sendWs({ type: "resize", cols: state.terminal.cols, rows: state.terminal.rows }); state.terminal.focus(); }
     if (message.type === "exit") { setConnectionStatus("已断开"); document.querySelector("#connect-host").textContent = "连接"; state.terminal.writeln("\r\n\x1b[90m连接已关闭\x1b[0m"); }
     if (message.type === "error") { setConnectionStatus("连接失败"); state.terminal.writeln(`\r\n\x1b[31m${message.message}\x1b[0m`); toast(message.message, "error"); }

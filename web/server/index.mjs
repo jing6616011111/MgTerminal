@@ -24,6 +24,8 @@ const SESSION_SECRET = String(process.env.MGTERMINAL_SESSION_SECRET || "");
 const ADMIN_PASSWORD = String(process.env.MGTERMINAL_ADMIN_PASSWORD || "");
 const COOKIE_NAME = "mgterminal_session";
 const MAX_JSON_BODY = 1024 * 1024;
+const MAX_TERMINAL_IN_FLIGHT = 1024 * 1024;
+const RESUME_TERMINAL_IN_FLIGHT = 256 * 1024;
 const LOGIN_LIMIT_WINDOW = 15 * 60 * 1000;
 const LOGIN_LIMIT_ATTEMPTS = 10;
 
@@ -225,23 +227,60 @@ wss.on("connection", (ws) => {
   let stream = null;
   let pendingHostKey = null;
   let requestedHost = null;
+  let unackedTerminalBytes = 0;
+  let flowControlTimer = null;
 
   const send = (message) => {
     if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(message));
   };
+  const updateFlowControl = () => {
+    if (!stream) return;
+    const congested = unackedTerminalBytes >= MAX_TERMINAL_IN_FLIGHT
+      || ws.bufferedAmount >= MAX_TERMINAL_IN_FLIGHT;
+    if (congested) {
+      stream.pause();
+      if (!flowControlTimer) {
+        flowControlTimer = setTimeout(() => {
+          flowControlTimer = null;
+          updateFlowControl();
+        }, 25);
+      }
+      return;
+    }
+    if (
+      unackedTerminalBytes <= RESUME_TERMINAL_IN_FLIGHT
+      && ws.bufferedAmount <= RESUME_TERMINAL_IN_FLIGHT
+    ) {
+      stream.resume();
+    }
+  };
+  const sendTerminalData = (data) => {
+    if (ws.readyState !== ws.OPEN) return;
+    const chunk = Buffer.isBuffer(data) ? data : Buffer.from(data);
+    unackedTerminalBytes += chunk.length;
+    ws.send(chunk, { binary: true });
+    updateFlowControl();
+  };
   const cleanup = () => {
-    try { stream?.end(); } catch {}
-    try { ssh?.end(); } catch {}
+    if (flowControlTimer) clearTimeout(flowControlTimer);
+    flowControlTimer = null;
+    unackedTerminalBytes = 0;
+    const closingStream = stream;
+    const closingSsh = ssh;
     stream = null;
     ssh = null;
+    try { closingStream?.end(); } catch {}
+    try { closingSsh?.end(); } catch {}
   };
 
   function connect(host, allowNewFingerprint = false) {
     cleanup();
     requestedHost = host;
-    ssh = new Client();
-    ssh.on("ready", () => {
-      ssh.shell({ term: "xterm-256color", cols: 120, rows: 32 }, (error, shell) => {
+    const connection = new Client();
+    ssh = connection;
+    connection.on("ready", () => {
+      if (ssh !== connection) return;
+      connection.shell({ term: "xterm-256color", cols: 120, rows: 32 }, (error, shell) => {
         if (error) {
           send({ type: "error", message: error.message });
           cleanup();
@@ -249,22 +288,29 @@ wss.on("connection", (ws) => {
         }
         stream = shell;
         send({ type: "ready", host: { id: host.id, name: host.name } });
-        shell.on("data", (data) => send({ type: "data", data: data.toString("base64") }));
-        shell.stderr?.on("data", (data) => send({ type: "data", data: data.toString("base64") }));
+        const forwardShellData = (data) => {
+          if (stream === shell) sendTerminalData(data);
+        };
+        shell.on("data", forwardShellData);
+        shell.stderr?.on("data", forwardShellData);
         shell.on("close", () => {
+          if (stream !== shell) return;
           send({ type: "exit" });
           cleanup();
         });
       });
     });
-    ssh.on("keyboard-interactive", (_name, _instructions, _language, prompts, finish) => {
+    connection.on("keyboard-interactive", (_name, _instructions, _language, prompts, finish) => {
       finish(prompts.map(() => host.secret.password || ""));
     });
-    ssh.on("error", (error) => {
+    connection.on("error", (error) => {
+      if (ssh !== connection) return;
       if (pendingHostKey && /host denied|verification failed/i.test(String(error.message || ""))) return;
       send({ type: "error", message: error.message });
     });
-    ssh.on("close", () => { if (stream) send({ type: "exit" }); });
+    connection.on("close", () => {
+      if (ssh === connection && stream) send({ type: "exit" });
+    });
 
     const config = {
       host: host.hostname,
@@ -292,7 +338,7 @@ wss.on("connection", (ws) => {
         callback(false);
       },
     };
-    ssh.connect(config);
+    connection.connect(config);
   }
 
   ws.on("message", (raw) => {
@@ -315,6 +361,10 @@ wss.on("connection", (ws) => {
         const cols = Math.max(20, Math.min(500, Number(message.cols) || 120));
         const rows = Math.max(5, Math.min(300, Number(message.rows) || 32));
         stream.setWindow(rows, cols, 0, 0);
+      } else if (message.type === "ack" && stream) {
+        const acknowledged = Math.max(0, Math.min(unackedTerminalBytes, Number(message.bytes) || 0));
+        unackedTerminalBytes -= acknowledged;
+        updateFlowControl();
       } else if (message.type === "disconnect") {
         cleanup();
       }
