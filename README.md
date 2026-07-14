@@ -160,10 +160,10 @@ Or browse all releases at [GitHub Releases](https://github.com/JasonZhangDad/MgT
 Deploy on a Linux server and manage SSH hosts from a browser:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jing6616011111/MgTerminal/main/scripts/install-web.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/jing6616011111/MgTerminal/main/scripts/install-web.sh | bash
 ```
 
-The Web edition includes admin authentication, encrypted credential storage, SSH host-key confirmation, and a real-time WebSocket terminal. Configure HTTPS before exposing it publicly. See [`docs/WEB_DEPLOYMENT.zh-CN.md`](docs/WEB_DEPLOYMENT.zh-CN.md).
+The script detects privileges automatically: it runs directly as `root` and invokes `sudo` only for non-root users. The Web edition includes admin authentication, encrypted credential storage, SSH host-key confirmation, and a real-time WebSocket terminal. Configure HTTPS before exposing it publicly. See [`docs/WEB_DEPLOYMENT.zh-CN.md`](docs/WEB_DEPLOYMENT.zh-CN.md).
 
 > The current Web MVP focuses on host management and SSH terminals. Advanced Electron features such as SFTP, port forwarding, and the AI Agent are not yet available in Web mode.
 

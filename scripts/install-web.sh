@@ -24,7 +24,7 @@ MgTerminal Web 一键安装脚本
   -h, --help          显示帮助
 
 示例:
-  curl -fsSL https://raw.githubusercontent.com/${REPO}/main/scripts/install-web.sh | sudo bash
+  curl -fsSL https://raw.githubusercontent.com/${REPO}/main/scripts/install-web.sh | bash
 USAGE
 }
 
@@ -46,9 +46,11 @@ done
 
 if [[ $(id -u) -eq 0 ]]; then
   SUDO=()
+  COMMAND_PREFIX=""
 else
   command -v sudo >/dev/null 2>&1 || die "请使用 root 运行，或先安装 sudo"
   SUDO=(sudo)
+  COMMAND_PREFIX="sudo "
 fi
 as_root() { "${SUDO[@]}" "$@"; }
 
@@ -150,6 +152,6 @@ if ((FIRST_INSTALL == 1)); then
   printf '请立即保存密码；安装脚本不会再次显示。\n'
 fi
 printf '\n管理命令:\n'
-printf '  cd %s && sudo docker compose --env-file .env.web -f docker-compose.web.yml logs -f\n' "$INSTALL_DIR"
-printf '  cd %s && sudo docker compose --env-file .env.web -f docker-compose.web.yml restart\n' "$INSTALL_DIR"
+printf '  cd %s && %sdocker compose --env-file .env.web -f docker-compose.web.yml logs -f\n' "$INSTALL_DIR" "$COMMAND_PREFIX"
+printf '  cd %s && %sdocker compose --env-file .env.web -f docker-compose.web.yml restart\n' "$INSTALL_DIR" "$COMMAND_PREFIX"
 warn "当前地址是 HTTP。跨公网使用前必须配置 HTTPS 反向代理，或仅通过 WireGuard/Tailscale 等 VPN 访问。"
