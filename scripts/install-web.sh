@@ -82,6 +82,21 @@ install_docker() {
   as_root systemctl enable --now docker 2>/dev/null || true
 }
 
+detect_public_ipv4() {
+  local endpoint ip
+  for endpoint in \
+    "https://api.ipify.org" \
+    "https://ifconfig.me/ip" \
+    "https://icanhazip.com"; do
+    ip="$(curl -4fsS --max-time 5 "$endpoint" 2>/dev/null | tr -d '[:space:]' || true)"
+    if [[ "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+      printf '%s' "$ip"
+      return 0
+    fi
+  done
+  return 1
+}
+
 install_base_tools
 install_docker
 as_root docker compose version >/dev/null 2>&1 || die "Docker Compose 插件不可用，请安装 docker-compose-plugin"
@@ -143,10 +158,16 @@ if ((FIRST_INSTALL == 1)); then
   as_root docker compose --env-file .env.web -f docker-compose.web.yml up -d
 fi
 
-SERVER_IP="$(hostname -I 2>/dev/null | awk '{print $1}' || true)"
-[[ -n "$SERVER_IP" ]] || SERVER_IP="服务器IP"
+LOCAL_IP="$(hostname -I 2>/dev/null | awk '{print $1}' || true)"
+[[ -n "$LOCAL_IP" ]] || LOCAL_IP="服务器内网IP"
+PUBLIC_IP="$(detect_public_ipv4 || true)"
 printf '\n\033[1;32m安装完成！\033[0m\n'
-printf '访问地址: http://%s:%s\n' "$SERVER_IP" "$WEB_PORT"
+printf '内网地址: http://%s:%s\n' "$LOCAL_IP" "$WEB_PORT"
+if [[ -n "$PUBLIC_IP" ]]; then
+  printf '公网候选地址: http://%s:%s\n' "$PUBLIC_IP" "$WEB_PORT"
+else
+  printf '公网候选地址: 未能自动检测\n'
+fi
 if ((FIRST_INSTALL == 1)); then
   printf '管理员密码: \033[1;33m%s\033[0m\n' "$ADMIN_PASSWORD"
   printf '请立即保存密码；安装脚本不会再次显示。\n'
@@ -155,3 +176,4 @@ printf '\n管理命令:\n'
 printf '  cd %s && %sdocker compose --env-file .env.web -f docker-compose.web.yml logs -f\n' "$INSTALL_DIR" "$COMMAND_PREFIX"
 printf '  cd %s && %sdocker compose --env-file .env.web -f docker-compose.web.yml restart\n' "$INSTALL_DIR" "$COMMAND_PREFIX"
 warn "当前地址是 HTTP。跨公网使用前必须配置 HTTPS 反向代理，或仅通过 WireGuard/Tailscale 等 VPN 访问。"
+warn "公网候选地址不代表端口已经开放；云服务器还需放行安全组/防火墙，NAT 主机还需配置端口映射。"

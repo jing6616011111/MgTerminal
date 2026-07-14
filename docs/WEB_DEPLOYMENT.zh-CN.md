@@ -33,6 +33,8 @@ curl -fsSL https://raw.githubusercontent.com/jing6616011111/MgTerminal/main/scri
 5. 启动服务并显示访问地址和一次性管理员密码；
 6. 首次初始化成功后，从 `.env.web` 删除管理员明文密码。
 
+安装完成后会同时显示内网地址和公网候选地址。公网地址仅表示检测到的出口 IP，不代表云安全组、防火墙或路由器端口映射已经配置完成。
+
 自定义端口：
 
 ```bash
@@ -78,6 +80,30 @@ X-Forwarded-Proto: https
 ```
 
 服务检测到 `X-Forwarded-Proto: https` 后会自动给登录 Cookie 添加 `Secure`。
+
+## 公网地址与端口
+
+已经安装完成的服务器不需要重装。可用下面的命令查看公网 IPv4：
+
+```bash
+curl -4fsS https://api.ipify.org; echo
+```
+
+假设公网 IP 是 `203.0.113.10`，默认端口是 `8080`，候选地址为：
+
+```text
+http://203.0.113.10:8080
+```
+
+无法访问时依次检查：
+
+1. 云服务器控制台的安全组是否允许 TCP `8080`；
+2. Debian/Ubuntu 防火墙是否允许该端口，例如 `ufw allow 8080/tcp`；
+3. 服务器是否位于路由器或运营商 NAT 后面，若是则需要端口映射；
+4. 容器是否运行：`docker compose --env-file .env.web -f docker-compose.web.yml ps`；
+5. 本机健康检查是否成功：`curl http://127.0.0.1:8080/api/health`。
+
+直接开放 `8080` 仅适合临时测试。正式使用应配置域名和 HTTPS，然后只向公网开放 `443`。
 
 ## 数据与备份
 
