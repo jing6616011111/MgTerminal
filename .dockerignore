@@ -1,0 +1,13 @@
+.git
+.github
+.vscode
+node_modules
+release
+dist
+web/node_modules
+web/dist
+web/data
+outputs
+work
+*.log
+.env*

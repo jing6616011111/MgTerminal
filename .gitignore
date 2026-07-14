@@ -92,3 +92,7 @@ build_with_vs2022.bat
 /resources/et/*/et-*-dlls/
 /resources/et/*/*.dll
 .venv-icons
+
+# Keep the documented Web deployment template while ignoring real secrets.
+!.env.web.example
+/web/data/

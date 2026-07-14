@@ -1,0 +1,25 @@
+services:
+  mgterminal-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    image: mgterminal-web:local
+    container_name: mgterminal-web
+    restart: unless-stopped
+    env_file:
+      - .env.web
+    environment:
+      MGTERMINAL_HOST: 0.0.0.0
+      MGTERMINAL_PORT: 8080
+      MGTERMINAL_DATA_DIR: /data
+    ports:
+      - "${MGTERMINAL_WEB_PORT:-8080}:8080"
+    volumes:
+      - mgterminal-web-data:/data
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+volumes:
+  mgterminal-web-data:

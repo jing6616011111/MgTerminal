@@ -1,0 +1,44 @@
+name: web-server
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "web/**"
+      - "Dockerfile.web"
+      - "docker-compose.web.yml"
+      - "scripts/install-web.sh"
+      - ".github/workflows/web.yml"
+  pull_request:
+    paths:
+      - "web/**"
+      - "Dockerfile.web"
+      - "docker-compose.web.yml"
+      - "scripts/install-web.sh"
+      - ".github/workflows/web.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install Web dependencies
+        working-directory: web
+        run: npm ci
+      - name: Test Web server
+        working-directory: web
+        run: npm test
+      - name: Build Web frontend
+        working-directory: web
+        run: npm run build
+      - name: Build Docker image
+        run: docker build -f Dockerfile.web -t mgterminal-web:test .
