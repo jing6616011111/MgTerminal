@@ -15,6 +15,25 @@ export default [
     ignores: ["node_modules/**", "dist/**", "scripts/**", "public/monaco/**", ".github/**", ".claude/**", "release/**", "release-build/**", ".worktrees/**", ".venv*/**", "**/.venv*/**"],
   },
   {
+    files: ["web/server/**/*.mjs", "web/test/**/*.mjs"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: globals.node,
+    },
+    rules: {
+      "no-empty": ["error", { allowEmptyCatch: true }],
+    },
+  },
+  {
+    files: ["web/src/**/*.js", "web/vite.config.js"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: globals.browser,
+    },
+  },
+  {
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       parser: tsParser,
